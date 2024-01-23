@@ -47,6 +47,7 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	InputComponent->BindAxis("Thrust", this, &APlanePawn::ProcessThrust);
 	InputComponent->BindAxis("Pitch", this, &APlanePawn::ProcessPitch);
 	InputComponent->BindAxis("Roll", this, &APlanePawn::ProcessRoll);
+	InputComponent->BindAction("Fire1", IE_Pressed, this, &APlanePawn::ProcessFire1Pressed);
 }
 // input processing
 void APlanePawn::ProcessThrust(float InThrust)
@@ -64,5 +65,13 @@ void APlanePawn::ProcessRoll(float InRoll)
 void APlanePawn::ProcessSteer(float InSteer)
 {
 	CurrentSteer = InSteer;
+}
+void ProcessFire1Pressed()
+{
+
+}
+void ProcessFire1Released()
+{
+
 }
 

@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-#include "HardpointWeapon.h"
-#include "Hardpoint.h"
 #include "PlanePawn.generated.h"
 
 UCLASS()
@@ -50,8 +48,8 @@ public:
 	TArray<FVector> hardpoints;
 
 	UPROPERTY(EditAnywhere)
-	TArray<AHardpointWeapon*> hardpointWeapons;
-	TArray<AHardpoint*> Hardpoints;
+	TArray<TSubclassOf<class AHardpointWeapon>> hardpointWeapons;
+	TArray<TSubclassOf<class AHardpoint>> Hardpoints;
 
 
 protected:
@@ -62,6 +60,12 @@ protected:
 	void ProcessSteer(float InSteer);
 	void ProcessThrust(float InThrust);
 	void ProcessRoll(float InRoll);
+	void ProcessFire1Pressed();
+	void ProcessFire1Released();
+	void ProcessFire2Pressed();
+	void ProcessFire2Released();
+	void ProcessFire3Pressed();
+	void ProcessFire3Released();
 	
 
 public:	

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "HardpointWeapon.h"
 #include "Hardpoint.generated.h"
 
 UCLASS()
@@ -18,7 +17,7 @@ public:
 
 	FVector BasePosition;
 
-	AHardpointWeapon weapon
+	TSubclassOf<class AHardpointWeapon> weapon;
 
 protected:
 	// Called when the game starts or when spawned
