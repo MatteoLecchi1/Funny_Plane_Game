@@ -33,6 +33,11 @@ public:
 
 	UPROPERTY()
 	double CurrentThrust = 0;
+	double TargetThrust = 0;
+	UPROPERTY(EditAnywhere)
+	double MaxTargetThrust = 100;
+	UPROPERTY(EditAnywhere)
+	double MinTargetThrust = 20;
 
 	UPROPERTY()
 	double CurrentPitch = 0;
@@ -51,6 +56,9 @@ public:
 	TArray<TSubclassOf<class AHardpointWeapon>> hardpointWeapons;
 	TArray<TSubclassOf<class AHardpoint>> Hardpoints;
 
+	bool Fire1;
+	bool Fire2;
+	bool Fire3;
 
 protected:
 	// Called when the game starts or when spawned

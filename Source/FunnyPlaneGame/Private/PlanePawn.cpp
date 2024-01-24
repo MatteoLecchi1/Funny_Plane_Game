@@ -32,9 +32,14 @@ void APlanePawn::Tick(float DeltaTime)
 	Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier, 0));
 	//Roll
 	Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier));
-
+	//Clamping throttle
+	TargetThrust += CurrentThrust*DeltaTime;
+	TargetThrust = FMath::Clamp(TargetThrust, MinTargetThrust, MaxTargetThrust);
+	
 	// Add a force dependent on Thrust in the forward direction
-	Component->AddForce(Component->GetForwardVector() * CurrentThrust * Speed, NAME_None, true);
+	Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
+
+	printf("%lf", TargetThrust);
 
 }
 
@@ -48,6 +53,11 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	InputComponent->BindAxis("Pitch", this, &APlanePawn::ProcessPitch);
 	InputComponent->BindAxis("Roll", this, &APlanePawn::ProcessRoll);
 	InputComponent->BindAction("Fire1", IE_Pressed, this, &APlanePawn::ProcessFire1Pressed);
+	InputComponent->BindAction("Fire1", IE_Released, this, &APlanePawn::ProcessFire1Released);
+	InputComponent->BindAction("Fire2", IE_Pressed, this, &APlanePawn::ProcessFire2Pressed);
+	InputComponent->BindAction("Fire2", IE_Released, this, &APlanePawn::ProcessFire2Released);
+	InputComponent->BindAction("Fire3", IE_Pressed, this, &APlanePawn::ProcessFire3Pressed);
+	InputComponent->BindAction("Fire3", IE_Released, this, &APlanePawn::ProcessFire3Released);
 }
 // input processing
 void APlanePawn::ProcessThrust(float InThrust)
@@ -66,12 +76,28 @@ void APlanePawn::ProcessSteer(float InSteer)
 {
 	CurrentSteer = InSteer;
 }
-void ProcessFire1Pressed()
+void APlanePawn::ProcessFire1Pressed()
 {
-
+	Fire1 = true;
 }
-void ProcessFire1Released()
+void APlanePawn::ProcessFire1Released()
 {
-
+	Fire1 = false;
+}
+void APlanePawn::ProcessFire2Pressed()
+{
+	Fire2 = true;
+}
+void APlanePawn::ProcessFire2Released()
+{
+	Fire2 = false;
+}
+void APlanePawn::ProcessFire3Pressed()
+{
+	Fire3 = true;
+}
+void APlanePawn::ProcessFire3Released()
+{
+	Fire3 = false;
 }
 
