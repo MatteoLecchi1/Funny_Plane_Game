@@ -29,9 +29,6 @@ public:
 	double RollMultiplier = 1;
 
 	UPROPERTY()
-	double CurrentSteer = 0;
-
-	UPROPERTY()
 	double CurrentThrust = 0;
 	double TargetThrust = 0;
 	UPROPERTY(EditAnywhere)
@@ -40,10 +37,16 @@ public:
 	double MinTargetThrust = 20;
 
 	UPROPERTY()
+	double CurrentSteer = 0;
+	UPROPERTY()
 	double CurrentPitch = 0;
-
 	UPROPERTY()
 	double CurrentRoll = 0;
+
+	UPROPERTY()
+	double CurrenCameraX = 0;
+	UPROPERTY()
+	double CurrenCameraY = 0;
 
 	UPROPERTY()
 	FRotator Rotator = FRotator::ZeroRotator;
@@ -68,6 +71,8 @@ protected:
 	void ProcessSteer(float InSteer);
 	void ProcessThrust(float InThrust);
 	void ProcessRoll(float InRoll);
+	void ProcessCameraX(float InCameraX);
+	void ProcessCameraY(float InCameray);
 	void ProcessFire1Pressed();
 	void ProcessFire1Released();
 	void ProcessFire2Pressed();

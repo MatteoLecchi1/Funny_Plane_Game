@@ -2,6 +2,8 @@
 
 
 #include "PlanePawn.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Math/Rotator.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
@@ -24,6 +26,7 @@ void APlanePawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
+	auto CameraArmComponet = Cast<USpringArmComponent>(GetComponentByClass<USpringArmComponent>());
 
 	// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
 	//Pitch
@@ -38,8 +41,7 @@ void APlanePawn::Tick(float DeltaTime)
 	
 	// Add a force dependent on Thrust in the forward direction
 	Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
-
-	printf("%lf", TargetThrust);
+	CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(FVector(0.f, (float)CurrenCameraY * 179.f,(float)CurrenCameraX * 179.f)));
 
 }
 
@@ -52,6 +54,8 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	InputComponent->BindAxis("Thrust", this, &APlanePawn::ProcessThrust);
 	InputComponent->BindAxis("Pitch", this, &APlanePawn::ProcessPitch);
 	InputComponent->BindAxis("Roll", this, &APlanePawn::ProcessRoll);
+	InputComponent->BindAxis("CameraX", this, &APlanePawn::ProcessCameraX);
+	InputComponent->BindAxis("CameraY", this, &APlanePawn::ProcessCameraY);
 	InputComponent->BindAction("Fire1", IE_Pressed, this, &APlanePawn::ProcessFire1Pressed);
 	InputComponent->BindAction("Fire1", IE_Released, this, &APlanePawn::ProcessFire1Released);
 	InputComponent->BindAction("Fire2", IE_Pressed, this, &APlanePawn::ProcessFire2Pressed);
@@ -75,6 +79,14 @@ void APlanePawn::ProcessRoll(float InRoll)
 void APlanePawn::ProcessSteer(float InSteer)
 {
 	CurrentSteer = InSteer;
+}
+void APlanePawn::ProcessCameraX(float InCameraX)
+{
+	CurrenCameraX = InCameraX;
+}
+void APlanePawn::ProcessCameraY(float InCameraY)
+{
+	CurrenCameraY = InCameraY;
 }
 void APlanePawn::ProcessFire1Pressed()
 {
