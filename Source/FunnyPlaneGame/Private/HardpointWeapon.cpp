@@ -12,6 +12,7 @@ AHardpointWeapon::AHardpointWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	gunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Mesh"));
+	
 }
 
 // Called when the game starts or when spawned
@@ -30,8 +31,10 @@ void AHardpointWeapon::Tick(float DeltaTime)
 
 	if (fireDelay > 1/fireRate)
 	{
-		AProjectile* ProjectileInstance= GetWorld()->SpawnActor<AProjectile>(projectile, GetActorLocation()+((GetActorForwardVector()*projectileSpawnLocation.X)+ (GetActorUpVector() * projectileSpawnLocation.Z)+(GetActorRightVector()*projectileSpawnLocation.Y)), GetActorRotation());
-		ProjectileInstance->ProjectileMesh->ComponentVelocity += gunMesh->ComponentVelocity;
+		
+		AProjectile* ProjectileInstance= GetWorld()->SpawnActor<AProjectile>(projectile,gunMesh->GetSocketLocation("ProjectileSpawnLocation1"), GetActorRotation()+FRotator::MakeFromEuler(FVector((0, FMath::FRandRange(-fireSpread, fireSpread), FMath::FRandRange(-fireSpread, fireSpread)))));
+		if(GetParentActor()->IsValidLowLevelFast())
+			ProjectileInstance->ProjectileMesh->ComponentVelocity += GetParentActor()->GetVelocity();
 		fireDelay = 0;
 	}
 	

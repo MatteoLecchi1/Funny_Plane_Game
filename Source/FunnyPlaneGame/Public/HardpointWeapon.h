@@ -23,10 +23,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float fireRate;
+	UPROPERTY(EditAnywhere)
+	float fireSpread=0;
 	float fireDelay;
 	bool shouldFire;
 
-	UPROPERTY(EditAnywhere,Meta = (MakeEditWidget = true))
+	UPROPERTY()
 	FVector projectileSpawnLocation;
 		 
 protected:
