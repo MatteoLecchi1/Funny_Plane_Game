@@ -20,6 +20,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> projectile;
+	AActor* PlaneParent;
 
 	UPROPERTY(EditAnywhere)
 	float fireRate;
@@ -27,6 +28,9 @@ public:
 	float fireSpread=0;
 	float fireDelay;
 	bool shouldFire;
+
+	UPROPERTY(EditAnywhere)
+	int ButtonToFire = 1;
 
 	UPROPERTY()
 	FVector projectileSpawnLocation;
@@ -38,5 +42,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	void Shoot();
 };

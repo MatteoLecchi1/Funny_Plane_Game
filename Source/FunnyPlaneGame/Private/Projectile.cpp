@@ -2,6 +2,7 @@
 
 
 #include "Projectile.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -10,6 +11,7 @@ AProjectile::AProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
+	ProjectileMesh->SetSimulatePhysics(true);
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
 
@@ -19,8 +21,7 @@ AProjectile::AProjectile()
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 }
 
 // Called every frame
@@ -29,16 +30,48 @@ void AProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	ProjectileLifespan -= DeltaTime;
 	if (ProjectileLifespan < 0)
-		Destroy();
-
+		DestroySelf();
 }
-void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
+void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
+	if (ActorHasTag("IsFriendly")) 
 	{
+		if (OtherActor->ActorHasTag("IsFriendly"))
+		{	//friendly hits friendly
 
+		}
+		else if (OtherActor->ActorHasTag("IsEnemy"))
+		{   //friendly hits enemy
+			if (OtherActor->CanBeDamaged())
+			{
+				UGameplayStatics::ApplyDamage(OtherActor, DamageDealt, UGameplayStatics::GetPlayerController(GetWorld(), 0), this, nullptr);
+			}
+			DestroySelf();
+		}
+		else 
+		{   //hits others
+			DestroySelf();
+		}
 	}
+	else if(ActorHasTag("IsEnemy"))
+	{
+		if (OtherActor->ActorHasTag("IsFriendly"))
+		{	//enemy hits friendly
+			UGameplayStatics::ApplyDamage(OtherActor, DamageDealt, UGameplayStatics::GetPlayerController(GetWorld(), 0), this, nullptr);
+			DestroySelf();
+		}
+		else if (OtherActor->ActorHasTag("IsEnemy"))
+		{   //enemy hits enemy
 
+		}
+		else
+		{   //hits others
+			DestroySelf();
+		}
+	}
+}
+void AProjectile::DestroySelf()
+{
 	Destroy();
 }
 

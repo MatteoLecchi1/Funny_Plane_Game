@@ -14,6 +14,14 @@ class FUNNYPLANEGAME_API APlanePawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	APlanePawn();
+	UPROPERTY(EditAnywhere)
+	double MaxHealth = 100.;
+	UPROPERTY()
+	double CurrentHealth = 1.;
+	UPROPERTY(EditAnywhere)
+	double MaxShield = 100.;
+	UPROPERTY()
+	double CurrentShield = 1.;
 
 	UPROPERTY(EditAnywhere)
 	double RotationSpeed = 1.;
@@ -46,22 +54,42 @@ public:
 	UPROPERTY()
 	double CurrenCameraX = 0;
 	UPROPERTY()
+	double TargetCameraX = 0;
+	UPROPERTY()
 	double CurrenCameraY = 0;
+	UPROPERTY()
+	double TargetCameraY = 0;
+	UPROPERTY(EditAnywhere)
+	double CameraSpeedX = 1;
+	UPROPERTY(EditAnywhere)
+	double CameraSpeedY = 1;
+
+	UPROPERTY()
+	FVector TargetCameraRotation = FVector::ZeroVector;
+
+	float TimeSinceLastCameraInput = 100.f;
+	UPROPERTY(EditAnywhere)
+	float TimeCameraToReset = 2.f;
+
+	UPROPERTY()
+	bool IsCameraLockedOn = false;
+	AActor* LockedOnActor =this;
 
 	UPROPERTY()
 	FRotator Rotator = FRotator::ZeroRotator;
 
-
-	UPROPERTY(EditAnywhere)
-	TArray<FVector> hardpoints;
-
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<class AHardpointWeapon>> hardpointWeapons;
-	TArray<TSubclassOf<class AHardpoint>> Hardpoints;
 
-	bool Fire1;
-	bool Fire2;
-	bool Fire3;
+	const float& NearestActorSearchRange = 1000.f;
+	TArray<AActor*> AllEnemiesInMap;
+	AActor* ClosestEnemyInMap;
+	float ClosestEnemyInMapDistace= std::numeric_limits<float>::max();
+
+
+	bool Fire1 = false;
+	bool Fire2 = false;
+	bool Fire3 = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -79,6 +107,16 @@ protected:
 	void ProcessFire2Released();
 	void ProcessFire3Pressed();
 	void ProcessFire3Released();
+	void ProcessLockOnPressed();
+	void OnShieldBreak();
+	
+	virtual float TakeDamage
+	(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator,
+		AActor* DamageCauser
+	)override;
 	
 
 public:	
