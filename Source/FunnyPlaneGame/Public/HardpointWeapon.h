@@ -34,6 +34,7 @@ public:
 
 	UPROPERTY()
 	FVector projectileSpawnLocation;
+	FRandomStream RandomStream;
 		 
 protected:
 	// Called when the game starts or when spawned

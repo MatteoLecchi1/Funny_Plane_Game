@@ -20,7 +20,6 @@ AHardpointWeapon::AHardpointWeapon()
 void AHardpointWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -67,7 +66,7 @@ void AHardpointWeapon::Tick(float DeltaTime)
 }
 void AHardpointWeapon::Shoot()
 {
-	AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, gunMesh->GetSocketLocation("ProjectileSpawnLocation1"), GetActorRotation() + FRotator::MakeFromEuler(FVector((0, FMath::FRandRange(-fireSpread, fireSpread), FMath::FRandRange(-fireSpread, fireSpread))))); 
+	AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, gunMesh->GetSocketLocation("ProjectileSpawnLocation1"), GetActorRotation() + FRotator::MakeFromEuler(FVector(0, RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread))));
 	
 	if (ProjectileInstance->IsValidLowLevel()) {
 		if (PlaneParent->ActorHasTag("IsFriendly")) {
