@@ -23,26 +23,25 @@ public:
 	UPROPERTY()
 	double CurrentShield = 1.;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	double RotationSpeed = 1.;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	double Speed = 100.;
-
-	UPROPERTY(EditAnywhere)
-	double PitchMultiplier = 1;
-	UPROPERTY(EditAnywhere)
-	double YawMultiplier = 1;
-	UPROPERTY(EditAnywhere)
-	double RollMultiplier = 1;
-
 	UPROPERTY()
 	double CurrentThrust = 0;
 	double TargetThrust = 0;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	double MaxTargetThrust = 100;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Movement")
 	double MinTargetThrust = 20;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	double PitchMultiplier = 1;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	double YawMultiplier = 1;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	double RollMultiplier = 1;
 
 	UPROPERTY()
 	double CurrentSteer = 0;
@@ -74,7 +73,6 @@ public:
 	UPROPERTY()
 	bool IsCameraLockedOn = false;
 	AActor* LockedOnActor =this;
-
 	UPROPERTY()
 	FRotator Rotator = FRotator::ZeroRotator;
 
@@ -91,6 +89,11 @@ public:
 	bool Fire2 = false;
 	bool Fire3 = false;
 
+	APlayerController* Controller;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> widgetHUD = nullptr;
+	UPROPERTY()
+	TObjectPtr<UUserWidget> widgetHUDInstance = nullptr;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

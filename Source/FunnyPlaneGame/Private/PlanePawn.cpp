@@ -6,6 +6,7 @@
 #include "Math/Rotator.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
@@ -23,6 +24,12 @@ void APlanePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (IsLocallyControlled() && widgetHUD)
+	{
+			widgetHUDInstance = CreateWidget<UUserWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), widgetHUD->StaticClass());
+			if(widgetHUDInstance)
+			widgetHUDInstance->AddToViewport();
+	}
 }
 
 // Called every frame
