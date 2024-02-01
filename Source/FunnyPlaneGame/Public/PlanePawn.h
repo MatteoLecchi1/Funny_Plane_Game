@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "Hardpoint.h"
 #include "PlanePawn.generated.h"
 
 UCLASS()
@@ -14,15 +15,8 @@ class FUNNYPLANEGAME_API APlanePawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	APlanePawn();
-	UPROPERTY(EditAnywhere)
-	double MaxHealth = 100.;
-	UPROPERTY()
-	double CurrentHealth = 1.;
-	UPROPERTY(EditAnywhere)
-	double MaxShield = 100.;
-	UPROPERTY()
-	double CurrentShield = 1.;
 
+	//Movement
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	double RotationSpeed = 1.;
 
@@ -50,6 +44,7 @@ public:
 	UPROPERTY()
 	double CurrentRoll = 0;
 
+	//Camera
 	UPROPERTY()
 	double CurrenCameraX = 0;
 	UPROPERTY()
@@ -76,24 +71,30 @@ public:
 	UPROPERTY()
 	FRotator Rotator = FRotator::ZeroRotator;
 
-	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<class AHardpointWeapon>> hardpointWeapons;
-
 	const float& NearestActorSearchRange = 1000.f;
 	TArray<AActor*> AllEnemiesInMap;
 	AActor* ClosestEnemyInMap;
 	float ClosestEnemyInMapDistace= std::numeric_limits<float>::max();
 
-
-	bool Fire1 = false;
-	bool Fire2 = false;
-	bool Fire3 = false;
-
-	APlayerController* Controller;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<UUserWidget> widgetHUD = nullptr;
+	//Combat
+	UPROPERTY(EditAnywhere)
+	double MaxHealth = 100.;
 	UPROPERTY()
-	TObjectPtr<UUserWidget> widgetHUDInstance = nullptr;
+	double CurrentHealth = 1.;
+	UPROPERTY(EditAnywhere)
+	double MaxShield = 100.;
+	UPROPERTY()
+	double CurrentShield = 1.;
+
+	//HUD
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<class UPlanePlayerHUD> widgetHUDClass;
+	UPROPERTY()
+	class UPlanePlayerHUD* widgetHUDInstance;
+
+	UPROPERTY()
+	TArray <UHardpoint*> hardpoints;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -111,6 +112,7 @@ protected:
 	void ProcessFire3Pressed();
 	void ProcessFire3Released();
 	void ProcessLockOnPressed();
+	void UpdateHealthAndShield();
 	void OnShieldBreak();
 	
 	virtual float TakeDamage
@@ -120,7 +122,6 @@ protected:
 		class AController* EventInstigator,
 		AActor* DamageCauser
 	)override;
-	
 
 public:	
 	// Called every frame

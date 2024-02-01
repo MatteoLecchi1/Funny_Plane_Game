@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Blueprint/UserWidget.h"
+#include "PlanePlayerHUD.h"
+#include "Hardpoint.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
@@ -16,7 +18,8 @@ APlanePawn::APlanePawn()
 
 	CurrentHealth = MaxHealth;
 	CurrentShield = MaxShield;
-
+	UpdateHealthAndShield();
+	GetComponents(TSubclassOf<UHardpoint>(), hardpoints, true);
 }
 
 // Called when the game starts or when spawned
@@ -24,12 +27,13 @@ void APlanePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsLocallyControlled() && widgetHUD)
+	if (IsLocallyControlled() && widgetHUDClass)
 	{
-			widgetHUDInstance = CreateWidget<UUserWidget>(UGameplayStatics::GetPlayerController(GetWorld(), 0), widgetHUD->StaticClass());
+			widgetHUDInstance = CreateWidget<UPlanePlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(),0), widgetHUDClass);
 			if(widgetHUDInstance)
-			widgetHUDInstance->AddToViewport();
+			widgetHUDInstance->AddToPlayerScreen();
 	}
+
 }
 
 // Called every frame
@@ -39,6 +43,7 @@ void APlanePawn::Tick(float DeltaTime)
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	auto CameraArmComponet = Cast<USpringArmComponent>(GetComponentByClass<USpringArmComponent>());
+
 
 	// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
 	//Pitch
@@ -127,7 +132,16 @@ float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& Damag
 		CurrentHealth -= abs(CurrentShield);
 		CurrentShield = 0;
 	}
+	UpdateHealthAndShield();
 	return DamageAmount;
+}
+void APlanePawn::UpdateHealthAndShield() 
+{
+	if(widgetHUDInstance)
+	{
+		widgetHUDInstance->UpdateHealth(CurrentHealth,MaxHealth);
+		widgetHUDInstance->UpdateShield(CurrentShield,MaxShield);
+	}
 }
 // input processing
 void APlanePawn::ProcessThrust(float InThrust)
@@ -156,27 +170,53 @@ void APlanePawn::ProcessCameraY(float InCameraY)
 }
 void APlanePawn::ProcessFire1Pressed()
 {
-	Fire1 = true;
+	for (UHardpoint* a : hardpoints) 
+	{
+		if (a->thisShootButton == ShootButton::RIGHT)
+			a->IsShooting=true;
+	}
 }
 void APlanePawn::ProcessFire1Released()
 {
-	Fire1 = false;
+	{
+		for (UHardpoint* a : hardpoints)
+		{
+			if (a->thisShootButton == ShootButton::RIGHT)
+				a->IsShooting = false;
+		}
+	}
 }
 void APlanePawn::ProcessFire2Pressed()
 {
-	Fire2 = true;
+	for (UHardpoint* a : hardpoints)
+	{
+		if (a->thisShootButton == ShootButton::UP)
+			a->IsShooting = true;
+	}
 }
 void APlanePawn::ProcessFire2Released()
 {
-	Fire2 = false;
+	for (UHardpoint* a : hardpoints)
+	{
+		if (a->thisShootButton == ShootButton::UP)
+			a->IsShooting = false;
+	}
 }
 void APlanePawn::ProcessFire3Pressed()
 {
-	Fire3 = true;
+	for (UHardpoint* a : hardpoints)
+	{
+		if (a->thisShootButton == ShootButton::LEFT)
+			a->IsShooting = true;
+	}
 }
 void APlanePawn::ProcessFire3Released()
 {
-	Fire3 = false;
+	for (UHardpoint* a : hardpoints)
+	{
+		if (a->thisShootButton == ShootButton::LEFT)
+			a->IsShooting = false;
+	}
 }
 void APlanePawn::ProcessLockOnPressed()
 {

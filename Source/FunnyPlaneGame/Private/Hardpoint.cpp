@@ -2,31 +2,44 @@
 
 
 #include "Hardpoint.h"
+#include "HardpointWeapon.h"
 
-// Sets default values
-AHardpoint::AHardpoint()
+// Sets default values for this component's properties
+UHardpoint::UHardpoint()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;
 
 }
 
-// Called when the game starts or when spawned
-void AHardpoint::BeginPlay()
+
+// Called when the game starts
+void UHardpoint::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	Super::BeginPlay(); 
+	AssignWeapon();
 }
+
 
 // Called every frame
-void AHardpoint::Tick(float DeltaTime)
+void UHardpoint::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::Tick(DeltaTime);
-
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (IsShooting)
+		ShootWeapon();
 }
 
-void SpawnWeapon()
+void UHardpoint::ShootWeapon()
 {
-	
+	if (WeaponInstance)
+	{
+		WeaponInstance->Shoot();
+	}
 }
-
+void UHardpoint::AssignWeapon() 
+{
+	if(HardpointWeapon)
+	{
+		WeaponInstance = GetWorld()->SpawnActor<AHardpointWeapon>(HardpointWeapon, SocketLocation, SocketRotation);
+		WeaponInstance->AttachToActor(this->GetOwner(), FAttachmentTransformRules::KeepRelativeTransform);
+	}
+}
