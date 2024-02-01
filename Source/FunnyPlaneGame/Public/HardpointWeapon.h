@@ -20,8 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> projectile;
-	AActor* PlaneParent;
 
+	UPROPERTY()
+	AActor* PlaneOwner;
 	UPROPERTY(EditAnywhere)
 	float fireRate;
 	UPROPERTY(EditAnywhere)

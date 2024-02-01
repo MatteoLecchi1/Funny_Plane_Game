@@ -13,7 +13,6 @@ AHardpointWeapon::AHardpointWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 	gunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Mesh"));
-	PlaneParent = GetParentActor();
 }
 
 // Called when the game starts or when spawned
@@ -33,15 +32,14 @@ void AHardpointWeapon::Shoot()
 	if (fireDelay > 1 / fireRate)
 	{
 		//spawn projectile and assign
-		PlaneParent = GetParentActor();
 		AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, gunMesh->GetSocketLocation("ProjectileSpawnLocation1"), GetActorRotation() + FRotator::MakeFromEuler(FVector(0, RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread))));
-		if (ProjectileInstance->IsValidLowLevel()) {
-			if (PlaneParent->ActorHasTag("IsFriendly")) {
+		if (ProjectileInstance->IsValidLowLevel() && PlaneOwner) {
+			if (PlaneOwner->ActorHasTag("IsFriendly")) {
 				ProjectileInstance->Tags.Add(FName("IsFriendly"));
 			}
 
-			Cast<APawn>(PlaneParent)->MoveIgnoreActorAdd(ProjectileInstance);
-			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(ProjectileInstance->GetVelocity() + PlaneParent->GetVelocity());
+			Cast<APawn>(PlaneOwner)->MoveIgnoreActorAdd(ProjectileInstance);
+			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(ProjectileInstance->GetVelocity() + PlaneOwner->GetVelocity());
 			ProjectileInstance->ProjectileMesh->SetGenerateOverlapEvents(true);
 		}
 		fireDelay = 0;

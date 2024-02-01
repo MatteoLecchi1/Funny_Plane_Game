@@ -37,9 +37,16 @@ void UHardpoint::ShootWeapon()
 }
 void UHardpoint::AssignWeapon() 
 {
+	if (WeaponInstance)
+	{
+		WeaponInstance->Destroy();
+	}
 	if(HardpointWeapon)
 	{
-		WeaponInstance = GetWorld()->SpawnActor<AHardpointWeapon>(HardpointWeapon, SocketLocation, SocketRotation);
+		WeaponInstance = GetWorld()->SpawnActor<AHardpointWeapon>(HardpointWeapon, FVector::ZeroVector, FRotator::ZeroRotator);
 		WeaponInstance->AttachToActor(this->GetOwner(), FAttachmentTransformRules::KeepRelativeTransform);
+		WeaponInstance->SetActorRelativeLocation(SocketLocation);
+		WeaponInstance->SetActorRelativeRotation(SocketRotation);
+		WeaponInstance->PlaneOwner = this->GetOwner();
 	}
 }

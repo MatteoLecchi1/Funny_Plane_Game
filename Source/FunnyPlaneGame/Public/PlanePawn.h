@@ -72,7 +72,9 @@ public:
 	FRotator Rotator = FRotator::ZeroRotator;
 
 	const float& NearestActorSearchRange = 1000.f;
+	UPROPERTY()
 	TArray<AActor*> AllEnemiesInMap;
+	UPROPERTY()
 	AActor* ClosestEnemyInMap;
 	float ClosestEnemyInMapDistace= std::numeric_limits<float>::max();
 

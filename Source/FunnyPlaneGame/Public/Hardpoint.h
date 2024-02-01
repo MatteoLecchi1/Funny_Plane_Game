@@ -31,14 +31,15 @@ public:
 	// Sets default values for this component's properties
 	UHardpoint();
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<class AHardpointWeapon> HardpointWeapon;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	ShootButton thisShootButton = ShootButton::RIGHT;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	HardpointTier thisHardpointTier = HardpointTier::TIER0;
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FString SocketName = "";
 	UPROPERTY()
 	FVector SocketLocation = FVector::ZeroVector;
 	UPROPERTY()

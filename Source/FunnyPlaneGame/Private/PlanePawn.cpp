@@ -19,7 +19,6 @@ APlanePawn::APlanePawn()
 	CurrentHealth = MaxHealth;
 	CurrentShield = MaxShield;
 	UpdateHealthAndShield();
-	GetComponents(TSubclassOf<UHardpoint>(), hardpoints, true);
 }
 
 // Called when the game starts or when spawned
@@ -27,13 +26,19 @@ void APlanePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsLocallyControlled() && widgetHUDClass)
+	GetComponents<UHardpoint>(hardpoints, true);
+	for (UHardpoint* a : hardpoints)
 	{
-			widgetHUDInstance = CreateWidget<UPlanePlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(),0), widgetHUDClass);
-			if(widgetHUDInstance)
-			widgetHUDInstance->AddToPlayerScreen();
+		a->SocketLocation = Cast<UStaticMeshComponent>(GetRootComponent())->GetSocketLocation(FName((a->SocketName)));
+		a->SocketRotation = Cast<UStaticMeshComponent>(GetRootComponent())->GetSocketRotation(FName((a->SocketName)));
 	}
 
+	if (IsLocallyControlled() && widgetHUDClass)
+	{
+		widgetHUDInstance = CreateWidget<UPlanePlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(),0), widgetHUDClass);
+		if(widgetHUDInstance)
+		widgetHUDInstance->AddToPlayerScreen();
+	}
 }
 
 // Called every frame
@@ -126,11 +131,18 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 //damage management
 float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& DamageEvent,class AController* EventInstigator,AActor* DamageCauser) 
 {
+	bool ShieldWasOn = false;
+	if (CurrentShield > 0)
+		ShieldWasOn = true;
+
 	CurrentShield -= DamageAmount;
 	if (CurrentShield < 0) 
 	{
 		CurrentHealth -= abs(CurrentShield);
 		CurrentShield = 0;
+		if (ShieldWasOn)
+			OnShieldBreak();
+		
 	}
 	UpdateHealthAndShield();
 	return DamageAmount;
@@ -142,6 +154,10 @@ void APlanePawn::UpdateHealthAndShield()
 		widgetHUDInstance->UpdateHealth(CurrentHealth,MaxHealth);
 		widgetHUDInstance->UpdateShield(CurrentShield,MaxShield);
 	}
+}
+void APlanePawn::OnShieldBreak() 
+{
+
 }
 // input processing
 void APlanePawn::ProcessThrust(float InThrust)
