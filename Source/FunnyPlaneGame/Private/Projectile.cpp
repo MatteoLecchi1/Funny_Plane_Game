@@ -28,6 +28,7 @@ void AProjectile::BeginPlay()
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	ProjectileLifespan -= DeltaTime;
 	if (ProjectileLifespan < 0)
 		DestroySelf();

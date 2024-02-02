@@ -26,7 +26,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float ProjectileLifespan=10; 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	float DamageDealt = 10;
 	
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Hardpoint.generated.h"
 
 UENUM(BlueprintType)
@@ -23,7 +23,7 @@ enum class HardpointTier : uint8
 	TIER3 = 3	UMETA(DisplayName = "TIER3")
 };
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class FUNNYPLANEGAME_API UHardpoint : public UActorComponent
+class FUNNYPLANEGAME_API UHardpoint : public UStaticMeshComponent
 {
 	GENERATED_BODY()
 
@@ -31,19 +31,13 @@ public:
 	// Sets default values for this component's properties
 	UHardpoint();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class AHardpointWeapon> HardpointWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	ShootButton thisShootButton = ShootButton::RIGHT;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	HardpointTier thisHardpointTier = HardpointTier::TIER0;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FString SocketName = "";
-	UPROPERTY()
-	FVector SocketLocation = FVector::ZeroVector;
-	UPROPERTY()
-	FRotator SocketRotation = FRotator::ZeroRotator;
 	UPROPERTY()
 	AHardpointWeapon* WeaponInstance;
 

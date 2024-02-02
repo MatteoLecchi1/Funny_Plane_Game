@@ -23,15 +23,16 @@ public:
 
 	UPROPERTY()
 	AActor* PlaneOwner;
-	UPROPERTY(EditAnywhere)
-	float fireRate;
-	UPROPERTY(EditAnywhere)
-	float fireSpread=0;
-	float fireDelay;
-	bool shouldFire;
 
 	UPROPERTY(EditAnywhere)
-	int ButtonToFire = 1;
+	float DamageOverride = -1;
+
+	UPROPERTY(EditAnywhere)
+	float fireRate = 10;
+	UPROPERTY(EditAnywhere)
+	float fireSpread = 0;
+	float fireDelay = 0;
+	bool shouldFire = false;
 
 	UPROPERTY()
 	FVector projectileSpawnLocation;

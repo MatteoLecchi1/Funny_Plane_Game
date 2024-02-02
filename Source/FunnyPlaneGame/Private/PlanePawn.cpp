@@ -15,10 +15,6 @@ APlanePawn::APlanePawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	CurrentHealth = MaxHealth;
-	CurrentShield = MaxShield;
-	UpdateHealthAndShield();
 }
 
 // Called when the game starts or when spawned
@@ -26,12 +22,11 @@ void APlanePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CurrentHealth = MaxHealth;
+	CurrentShield = MaxShield;
+	UpdateHealthAndShield();
+
 	GetComponents<UHardpoint>(hardpoints, true);
-	for (UHardpoint* a : hardpoints)
-	{
-		a->SocketLocation = Cast<UStaticMeshComponent>(GetRootComponent())->GetSocketLocation(FName((a->SocketName)));
-		a->SocketRotation = Cast<UStaticMeshComponent>(GetRootComponent())->GetSocketRotation(FName((a->SocketName)));
-	}
 
 	if (IsLocallyControlled() && widgetHUDClass)
 	{
