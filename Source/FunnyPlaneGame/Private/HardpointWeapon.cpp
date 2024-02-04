@@ -27,19 +27,21 @@ void AHardpointWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	fireDelay += DeltaTime;
 }
-void AHardpointWeapon::Shoot()
+void AHardpointWeapon::Shoot_Implementation()
 {
 	if (fireDelay > 1 / fireRate)
 	{
 		//spawn projectile and assign
 		AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, gunMesh->GetSocketLocation("ProjectileSpawnLocation1"), gunMesh->GetSocketRotation("ProjectileSpawnLocation1") + FRotator::MakeFromEuler(FVector(0, RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread))));
 		if (ProjectileInstance->IsValidLowLevel() && PlaneOwner) {
+
 			if (PlaneOwner->ActorHasTag("IsFriendly")) {
 				ProjectileInstance->Tags.Add(FName("IsFriendly"));
 			}
 			else if (PlaneOwner->ActorHasTag("IsEnemy")) {
 				ProjectileInstance->Tags.Add(FName("IsEnemy"));
 			}
+
 
 			Cast<APawn>(PlaneOwner)->MoveIgnoreActorAdd(ProjectileInstance);
 			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(ProjectileInstance->GetVelocity() + PlaneOwner->GetVelocity());

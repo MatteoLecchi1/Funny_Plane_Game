@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> projectile;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	AActor* PlaneOwner;
 
 	UPROPERTY(EditAnywhere)
@@ -45,5 +45,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shooting")
 	void Shoot();
 };

@@ -28,6 +28,8 @@ public:
 	float ProjectileLifespan=10; 
 	UPROPERTY()
 	float DamageDealt = 10;
+	UPROPERTY()
+	float AreaDamageRadius = 100;
 	
 
 

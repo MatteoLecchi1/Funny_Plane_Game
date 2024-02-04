@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "PlanePlayerHUD.h"
+#include "DeathScreen.h"
 #include "Hardpoint.h"
 
 // Sets default values
@@ -32,8 +33,13 @@ void APlanePawn::BeginPlay()
 	{
 		widgetHUDInstance = CreateWidget<UPlanePlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(),0), widgetHUDClass);
 		if(widgetHUDInstance)
-		widgetHUDInstance->AddToPlayerScreen();
+			widgetHUDInstance->AddToPlayerScreen();
 	}
+	if (IsLocallyControlled() && widgetDeathScreenClass)
+	{
+		widgetDeathScreenInstance = CreateWidget<UDeathScreen>(UGameplayStatics::GetPlayerController(GetWorld(), 0), widgetDeathScreenClass);
+	}
+	SetCanBeDamaged(true);
 }
 
 // Called every frame
@@ -131,6 +137,7 @@ float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& Damag
 		ShieldWasOn = true;
 
 	CurrentShield -= DamageAmount;
+
 	if (CurrentShield < 0) 
 	{
 		CurrentHealth -= abs(CurrentShield);
@@ -140,6 +147,10 @@ float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& Damag
 		
 	}
 	UpdateHealthAndShield();
+	//if players health is less than 0
+	if (CurrentHealth <= 0)
+		OnPlayerDeath();
+
 	return DamageAmount;
 }
 void APlanePawn::UpdateHealthAndShield() 
@@ -149,6 +160,16 @@ void APlanePawn::UpdateHealthAndShield()
 		widgetHUDInstance->UpdateHealth(CurrentHealth,MaxHealth);
 		widgetHUDInstance->UpdateShield(CurrentShield,MaxShield);
 	}
+}
+void APlanePawn::OnPlayerDeath()
+{
+	auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PC->SetPause(true);
+	PC->bShowMouseCursor = true;
+	PC->bEnableClickEvents = true;
+	PC->bEnableMouseOverEvents = true;
+	if (widgetDeathScreenInstance)
+		widgetDeathScreenInstance->AddToPlayerScreen();
 }
 void APlanePawn::OnShieldBreak() 
 {

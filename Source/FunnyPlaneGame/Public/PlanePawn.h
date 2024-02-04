@@ -87,12 +87,17 @@ public:
 	double MaxShield = 100.;
 	UPROPERTY()
 	double CurrentShield = 1.;
-
+	//UI
 	//HUD
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<class UPlanePlayerHUD> widgetHUDClass;
 	UPROPERTY()
 	class UPlanePlayerHUD* widgetHUDInstance;
+	//DeathScreen
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<class UDeathScreen> widgetDeathScreenClass;
+	UPROPERTY()
+	class UDeathScreen* widgetDeathScreenInstance;
 
 	UPROPERTY()
 	TArray <UHardpoint*> hardpoints;
@@ -116,6 +121,7 @@ protected:
 	void ProcessLockOnPressed();
 	void UpdateHealthAndShield();
 	void OnShieldBreak();
+	void OnPlayerDeath();
 	
 	virtual float TakeDamage
 	(

@@ -66,7 +66,7 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 
 		}
 		else
-		{   //hits others
+		{   //hits othersS
 			DestroySelf();
 		}
 	}
