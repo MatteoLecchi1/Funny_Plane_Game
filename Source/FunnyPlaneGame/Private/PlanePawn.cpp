@@ -50,7 +50,6 @@ void APlanePawn::Tick(float DeltaTime)
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	auto CameraArmComponet = Cast<USpringArmComponent>(GetComponentByClass<USpringArmComponent>());
 
-
 	// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
 	//Pitch
 	Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier, 0, 0));
@@ -106,8 +105,7 @@ void APlanePawn::Tick(float DeltaTime)
 	// Add a force dependent on Thrust in the forward direction
 	Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
 
-	
-
+	RechargeShield(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -132,6 +130,7 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 //damage management
 float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& DamageEvent,class AController* EventInstigator,AActor* DamageCauser) 
 {
+	TimeSinceDamageTaken = 0;
 	bool ShieldWasOn = false;
 	if (CurrentShield > 0)
 		ShieldWasOn = true;
@@ -175,6 +174,15 @@ void APlanePawn::OnShieldBreak()
 {
 
 }
+void APlanePawn::RechargeShield(float DeltaTime)
+{
+	TimeSinceDamageTaken += DeltaTime;
+	if (TimeSinceDamageTaken > TimeBeforeShieldStartsRecover && CurrentShield < MaxShield) 
+	{
+		CurrentShield += ShieldRecoverPerSecond * DeltaTime;
+		UpdateHealthAndShield();
+	}
+}
 // input processing
 void APlanePawn::ProcessThrust(float InThrust)
 {
@@ -204,7 +212,7 @@ void APlanePawn::ProcessFire1Pressed()
 {
 	for (UHardpoint* a : hardpoints) 
 	{
-		if (a->thisShootButton == ShootButton::RIGHT)
+		if (a->thisShootButton == ShootButton::DOWN)
 			a->IsShooting=true;
 	}
 }
@@ -213,7 +221,7 @@ void APlanePawn::ProcessFire1Released()
 	{
 		for (UHardpoint* a : hardpoints)
 		{
-			if (a->thisShootButton == ShootButton::RIGHT)
+			if (a->thisShootButton == ShootButton::DOWN)
 				a->IsShooting = false;
 		}
 	}
@@ -222,7 +230,7 @@ void APlanePawn::ProcessFire2Pressed()
 {
 	for (UHardpoint* a : hardpoints)
 	{
-		if (a->thisShootButton == ShootButton::UP)
+		if (a->thisShootButton == ShootButton::LEFT)
 			a->IsShooting = true;
 	}
 }
@@ -230,7 +238,7 @@ void APlanePawn::ProcessFire2Released()
 {
 	for (UHardpoint* a : hardpoints)
 	{
-		if (a->thisShootButton == ShootButton::UP)
+		if (a->thisShootButton == ShootButton::LEFT)
 			a->IsShooting = false;
 	}
 }
@@ -238,7 +246,7 @@ void APlanePawn::ProcessFire3Pressed()
 {
 	for (UHardpoint* a : hardpoints)
 	{
-		if (a->thisShootButton == ShootButton::LEFT)
+		if (a->thisShootButton == ShootButton::UP)
 			a->IsShooting = true;
 	}
 }
@@ -246,7 +254,7 @@ void APlanePawn::ProcessFire3Released()
 {
 	for (UHardpoint* a : hardpoints)
 	{
-		if (a->thisShootButton == ShootButton::LEFT)
+		if (a->thisShootButton == ShootButton::UP)
 			a->IsShooting = false;
 	}
 }

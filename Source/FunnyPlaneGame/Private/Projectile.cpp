@@ -23,7 +23,7 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
-	CombatManager = Cast<ACombatManager>(UGameplayStatics::GetActorOfClass(GetWorld(),TSubclassOf<ACombatManager>()));
+	CombatManager = Cast<ACombatManager>(UGameplayStatics::GetActorOfClass(GetWorld(),ACombatManager::StaticClass()));
 }
 
 // Called every frame
@@ -73,10 +73,17 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 void AProjectile::DestroySelf()
 {
 	if (CombatManager) {
-		if (ActorHasTag("IsFriendly"))
-			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, CombatManager->FriendlyActors);
-		if (ActorHasTag("IsEnemy"))
-			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, CombatManager->EnemyActors);
+		if (ActorHasTag("IsFriendly")) {
+			//this array contains all "FriendlyActors" and self
+			TArray<AActor*> TemporaryArray = CombatManager->FriendlyActors;
+			TemporaryArray.Add(this);
+			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray);
+		}
+		else if (ActorHasTag("IsEnemy")) {
+			TArray<AActor*> TemporaryArray = CombatManager->EnemyActors;
+			TemporaryArray.Add(this);
+			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray);
+		}
 	}
 	Destroy();
 }

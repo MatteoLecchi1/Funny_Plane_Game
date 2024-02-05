@@ -87,6 +87,13 @@ public:
 	double MaxShield = 100.;
 	UPROPERTY()
 	double CurrentShield = 1.;
+	UPROPERTY()
+	double TimeSinceDamageTaken = 0.;
+	UPROPERTY(EditAnywhere)
+	double TimeBeforeShieldStartsRecover = 5.;
+	UPROPERTY(EditAnywhere)
+	double ShieldRecoverPerSecond = 50.;
+
 	//UI
 	//HUD
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
@@ -120,6 +127,7 @@ protected:
 	void ProcessFire3Released();
 	void ProcessLockOnPressed();
 	void UpdateHealthAndShield();
+	void RechargeShield(float DeltaTime);
 	void OnShieldBreak();
 	void OnPlayerDeath();
 	
