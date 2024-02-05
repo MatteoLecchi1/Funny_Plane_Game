@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "CombatManager.h"
 #include "Projectile.generated.h"
 
 
@@ -24,11 +25,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	UProjectileMovementComponent* ProjectileComponent;
 
+	UPROPERTY()
+	ACombatManager* CombatManager;
+
 	UPROPERTY(EditAnywhere)
 	float ProjectileLifespan=10; 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	float DamageDealt = 10;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	float AreaDamageRadius = 100;
 	
 

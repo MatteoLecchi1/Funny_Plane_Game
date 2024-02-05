@@ -46,8 +46,11 @@ void AHardpointWeapon::Shoot_Implementation()
 			Cast<APawn>(PlaneOwner)->MoveIgnoreActorAdd(ProjectileInstance);
 			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(ProjectileInstance->GetVelocity() + PlaneOwner->GetVelocity());
 
-			if (DamageOverride != -1) {
+			if (DamageOverride >= 0) {
 				ProjectileInstance->DamageDealt = DamageOverride;
+			}
+			if (AreaDamageRadiusOverride >= 0) {
+				ProjectileInstance->AreaDamageRadius = AreaDamageRadiusOverride;
 			}
 
 			ProjectileInstance->ProjectileMesh->SetGenerateOverlapEvents(true);

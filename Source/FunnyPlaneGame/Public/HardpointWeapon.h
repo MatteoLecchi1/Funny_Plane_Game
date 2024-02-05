@@ -26,6 +26,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float DamageOverride = -1;
+	UPROPERTY(EditAnywhere)
+	float AreaDamageRadiusOverride = -1;
 
 	UPROPERTY(EditAnywhere)
 	float fireRate = 10;

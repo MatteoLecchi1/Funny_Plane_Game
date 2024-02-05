@@ -2,6 +2,7 @@
 
 
 #include "Projectile.h"
+#include "CombatManager.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -22,6 +23,7 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
+	CombatManager = Cast<ACombatManager>(UGameplayStatics::GetActorOfClass(GetWorld(),TSubclassOf<ACombatManager>()));
 }
 
 // Called every frame
@@ -43,14 +45,11 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 		}
 		else if (OtherActor->ActorHasTag("IsEnemy"))
 		{   //friendly hits enemy
-			if (OtherActor->CanBeDamaged())
-			{
-				UGameplayStatics::ApplyDamage(OtherActor, DamageDealt, UGameplayStatics::GetPlayerController(GetWorld(), 0), this, nullptr);
-			}
+			UGameplayStatics::ApplyDamage(OtherActor, DamageDealt, UGameplayStatics::GetPlayerController(GetWorld(), 0), this, nullptr);
 			DestroySelf();
 		}
 		else 
-		{   //hits others
+		{   //enemy hits others
 			DestroySelf();
 		}
 	}
@@ -66,13 +65,19 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 
 		}
 		else
-		{   //hits othersS
+		{   //enemy hits others
 			DestroySelf();
 		}
 	}
 }
 void AProjectile::DestroySelf()
 {
+	if (CombatManager) {
+		if (ActorHasTag("IsFriendly"))
+			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, CombatManager->FriendlyActors);
+		if (ActorHasTag("IsEnemy"))
+			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, CombatManager->EnemyActors);
+	}
 	Destroy();
 }
 
