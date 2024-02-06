@@ -43,7 +43,10 @@ public:
 	double CurrentPitch = 0;
 	UPROPERTY()
 	double CurrentRoll = 0;
-
+	UPROPERTY()
+	bool IsAOAOn = false;
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	double AOARotationMultiplier = 1;
 	//Camera
 	UPROPERTY()
 	double CurrenCameraX = 0;
@@ -125,6 +128,8 @@ protected:
 	void ProcessFire2Released();
 	void ProcessFire3Pressed();
 	void ProcessFire3Released();
+	void ProcessEvadePressed();
+	void ProcessEvadeReleased();
 	void ProcessLockOnPressed();
 	void UpdateHealthAndShield();
 	void RechargeShield(float DeltaTime);

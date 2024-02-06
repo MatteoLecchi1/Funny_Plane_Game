@@ -51,12 +51,25 @@ void APlanePawn::Tick(float DeltaTime)
 	auto CameraArmComponet = Cast<USpringArmComponent>(GetComponentByClass<USpringArmComponent>());
 
 	// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
-	//Pitch
-	Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier, 0, 0));
-	//Yaw
-	Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier, 0));
-	//Roll
-	Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier));
+	if (!IsAOAOn) {
+		//without AOA
+		//Pitch
+		Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier, 0, 0));
+		//Yaw
+		Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier, 0));
+		//Roll
+		Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier));
+	}
+	else {
+		//with AOA
+		//Pitch
+		Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier * AOARotationMultiplier, 0, 0));
+		//Yaw
+		Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier * AOARotationMultiplier, 0));
+		//Roll
+		Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier * AOARotationMultiplier));
+	}
+
 	//Clamp throttle
 	TargetThrust += CurrentThrust*DeltaTime;
 	TargetThrust = FMath::Clamp(TargetThrust, MinTargetThrust, MaxTargetThrust);
@@ -101,9 +114,10 @@ void APlanePawn::Tick(float DeltaTime)
 		TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
 		CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));
 	}
-
-	// Add a force dependent on Thrust in the forward direction
-	Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
+	if (!IsAOAOn) {
+		// Add a force dependent on Thrust in the forward direction
+		Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
+	}
 
 	RechargeShield(DeltaTime);
 }
@@ -125,6 +139,8 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	InputComponent->BindAction("Fire2", IE_Released, this, &APlanePawn::ProcessFire2Released);
 	InputComponent->BindAction("Fire3", IE_Pressed, this, &APlanePawn::ProcessFire3Pressed);
 	InputComponent->BindAction("Fire3", IE_Released, this, &APlanePawn::ProcessFire3Released);
+	InputComponent->BindAction("Evade", IE_Pressed, this, &APlanePawn::ProcessEvadePressed);
+	InputComponent->BindAction("Evade", IE_Released, this, &APlanePawn::ProcessEvadeReleased);
 	InputComponent->BindAction("LockOn", IE_Pressed, this, &APlanePawn::ProcessLockOnPressed);
 }
 //damage management
@@ -257,6 +273,14 @@ void APlanePawn::ProcessFire3Released()
 		if (a->thisShootButton == ShootButton::UP)
 			a->IsShooting = false;
 	}
+}
+void APlanePawn::ProcessEvadePressed()
+{
+	IsAOAOn = true;
+}
+void APlanePawn::ProcessEvadeReleased()
+{
+	IsAOAOn = false;
 }
 void APlanePawn::ProcessLockOnPressed()
 {
