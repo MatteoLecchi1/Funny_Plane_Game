@@ -4,6 +4,8 @@
 #include "Projectile.h"
 #include "CombatManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -77,12 +79,12 @@ void AProjectile::DestroySelf()
 			//this array contains all "FriendlyActors" and self
 			TArray<AActor*> TemporaryArray = CombatManager->FriendlyActors;
 			TemporaryArray.Add(this);
-			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray);
+			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
 		}
 		else if (ActorHasTag("IsEnemy")) {
 			TArray<AActor*> TemporaryArray = CombatManager->EnemyActors;
 			TemporaryArray.Add(this);
-			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray);
+			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
 		}
 	}
 	Destroy();

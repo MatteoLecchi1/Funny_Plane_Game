@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "CombatManager.h"
+#include "NiagaraComponent.h"
 #include "Projectile.generated.h"
 
 
@@ -35,6 +36,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float AreaDamageRadius = 100;
 	
+
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	UNiagaraSystem* FireEffectMuzzle;
 
 
 protected:
