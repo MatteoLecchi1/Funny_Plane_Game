@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 #include "HardpointWeapon.generated.h"
 
 UCLASS()
-class FUNNYPLANEGAME_API AHardpointWeapon : public AActor
+class FUNNYPLANEGAME_API UHardpointWeapon : public UStaticMeshComponent
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AHardpointWeapon();
+	UHardpointWeapon();
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* gunMesh;
@@ -29,6 +29,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float AreaDamageRadiusOverride = -1;
 
+	UPROPERTY(EditAnywhere)
+	float fireSpeed = 10000;
 	UPROPERTY(EditAnywhere)
 	float fireRate = 10;
 	UPROPERTY(EditAnywhere)
@@ -46,7 +48,7 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shooting")
 	void Shoot();
 };

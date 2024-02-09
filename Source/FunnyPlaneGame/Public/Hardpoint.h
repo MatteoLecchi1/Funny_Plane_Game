@@ -32,14 +32,14 @@ public:
 	UHardpoint();
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class AHardpointWeapon> HardpointWeapon;
+	TSubclassOf<class UHardpointWeapon> HardpointWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	ShootButton thisShootButton = ShootButton::RIGHT;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	HardpointTier thisHardpointTier = HardpointTier::TIER0;
-	UPROPERTY()
-	AHardpointWeapon* WeaponInstance;
+	UPROPERTY(BlueprintReadOnly)
+	UHardpointWeapon* WeaponInstance;
 
 	UPROPERTY()
 	bool IsShooting = false;

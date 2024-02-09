@@ -7,32 +7,36 @@
 #include "PlanePawn.h"
 
 // Sets default values
-AHardpointWeapon::AHardpointWeapon()
+UHardpointWeapon::UHardpointWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	gunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Mesh"));
 }
 
 // Called when the game starts or when spawned
-void AHardpointWeapon::BeginPlay()
+void UHardpointWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 // Called every frame
-void AHardpointWeapon::Tick(float DeltaTime)
+void UHardpointWeapon::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::Tick(DeltaTime);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	fireDelay += DeltaTime;
 }
-void AHardpointWeapon::Shoot_Implementation()
+void UHardpointWeapon::Shoot_Implementation()
 {
 	if (fireDelay > 1 / fireRate)
 	{
 		//spawn projectile and assign
-		AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, gunMesh->GetSocketLocation("ProjectileSpawnLocation1"), gunMesh->GetSocketRotation("ProjectileSpawnLocation1") + FRotator::MakeFromEuler(FVector(0, RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread))));
+		FTransform SpawnTransform = gunMesh->GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
+		SpawnTransform.SetRotation((SpawnTransform.Rotator().Add(RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread), 0.f)).Quaternion());
+		SpawnTransform = SpawnTransform * GetComponentTransform();
+
+		AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, SpawnTransform.GetLocation(), SpawnTransform.Rotator());
 		if (ProjectileInstance->IsValidLowLevel() && PlaneOwner) {
 
 			if (PlaneOwner->ActorHasTag("IsFriendly")) {
@@ -42,9 +46,9 @@ void AHardpointWeapon::Shoot_Implementation()
 				ProjectileInstance->Tags.Add(FName("IsEnemy"));
 			}
 
-
 			Cast<APawn>(PlaneOwner)->MoveIgnoreActorAdd(ProjectileInstance);
-			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(ProjectileInstance->GetVelocity() + PlaneOwner->GetVelocity());
+
+			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(PlaneOwner->GetVelocity() + SpawnTransform.GetUnitAxis(EAxis::X) * fireSpeed);
 
 			if (DamageOverride >= 0) {
 				ProjectileInstance->DamageDealt = DamageOverride;

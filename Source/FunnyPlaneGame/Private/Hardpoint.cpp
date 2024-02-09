@@ -39,12 +39,12 @@ void UHardpoint::AssignWeapon()
 {
 	if (WeaponInstance)
 	{
-		WeaponInstance->Destroy();
+		WeaponInstance->DestroyComponent();
 	}
 	if(HardpointWeapon)
 	{
-		WeaponInstance = GetWorld()->SpawnActor<AHardpointWeapon>(HardpointWeapon,GetComponentLocation(), FRotator::ZeroRotator);
-		WeaponInstance->AttachToActor(this->GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
-		WeaponInstance->PlaneOwner = this->GetOwner();
+		WeaponInstance = Cast<UHardpointWeapon>(GetOwner()->AddComponentByClass(HardpointWeapon, false, FTransform::Identity, false));
+		WeaponInstance->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		WeaponInstance->PlaneOwner = GetOwner();
 	}
 }
