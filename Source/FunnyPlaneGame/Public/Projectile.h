@@ -38,7 +38,7 @@ public:
 	
 
 	UPROPERTY(EditAnywhere, Category = "VFX")
-	UNiagaraSystem* FireEffectMuzzle;
+	UNiagaraSystem* ExplosionEffect;
 
 
 protected:
