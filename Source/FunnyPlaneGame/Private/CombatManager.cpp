@@ -9,7 +9,6 @@ ACombatManager::ACombatManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -17,8 +16,8 @@ void ACombatManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "IsFriendly", FriendlyActors);
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "IsEnemy", EnemyActors);
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), APawn::StaticClass(), "IsFriendly", FriendlyActors);
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), APawn::StaticClass(), "IsEnemy", EnemyActors);
 }
 
 // Called every frame

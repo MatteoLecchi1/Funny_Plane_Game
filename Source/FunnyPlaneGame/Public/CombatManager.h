@@ -7,7 +7,7 @@
 #include "CombatManager.generated.h"
 
 UCLASS()
-class FUNNYPLANEGAME_API ACombatManager : public AActor
+class FUNNYPLANEGAME_API ACombatManager : public AInfo
 {
 	GENERATED_BODY()
 	
