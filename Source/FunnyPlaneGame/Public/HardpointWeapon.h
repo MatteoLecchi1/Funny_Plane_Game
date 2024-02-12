@@ -16,9 +16,6 @@ public:
 	UHardpointWeapon();
 
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* gunMesh;
-
-	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> projectile;
 
 	UPROPERTY(BlueprintReadWrite)

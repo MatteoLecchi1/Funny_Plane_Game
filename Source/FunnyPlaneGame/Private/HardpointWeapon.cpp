@@ -11,8 +11,6 @@ UHardpointWeapon::UHardpointWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	gunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Gun Mesh"));
 }
 
 // Called when the game starts or when spawned
@@ -32,7 +30,7 @@ void UHardpointWeapon::Shoot_Implementation()
 	if (fireDelay > 1 / fireRate)
 	{
 		//spawn projectile and assign
-		FTransform SpawnTransform = gunMesh->GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
+		FTransform SpawnTransform = GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
 		SpawnTransform.SetRotation((SpawnTransform.Rotator().Add(RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread), 0.f)).Quaternion());
 		SpawnTransform = SpawnTransform * GetComponentTransform();
 
