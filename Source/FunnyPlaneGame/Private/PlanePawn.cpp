@@ -120,6 +120,7 @@ void APlanePawn::Tick(float DeltaTime)
 	}
 
 	RechargeShield(DeltaTime);
+	widgetHUDInstance->UpdateSpeed(Component->GetComponentVelocity().Length());
 }
 
 // Called to bind functionality to input
