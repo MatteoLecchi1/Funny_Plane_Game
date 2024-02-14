@@ -49,6 +49,12 @@ public:
 	double AOARotationMultiplier = 1;
 	//Camera
 	UPROPERTY()
+	class USpringArmComponent* CameraArmComponet;
+	UPROPERTY()
+	FRotator CameraRotationOnAOABegin = FRotator::ZeroRotator;;
+	UPROPERTY(EditAnywhere)
+	bool AOALocksCamera = false;
+	UPROPERTY()
 	double CurrenCameraX = 0;
 	UPROPERTY()
 	double TargetCameraX = 0;

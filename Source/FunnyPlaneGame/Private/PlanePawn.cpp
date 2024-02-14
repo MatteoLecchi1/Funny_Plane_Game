@@ -23,6 +23,8 @@ void APlanePawn::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CameraArmComponet = Cast<USpringArmComponent>(GetComponentByClass<USpringArmComponent>());
+
 	CurrentHealth = MaxHealth;
 	CurrentShield = MaxShield;
 	UpdateHealthAndShield();
@@ -48,7 +50,6 @@ void APlanePawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
-	auto CameraArmComponet = Cast<USpringArmComponent>(GetComponentByClass<USpringArmComponent>());
 
 	// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
 	if (!IsAOAOn) {
@@ -91,28 +92,37 @@ void APlanePawn::Tick(float DeltaTime)
 	}
 	else
 	{
-		if (CurrenCameraX != 0.f || CurrenCameraY != 0.f) {
-			//rotate camera dependant on cameraX and cameraY
-			TargetCameraX += CurrenCameraX * CameraSpeedX;
-			TargetCameraX = FMath::Clamp(TargetCameraX, -175.f, 175.f);
-
-			TargetCameraY += CurrenCameraY * CameraSpeedY;
-			TargetCameraY = FMath::Clamp(TargetCameraY, -175.f, 175.f);
-
-			TimeSinceLastCameraInput = 0.f;
-		}
-		else
+		if (!IsAOAOn)
 		{
-			//reset camera rotation if enoght time has passed
-			TimeSinceLastCameraInput += DeltaTime;
-			if (TimeSinceLastCameraInput > TimeCameraToReset) {
-				TargetCameraX = 0.f;
-				TargetCameraY = 0.f;
+			if (CurrenCameraX != 0.f || CurrenCameraY != 0.f) {
+				//rotate camera dependant on cameraX and cameraY
+				TargetCameraX += CurrenCameraX * CameraSpeedX;
+				TargetCameraX = FMath::Clamp(TargetCameraX, -175.f, 175.f);
+
+				TargetCameraY += CurrenCameraY * CameraSpeedY;
+				TargetCameraY = FMath::Clamp(TargetCameraY, -175.f, 175.f);
+
+				TimeSinceLastCameraInput = 0.f;
 			}
+			else
+			{
+				//reset camera rotation if enoght time has passed
+				TimeSinceLastCameraInput += DeltaTime;
+				if (TimeSinceLastCameraInput > TimeCameraToReset) {
+					TargetCameraX = 0.f;
+					TargetCameraY = 0.f;
+				}
+			}
+
+			TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
+			CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));
+		}
+		else 
+		{
+			if(AOALocksCamera)
+				CameraArmComponet->SetWorldRotation(CameraRotationOnAOABegin);
 		}
 
-		TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
-		CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));
 	}
 	if (!IsAOAOn) {
 		// Add a force dependent on Thrust in the forward direction
@@ -278,6 +288,7 @@ void APlanePawn::ProcessFire3Released()
 void APlanePawn::ProcessEvadePressed()
 {
 	IsAOAOn = true;
+	CameraRotationOnAOABegin = CameraArmComponet->GetComponentRotation();
 }
 void APlanePawn::ProcessEvadeReleased()
 {

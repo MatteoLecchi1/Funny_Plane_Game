@@ -27,7 +27,7 @@ public:
 	float AreaDamageRadiusOverride = -1;
 
 	UPROPERTY(EditAnywhere)
-	float fireSpeed = 10000;
+	float fireSpeed = 20000;
 	UPROPERTY(EditAnywhere)
 	float fireRate = 10;
 	UPROPERTY(EditAnywhere)

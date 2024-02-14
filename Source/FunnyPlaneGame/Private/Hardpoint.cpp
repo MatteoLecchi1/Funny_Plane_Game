@@ -8,7 +8,6 @@
 UHardpoint::UHardpoint()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 

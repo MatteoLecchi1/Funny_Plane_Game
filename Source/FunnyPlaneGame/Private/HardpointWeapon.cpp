@@ -54,7 +54,6 @@ void UHardpointWeapon::Shoot_Implementation()
 			if (AreaDamageRadiusOverride >= 0) {
 				ProjectileInstance->AreaDamageRadius = AreaDamageRadiusOverride;
 			}
-
 			ProjectileInstance->ProjectileMesh->SetGenerateOverlapEvents(true);
 		}
 		fireDelay = 0;

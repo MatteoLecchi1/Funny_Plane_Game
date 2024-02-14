@@ -14,7 +14,7 @@ AProjectile::AProjectile()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
-	ProjectileMesh->SetSimulatePhysics(true);
+	ProjectileMesh -> SetSimulatePhysics(true);
 
 	ProjectileComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
 
@@ -37,6 +37,7 @@ void AProjectile::Tick(float DeltaTime)
 }
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor->StaticClass() != TSubclassOf<AProjectile>()){
 	if (ActorHasTag("IsFriendly")) 
 	{
 		if (OtherActor->ActorHasTag("IsFriendly"))
@@ -68,6 +69,7 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 		{   //enemy hits others
 			DestroySelf();
 		}
+	}
 	}
 }
 void AProjectile::DestroySelf()
