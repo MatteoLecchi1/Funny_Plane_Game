@@ -15,6 +15,7 @@ void UMainMenu::NativeConstruct()
 }
 void UMainMenu::OnStartButtonPressed()
 {
+	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
 	UGameplayStatics::OpenLevel(GetWorld(), "LV_TestMap");
 }
 
