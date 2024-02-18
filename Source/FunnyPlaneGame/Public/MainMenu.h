@@ -18,6 +18,8 @@ class FUNNYPLANEGAME_API UMainMenu : public UUserWidget
 	class UButton* StartButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* ExitButton;
+	UPROPERTY(EditAnywhere)
+	class UUserWidget* PlaneCustomizationWidget;
 
 	virtual void NativeConstruct() override;
 
