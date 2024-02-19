@@ -14,11 +14,17 @@ class FUNNYPLANEGAME_API UMainMenu : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<class UPlaneCustomizationUI> PlaneCustomizationWidgetClass;
+	UPROPERTY()
+	class UPlaneCustomizationUI* PlaneCustomizationWidget;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* StartButton;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* ExitButton;
 
+protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
