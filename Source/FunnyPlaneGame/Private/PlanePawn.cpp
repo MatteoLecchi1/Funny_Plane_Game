@@ -42,6 +42,23 @@ void APlanePawn::BeginPlay()
 		widgetDeathScreenInstance = CreateWidget<UDeathScreen>(UGameplayStatics::GetPlayerController(GetWorld(), 0), widgetDeathScreenClass);
 	}
 	SetCanBeDamaged(true);
+
+	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
+	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
+}
+
+void APlanePawn::AddWingForce(FVector WingPosition, FVector WingNormal, double WingCoefficient)
+{
+	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
+	FVector PlaneVelocity = Component->GetPhysicsLinearVelocity();
+
+	FVector WorldWingNormal = Component->GetComponentTransform().TransformVector(WingNormal);
+	FVector WorldWingPosition = Component->GetComponentTransform().TransformPosition(WingPosition);
+
+	double ForceMagnitude = -FVector::DotProduct(WorldWingNormal, PlaneVelocity) * PlaneVelocity.Size() * WingCoefficient;
+	FVector Force = WorldWingNormal * ForceMagnitude;
+
+	Component->AddForceAtLocation(Force, WorldWingPosition);
 }
 
 // Called every frame
@@ -51,29 +68,50 @@ void APlanePawn::Tick(float DeltaTime)
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 
-	// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
-	if (!IsAOAOn) {
-		//without AOA
-		//Pitch
-		Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier, 0, 0));
-		//Yaw
-		Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier, 0));
-		//Roll
-		Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier));
-	}
-	else {
-		//with AOA
-		//Pitch
-		Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier * AOARotationMultiplier, 0, 0));
-		//Yaw
-		Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier * AOARotationMultiplier, 0));
-		//Roll
-		Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier * AOARotationMultiplier));
-	}
+	if (bPhysicsMovement)
+	{
+		double WingPitchAngle = PhysicsParams.WingControlAngles.Pitch * -CurrentPitch;
+		double WingRollAngle = PhysicsParams.WingControlAngles.Roll * CurrentRoll;
+		double RudderAngle = PhysicsParams.WingControlAngles.Yaw * CurrentSteer;
 
-	//Clamp throttle
-	TargetThrust += CurrentThrust*DeltaTime;
-	TargetThrust = FMath::Clamp(TargetThrust, MinTargetThrust, MaxTargetThrust);
+		FVector LeftWingDirection = FRotator(WingRollAngle, 0., 0.).RotateVector(FVector::UpVector);
+		FVector RightWingDirection = FRotator(-WingRollAngle, 0., 0.).RotateVector(FVector::UpVector);
+		FVector RearWingDirection = FRotator(WingPitchAngle, 0., 0.).RotateVector(FVector::UpVector);
+		FVector RudderDirection = FRotator(0., RudderAngle, 0.).RotateVector(FVector::RightVector);
+
+		AddWingForce(FVector(0., -PhysicsParams.WingOffset, 0.), LeftWingDirection, PhysicsParams.WingLiftCoefficient);
+		AddWingForce(FVector(0., PhysicsParams.WingOffset, 0.), RightWingDirection, PhysicsParams.WingLiftCoefficient);
+		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RearWingDirection, PhysicsParams.RearWingLiftCoefficient);
+		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RudderDirection, PhysicsParams.WingRudderCoefficient);
+
+		Component->AddForce(Component->GetForwardVector() * PhysicsParams.MaxThrustForce);
+	}
+	else
+	{
+		// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
+		if (!IsAOAOn) {
+			//without AOA
+			//Pitch
+			Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier, 0, 0));
+			//Yaw
+			Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier, 0));
+			//Roll
+			Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier));
+		}
+		else {
+			//with AOA
+			//Pitch
+			Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier * AOARotationMultiplier, 0, 0));
+			//Yaw
+			Component->AddLocalRotation(FRotator(0, RotationSpeed * CurrentSteer * DeltaTime * YawMultiplier * AOARotationMultiplier, 0));
+			//Roll
+			Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier * AOARotationMultiplier));
+		}
+
+		//Clamp throttle
+		TargetThrust += CurrentThrust * DeltaTime;
+		TargetThrust = FMath::Clamp(TargetThrust, MinTargetThrust, MaxTargetThrust);
+	}
 	
 	if (IsCameraLockedOn) 
 	{
@@ -125,8 +163,11 @@ void APlanePawn::Tick(float DeltaTime)
 
 	}
 	if (!IsAOAOn) {
-		// Add a force dependent on Thrust in the forward direction
-		Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
+		if (!bPhysicsMovement)
+		{
+			// Add a force dependent on Thrust in the forward direction
+			Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
+		}
 	}
 
 	RechargeShield(DeltaTime);

@@ -7,6 +7,38 @@
 #include "Hardpoint.h"
 #include "PlanePawn.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPlanePhysicsParams
+{
+	GENERATED_BODY()
+
+	FPlanePhysicsParams() = default;
+
+	UPROPERTY(EditAnywhere)
+	double WingOffset = 1000.f;
+
+	UPROPERTY(EditAnywhere)
+	double RudderOffset = -1000.f;
+
+	UPROPERTY(EditAnywhere)
+	FRotator WingControlAngles = FRotator(5., 5., 5.);
+
+	/* Affects roll */
+	UPROPERTY(EditAnywhere)
+	double WingLiftCoefficient = .01;
+
+	/* Affects pitch */
+	UPROPERTY(EditAnywhere)
+	double RearWingLiftCoefficient = .01;
+
+	/* Affects yaw */
+	UPROPERTY(EditAnywhere)
+	double WingRudderCoefficient = .01;
+
+	UPROPERTY(EditAnywhere)
+	double MaxThrustForce = 1000000.;
+};
+
 UCLASS()
 class FUNNYPLANEGAME_API APlanePawn : public APawn
 {
@@ -17,6 +49,12 @@ public:
 	APlanePawn();
 
 	//Movement
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	bool bPhysicsMovement = false;
+
+	UPROPERTY(EditAnywhere, Category = "Movement")
+	FPlanePhysicsParams PhysicsParams;
+
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	double RotationSpeed = 1.;
 
@@ -121,6 +159,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void AddWingForce(FVector WingPosition, FVector WingNormal, double WingCoefficient);
 
 	void ProcessPitch(float InPitch);
 	void ProcessSteer(float InSteer);
