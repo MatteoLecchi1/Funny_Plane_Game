@@ -5,6 +5,7 @@
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "PlaneCustomizationUI.h"
 
 void UMainMenu::NativeConstruct()
 {
@@ -16,7 +17,14 @@ void UMainMenu::NativeConstruct()
 void UMainMenu::OnStartButtonPressed()
 {
 	this->RemoveFromViewport();
-	PlaneCustomizationWidget->AddToViewport();
+	if (PlaneCustomizationWidgetClass)
+	{
+		PlaneCustomizationWidget = CreateWidget<UPlaneCustomizationUI>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PlaneCustomizationWidgetClass);
+		if (PlaneCustomizationWidget) {
+			PlaneCustomizationWidget->AddToViewport();
+			PlaneCustomizationWidget->UpdatePlaneList();
+		}
+	}
 }
 
 void UMainMenu::OnExitButtonPressed()

@@ -2,4 +2,10 @@
 
 
 #include "PlaneSelectionListElement.h"
+#include "Components/TextBlock.h"
 
+
+void UPlaneSelectionListElement::UpdatePlaneName(FText NewName)
+{
+	PlaneName->SetText(NewName);
+}
