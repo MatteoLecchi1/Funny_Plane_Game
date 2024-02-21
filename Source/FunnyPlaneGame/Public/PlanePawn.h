@@ -35,8 +35,15 @@ struct FPlanePhysicsParams
 	UPROPERTY(EditAnywhere)
 	double WingRudderCoefficient = .01;
 
+	UPROPERTY()
+	double CurrentThrustForce = 800000.;
+
 	UPROPERTY(EditAnywhere)
 	double MaxThrustForce = 1000000.;
+	UPROPERTY(EditAnywhere)
+	double MinThrustForce = 300000.;
+	UPROPERTY(EditAnywhere)
+	double ThrustForceVariation = 10000.;
 };
 
 UCLASS()
