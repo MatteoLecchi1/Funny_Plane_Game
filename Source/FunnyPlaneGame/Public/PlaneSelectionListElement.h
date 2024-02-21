@@ -15,9 +15,13 @@ class FUNNYPLANEGAME_API UPlaneSelectionListElement : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
+	class APlanePawn* Plane;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UTextBlock* PlaneName;
 
+	UFUNCTION()
+	void UpdatePlane(APlanePawn* PlaneIn);
 	UFUNCTION()
 	void UpdatePlaneName(FText NewName);
 };

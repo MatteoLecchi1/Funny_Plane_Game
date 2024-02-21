@@ -19,12 +19,12 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 	for (TSubclassOf<class APlanePawn> Plane : UnlockedPlanes)
 	{
 		UPlaneSelectionListElement* Item = NewObject<UPlaneSelectionListElement>(UPlaneSelectionListElement::StaticClass());
+		Item->UpdatePlane(Cast<APlanePawn>(Plane));
 		PlaneList->AddItem(Item);
-		//Item->UpdatePlaneName(FText::FromString("Baseplane"));
 	}
 }
 void UPlaneCustomizationUI::OnBeginMissionButtonPressed()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), "LV_TestMap");
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+	UGameplayStatics::OpenLevel(GetWorld(), "LV_TestMap");
 }
