@@ -45,6 +45,10 @@ void APlanePawn::BeginPlay()
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
+	if (bPhysicsMovement)
+	{
+		Component->AddForce(Component->GetForwardVector() * PhysicsParams.CurrentThrustForce*300);
+	}
 }
 
 void APlanePawn::AddWingForce(FVector WingPosition, FVector WingNormal, double WingCoefficient)
@@ -84,7 +88,11 @@ void APlanePawn::Tick(float DeltaTime)
 		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RearWingDirection, PhysicsParams.RearWingLiftCoefficient);
 		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RudderDirection, PhysicsParams.WingRudderCoefficient);
 
-		Component->AddForce(Component->GetForwardVector() * PhysicsParams.MaxThrustForce);
+		PhysicsParams.CurrentThrustForce += CurrentThrust * DeltaTime * PhysicsParams.ThrustForceVariation;
+		PhysicsParams.CurrentThrustForce = FMath::Clamp(PhysicsParams.CurrentThrustForce, PhysicsParams.MinThrustForce, PhysicsParams.MaxThrustForce);
+		if (!IsAOAOn) {
+			Component->AddForce(Component->GetForwardVector() * PhysicsParams.CurrentThrustForce);
+		}
 	}
 	else
 	{
