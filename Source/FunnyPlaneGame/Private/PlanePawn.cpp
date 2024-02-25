@@ -90,6 +90,9 @@ void APlanePawn::Tick(float DeltaTime)
 
 		PhysicsParams.CurrentThrustForce += CurrentThrust * DeltaTime * PhysicsParams.ThrustForceVariation;
 		PhysicsParams.CurrentThrustForce = FMath::Clamp(PhysicsParams.CurrentThrustForce, PhysicsParams.MinThrustForce, PhysicsParams.MaxThrustForce);
+
+		Component->AddForce(Component->GetPhysicsLinearVelocity() * (-PhysicsParams.AirDragFactor * Component->GetPhysicsLinearVelocity().Size()));
+
 		if (!IsAOAOn) {
 			Component->AddForce(Component->GetForwardVector() * PhysicsParams.CurrentThrustForce);
 		}
