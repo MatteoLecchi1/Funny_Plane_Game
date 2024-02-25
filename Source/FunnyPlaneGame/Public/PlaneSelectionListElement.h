@@ -4,24 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PlaneDefinition.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "PlaneSelectionListElement.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class FUNNYPLANEGAME_API UPlaneSelectionListElement : public UUserWidget
+UCLASS(BlueprintType)
+class FUNNYPLANEGAME_API UPlaneSelectionListEntry : public UObject, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
-	class APlanePawn* Plane;
-	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UTextBlock* PlaneName;
-
-	UFUNCTION()
-	void UpdatePlane(APlanePawn* PlaneIn);
-	UFUNCTION()
-	void UpdatePlaneName(FText NewName);
+	UPROPERTY(BlueprintReadWrite, Category = UI)
+	FPlaneDefinition Plane;
 };

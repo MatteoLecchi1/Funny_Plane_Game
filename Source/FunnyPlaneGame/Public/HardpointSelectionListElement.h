@@ -3,15 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "PlaneDefinition.h"
+#include "Blueprint/IUserObjectListEntry.h"
 #include "HardpointSelectionListElement.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class FUNNYPLANEGAME_API UHardpointSelectionListElement : public UUserWidget
+UCLASS(BlueprintType)
+class FUNNYPLANEGAME_API UHardpointSelectionListEntry : public UObject, public IUserObjectListEntry
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPROPERTY(BlueprintReadWrite, Category = UI)
+	FHardpointDefinition Hardpoint;
 };

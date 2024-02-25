@@ -7,22 +7,47 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/ListView.h"
 #include "PlaneSelectionListElement.h"
-#include "PlanePawn.h"
+#include "HardpointSelectionListElement.h"
+#include "Engine/DataTable.h"
 
 void UPlaneCustomizationUI::NativeConstruct()
 {
 	if (BeginMissionButton)
 		BeginMissionButton->OnClicked.AddDynamic(this, &UPlaneCustomizationUI::OnBeginMissionButtonPressed);
 }
+
 void UPlaneCustomizationUI::UpdatePlaneList()
 {
-	for (TSubclassOf<class APlanePawn> Plane : UnlockedPlanes)
-	{
-		UPlaneSelectionListElement* Item = NewObject<UPlaneSelectionListElement>(UPlaneSelectionListElement::StaticClass());
-		Item->UpdatePlane(Cast<APlanePawn>(Plane));
+	PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
+
+		UPlaneSelectionListEntry* Item = NewObject<UPlaneSelectionListEntry>();
+		Item->Plane = PlaneDefinition;
 		PlaneList->AddItem(Item);
+	});
+}
+
+void UPlaneCustomizationUI::UpdateWeaponList()
+{
+	// TODO
+}
+
+void UPlaneCustomizationUI::UpdateHardpointList()
+{
+	HardpointList->ClearListItems();
+
+	auto PlaneItem = Cast<UPlaneSelectionListEntry>(PlaneList->GetSelectedItem());
+
+	if (PlaneItem != nullptr)
+	{
+		for (auto& HardpointDefinition : PlaneItem->Plane.Hardpoints)
+		{
+			UHardpointSelectionListEntry* Item = NewObject<UHardpointSelectionListEntry>();
+			Item->Hardpoint = HardpointDefinition;
+			HardpointList->AddItem(Item);
+		};
 	}
 }
+
 void UPlaneCustomizationUI::OnBeginMissionButtonPressed()
 {
 	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
