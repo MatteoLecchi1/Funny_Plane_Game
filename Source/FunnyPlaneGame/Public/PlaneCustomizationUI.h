@@ -19,6 +19,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UDataTable* PlanesDataTable;
 
+	UPROPERTY(EditAnywhere)
+	class UDataTable* WeaponsDataTable;
+
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* BeginMissionButton;
 
@@ -29,14 +32,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UListView* WeaponList;
 
-	UPROPERTY(EditDefaultsOnly)
-	TArray <TSubclassOf<class APlanePawn>> UnlockedPlanes;
 	UPROPERTY()
-	TArray<class UHardpoint*> PlaneHardpoints;
-	UPROPERTY(EditDefaultsOnly)
-	TArray <TSubclassOf<class UHardpointWeapon>> UnlockedWeapons;
-	UPROPERTY()
-	TArray<class UHardpointWeapon*> UnlockedWeaponsForSelectedHardpoint;
+	class APlanePawn* PlanePreviewInstance;
 
 
 	virtual void NativeConstruct() override;

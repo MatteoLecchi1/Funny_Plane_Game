@@ -8,6 +8,7 @@
 #include "Components/ListView.h"
 #include "PlaneSelectionListElement.h"
 #include "HardpointSelectionListElement.h"
+#include "WeaponSelectionListElement.h"
 #include "Engine/DataTable.h"
 
 void UPlaneCustomizationUI::NativeConstruct()
@@ -26,27 +27,45 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 	});
 }
 
-void UPlaneCustomizationUI::UpdateWeaponList()
-{
-	// TODO
-}
-
 void UPlaneCustomizationUI::UpdateHardpointList()
 {
 	HardpointList->ClearListItems();
 
 	auto PlaneItem = Cast<UPlaneSelectionListEntry>(PlaneList->GetSelectedItem());
 
+	if (PlanePreviewInstance != nullptr) {
+		PlanePreviewInstance->Destroy();
+	}
+
+	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
+
 	if (PlaneItem != nullptr)
 	{
-		for (auto& HardpointDefinition : PlaneItem->Plane.Hardpoints)
+		for (auto HardpointDefinition : PlanePreviewInstance->hardpoints)
 		{
 			UHardpointSelectionListEntry* Item = NewObject<UHardpointSelectionListEntry>();
-			Item->Hardpoint = HardpointDefinition;
+			Item->Hardpoint.Name = "aa";
+			Item->Hardpoint.Description = "aa1";
+			Item->Hardpoint.HardpointReferance = HardpointDefinition;
 			HardpointList->AddItem(Item);
 		};
 	}
 }
+
+void UPlaneCustomizationUI::UpdateWeaponList()
+{
+	WeaponList->ClearListItems();
+
+	auto HardpointItem = Cast<UHardpointSelectionListEntry>(HardpointList->GetSelectedItem());
+
+	WeaponsDataTable->ForeachRow<FHardpointWeaponDefinition>("Weapon", [&](const FName& Key, const FHardpointWeaponDefinition& WeaponDefinition) {
+
+		UWeaponSelectionListElement* Item = NewObject<UWeaponSelectionListElement>();
+		Item->Weapon = WeaponDefinition;
+		WeaponList->AddItem(Item);
+	});
+}
+
 
 void UPlaneCustomizationUI::OnBeginMissionButtonPressed()
 {
