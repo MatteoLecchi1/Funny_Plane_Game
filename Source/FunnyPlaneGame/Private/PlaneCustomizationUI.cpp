@@ -30,6 +30,7 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 void UPlaneCustomizationUI::UpdateHardpointList()
 {
 	HardpointList->ClearListItems();
+	WeaponList->ClearListItems();
 
 	auto PlaneItem = Cast<UPlaneSelectionListEntry>(PlaneList->GetSelectedItem());
 
