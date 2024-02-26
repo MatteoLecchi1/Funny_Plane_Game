@@ -27,28 +27,13 @@ void APlanePawn::BeginPlay()
 
 	CurrentHealth = MaxHealth;
 	CurrentShield = MaxShield;
-	UpdateHealthAndShield();
 
 	GetComponents<UHardpoint>(hardpoints, true);
 
-	if (IsLocallyControlled() && widgetHUDClass)
-	{
-		widgetHUDInstance = CreateWidget<UPlanePlayerHUD>(UGameplayStatics::GetPlayerController(GetWorld(),0), widgetHUDClass);
-		if(widgetHUDInstance)
-			widgetHUDInstance->AddToPlayerScreen();
-	}
-	if (IsLocallyControlled() && widgetDeathScreenClass)
-	{
-		widgetDeathScreenInstance = CreateWidget<UDeathScreen>(UGameplayStatics::GetPlayerController(GetWorld(), 0), widgetDeathScreenClass);
-	}
 	SetCanBeDamaged(true);
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
-	if (bPhysicsMovement)
-	{
-		Component->AddForce(Component->GetForwardVector() * PhysicsParams.CurrentThrustForce*300);
-	}
 }
 
 void APlanePawn::AddWingForce(FVector WingPosition, FVector WingNormal, double WingCoefficient)
@@ -71,6 +56,9 @@ void APlanePawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
+	if (Component->IsSimulatingPhysics()) 
+	{
+
 
 	if (bPhysicsMovement)
 	{
@@ -182,7 +170,7 @@ void APlanePawn::Tick(float DeltaTime)
 	}
 
 	RechargeShield(DeltaTime);
-	widgetHUDInstance->UpdateSpeed(Component->GetComponentVelocity().Length());
+	}
 }
 
 // Called to bind functionality to input
@@ -224,20 +212,11 @@ float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& Damag
 			OnShieldBreak();
 		
 	}
-	UpdateHealthAndShield();
 	//if players health is less than 0
 	if (CurrentHealth <= 0)
 		OnPlayerDeath();
 
 	return DamageAmount;
-}
-void APlanePawn::UpdateHealthAndShield() 
-{
-	if(widgetHUDInstance)
-	{
-		widgetHUDInstance->UpdateHealth(CurrentHealth,MaxHealth);
-		widgetHUDInstance->UpdateShield(CurrentShield,MaxShield);
-	}
 }
 void APlanePawn::OnPlayerDeath()
 {
@@ -246,8 +225,6 @@ void APlanePawn::OnPlayerDeath()
 	PC->bShowMouseCursor = true;
 	PC->bEnableClickEvents = true;
 	PC->bEnableMouseOverEvents = true;
-	if (widgetDeathScreenInstance)
-		widgetDeathScreenInstance->AddToPlayerScreen();
 }
 void APlanePawn::OnShieldBreak() 
 {
@@ -259,7 +236,6 @@ void APlanePawn::RechargeShield(float DeltaTime)
 	if (TimeSinceDamageTaken > TimeBeforeShieldStartsRecover && CurrentShield < MaxShield) 
 	{
 		CurrentShield += ShieldRecoverPerSecond * DeltaTime;
-		UpdateHealthAndShield();
 	}
 }
 // input processing

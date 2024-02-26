@@ -151,18 +151,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	double ShieldRecoverPerSecond = 50.;
 
-	//UI
-	//HUD
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<class UPlanePlayerHUD> widgetHUDClass;
-	UPROPERTY()
-	class UPlanePlayerHUD* widgetHUDInstance;
-	//DeathScreen
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TSubclassOf<class UDeathScreen> widgetDeathScreenClass;
-	UPROPERTY()
-	class UDeathScreen* widgetDeathScreenInstance;
-
 	UPROPERTY()
 	TArray <UHardpoint*> hardpoints;
 
@@ -187,7 +175,6 @@ protected:
 	void ProcessEvadePressed();
 	void ProcessEvadeReleased();
 	void ProcessLockOnPressed();
-	void UpdateHealthAndShield();
 	void RechargeShield(float DeltaTime);
 	void OnShieldBreak();
 	void OnPlayerDeath();
