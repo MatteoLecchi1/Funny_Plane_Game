@@ -73,6 +73,10 @@ void APlanePawn::Tick(float DeltaTime)
 
 		AddWingForce(FVector(0., -PhysicsParams.WingOffset, 0.), LeftWingDirection, PhysicsParams.WingLiftCoefficient);
 		AddWingForce(FVector(0., PhysicsParams.WingOffset, 0.), RightWingDirection, PhysicsParams.WingLiftCoefficient);
+
+		AddWingForce(FVector(0., 0., -PhysicsParams.WingOffset), FVector::RightVector, PhysicsParams.WingLiftCoefficient);
+		AddWingForce(FVector(0., 0., PhysicsParams.WingOffset), FVector::RightVector, PhysicsParams.WingLiftCoefficient);
+
 		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RearWingDirection, PhysicsParams.RearWingLiftCoefficient);
 		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RudderDirection, PhysicsParams.WingRudderCoefficient);
 
