@@ -29,8 +29,8 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 
 void UPlaneCustomizationUI::UpdateHardpointList()
 {
-	HardpointList->ClearListItems();
 	WeaponList->ClearListItems();
+	HardpointList->ClearListItems();
 
 	auto PlaneItem = Cast<UPlaneSelectionListEntry>(PlaneList->GetSelectedItem());
 
@@ -45,8 +45,26 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 		for (auto HardpointDefinition : PlanePreviewInstance->hardpoints)
 		{
 			UHardpointSelectionListEntry* Item = NewObject<UHardpointSelectionListEntry>();
-			Item->Hardpoint.Name = "aa";
-			Item->Hardpoint.Description = "aa1";
+			Item->Hardpoint.Name = HardpointDefinition->GetAttachSocketName().ToString();
+
+			switch (HardpointDefinition->thisHardpointTier)
+			{
+			case(HardpointTier::TIER0):
+				Item->Hardpoint.Description = "0";
+				break;
+			case(HardpointTier::TIER1):
+				Item->Hardpoint.Description = "00";
+				break;
+			case(HardpointTier::TIER2):
+				Item->Hardpoint.Description = "000";
+				break;
+			case(HardpointTier::TIER3):
+				Item->Hardpoint.Description = "0000";
+				break;
+			default:
+				Item->Hardpoint.Description = "";
+				break;
+			}
 			Item->Hardpoint.HardpointReferance = HardpointDefinition;
 			HardpointList->AddItem(Item);
 		};
@@ -65,6 +83,18 @@ void UPlaneCustomizationUI::UpdateWeaponList()
 		Item->Weapon = WeaponDefinition;
 		WeaponList->AddItem(Item);
 	});
+}
+
+void UPlaneCustomizationUI::ChangeWeapon()
+{
+	auto HardpointItem = Cast<UHardpointSelectionListEntry>(HardpointList->GetSelectedItem());
+	auto WeaponItem = Cast<UWeaponSelectionListElement>(WeaponList->GetSelectedItem());
+
+	if(HardpointItem && WeaponItem)
+	{
+		HardpointItem->Hardpoint.HardpointReferance->HardpointWeapon = WeaponItem->Weapon.HardpointWeaponReferance;
+		HardpointItem->Hardpoint.HardpointReferance->AssignWeapon();
+	}
 }
 
 

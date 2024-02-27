@@ -39,16 +39,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	HardpointTier thisHardpointTier = HardpointTier::TIER0;
 	UPROPERTY(BlueprintReadOnly)
-	UHardpointWeapon* WeaponInstance;
+	class UHardpointWeapon* WeaponInstance;
 
 	UPROPERTY()
 	bool IsShooting = false;
 	UFUNCTION()
 	void ShootWeapon();
+	void AssignWeapon();
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	void AssignWeapon();
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

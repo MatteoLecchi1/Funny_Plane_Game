@@ -47,6 +47,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateWeaponList();
 
+	UFUNCTION(BlueprintCallable)
+	void ChangeWeapon();
+
 	UFUNCTION()
 	void OnBeginMissionButtonPressed();
 };
