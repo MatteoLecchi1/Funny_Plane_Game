@@ -11,12 +11,12 @@
 #include "WeaponSelectionListElement.h"
 #include "Engine/DataTable.h"
 #include "PlaneConfigurationSaveGame.h"
+#include "FunnyPlaneGameController.h"
 
 void UPlaneCustomizationUI::NativeConstruct()
 {
 	if (BeginMissionButton)
 		BeginMissionButton->OnClicked.AddDynamic(this, &UPlaneCustomizationUI::OnBeginMissionButtonPressed);
-	SaveInstance = Cast<UPlaneConfigurationSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveInstance->StaticClass()));
 }
 
 void UPlaneCustomizationUI::UpdatePlaneList()
@@ -40,8 +40,13 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 		PlanePreviewInstance->Destroy();
 	}
 
+	//save Plane 
+	auto Controller = Cast<AFunnyPlaneGameController>(GetWorld()->GetFirstPlayerController());
+	Controller->SavePlaneByName(PlaneItem->Plane.Name);
+	//spawn plane as preview
 	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
 
+	//add all of the planes hardpoints to HUD
 	if (PlaneItem != nullptr)
 	{
 		for (auto HardpointDefinition : PlanePreviewInstance->hardpoints)
@@ -94,10 +99,13 @@ void UPlaneCustomizationUI::ChangeWeapon()
 
 	if(HardpointItem && WeaponItem)
 	{
+		//add weapon to preview
 		HardpointItem->Hardpoint.HardpointReferance->HardpointWeapon = WeaponItem->Weapon.HardpointWeaponReferance;
 		HardpointItem->Hardpoint.HardpointReferance->AssignWeapon();
-		// TODO assign weapon to save
-		UGameplayStatics::SaveGameToSlot(SaveInstance,SaveInstance->SaveSlotName,SaveInstance->UserIndex);
+
+		// save the weapon and its index in the array
+		auto Controller = Cast<AFunnyPlaneGameController>(GetWorld()->GetFirstPlayerController());
+		Controller->SaveWeaponByNameAndHardpoint(WeaponItem->Weapon.Name,HardpointList->GetIndexForItem(HardpointItem));
 	}
 }
 

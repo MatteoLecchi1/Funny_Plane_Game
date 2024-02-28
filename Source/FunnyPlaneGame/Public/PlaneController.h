@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "FunnyPlaneGameController.h"
 #include "PlaneController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FUNNYPLANEGAME_API APlaneController : public APlayerController
+class FUNNYPLANEGAME_API APlaneController : public AFunnyPlaneGameController
 {
 	GENERATED_BODY()
 	

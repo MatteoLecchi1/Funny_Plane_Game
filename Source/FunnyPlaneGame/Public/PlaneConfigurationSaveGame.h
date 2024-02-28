@@ -24,9 +24,9 @@ public:
     uint32 UserIndex;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-   	FString SavedPlane;
+    FString SavedPlane;
     UPROPERTY(VisibleAnywhere, Category = Basic)
-    FString HardpointWeapons;
+    TArray<FString> SavedHardpointWeapons = {"","","","","","","",""};
 
     UPlaneConfigurationSaveGame();
 };
