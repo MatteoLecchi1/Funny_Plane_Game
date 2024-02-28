@@ -10,11 +10,13 @@
 #include "HardpointSelectionListElement.h"
 #include "WeaponSelectionListElement.h"
 #include "Engine/DataTable.h"
+#include "PlaneConfigurationSaveGame.h"
 
 void UPlaneCustomizationUI::NativeConstruct()
 {
 	if (BeginMissionButton)
 		BeginMissionButton->OnClicked.AddDynamic(this, &UPlaneCustomizationUI::OnBeginMissionButtonPressed);
+	SaveInstance = Cast<UPlaneConfigurationSaveGame>(UGameplayStatics::CreateSaveGameObject(SaveInstance->StaticClass()));
 }
 
 void UPlaneCustomizationUI::UpdatePlaneList()
@@ -94,6 +96,8 @@ void UPlaneCustomizationUI::ChangeWeapon()
 	{
 		HardpointItem->Hardpoint.HardpointReferance->HardpointWeapon = WeaponItem->Weapon.HardpointWeaponReferance;
 		HardpointItem->Hardpoint.HardpointReferance->AssignWeapon();
+		// TODO assign weapon to save
+		UGameplayStatics::SaveGameToSlot(SaveInstance,SaveInstance->SaveSlotName,SaveInstance->UserIndex);
 	}
 }
 

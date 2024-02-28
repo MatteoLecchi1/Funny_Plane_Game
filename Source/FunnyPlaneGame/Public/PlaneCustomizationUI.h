@@ -34,6 +34,8 @@ public:
 
 	UPROPERTY()
 	class APlanePawn* PlanePreviewInstance;
+	UPROPERTY()
+	class UPlaneConfigurationSaveGame* SaveInstance;
 
 
 	virtual void NativeConstruct() override;
