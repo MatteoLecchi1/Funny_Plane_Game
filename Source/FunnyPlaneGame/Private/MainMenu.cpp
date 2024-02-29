@@ -16,7 +16,7 @@ void UMainMenu::NativeConstruct()
 }
 void UMainMenu::OnStartButtonPressed()
 {
-	this->RemoveFromViewport();
+	this->RemoveFromParent();
 	if (PlaneCustomizationWidgetClass)
 	{
 		PlaneCustomizationWidget = CreateWidget<UPlaneCustomizationUI>(UGameplayStatics::GetPlayerController(GetWorld(), 0), PlaneCustomizationWidgetClass);
