@@ -11,7 +11,7 @@
 #include "WeaponSelectionListElement.h"
 #include "Engine/DataTable.h"
 #include "PlaneConfigurationSaveGame.h"
-#include "FunnyPlaneGameController.h"
+#include "FunnyPlaneGameInstance.h"
 
 void UPlaneCustomizationUI::NativeConstruct()
 {
@@ -21,7 +21,9 @@ void UPlaneCustomizationUI::NativeConstruct()
 
 void UPlaneCustomizationUI::UpdatePlaneList()
 {
-	PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
+	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+
+	GameInstance->PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
 
 		UPlaneSelectionListEntry* Item = NewObject<UPlaneSelectionListEntry>();
 		Item->Plane = PlaneDefinition;
@@ -41,8 +43,8 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 	}
 
 	//save Plane 
-	auto Controller = Cast<AFunnyPlaneGameController>(GetWorld()->GetFirstPlayerController());
-	Controller->SavePlaneByName(PlaneItem->Plane.Name);
+	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+	GameInstance->SavePlaneByName(PlaneItem->Plane.Name);
 	//spawn plane as preview
 	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
 
@@ -84,7 +86,9 @@ void UPlaneCustomizationUI::UpdateWeaponList()
 
 	auto HardpointItem = Cast<UHardpointSelectionListEntry>(HardpointList->GetSelectedItem());
 
-	WeaponsDataTable->ForeachRow<FHardpointWeaponDefinition>("Weapon", [&](const FName& Key, const FHardpointWeaponDefinition& WeaponDefinition) {
+	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+
+	GameInstance->WeaponsDataTable->ForeachRow<FHardpointWeaponDefinition>("Weapon", [&](const FName& Key, const FHardpointWeaponDefinition& WeaponDefinition) {
 
 		UWeaponSelectionListElement* Item = NewObject<UWeaponSelectionListElement>();
 		Item->Weapon = WeaponDefinition;
@@ -104,8 +108,8 @@ void UPlaneCustomizationUI::ChangeWeapon()
 		HardpointItem->Hardpoint.HardpointReferance->AssignWeapon();
 
 		// save the weapon and its index in the array
-		auto Controller = Cast<AFunnyPlaneGameController>(GetWorld()->GetFirstPlayerController());
-		Controller->SaveWeaponByNameAndHardpoint(WeaponItem->Weapon.Name,HardpointList->GetIndexForItem(HardpointItem));
+		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+		GameInstance->SaveWeaponByNameAndHardpoint(WeaponItem->Weapon.Name,HardpointList->GetIndexForItem(HardpointItem));
 	}
 }
 

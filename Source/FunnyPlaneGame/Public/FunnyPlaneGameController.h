@@ -14,16 +14,4 @@ class FUNNYPLANEGAME_API AFunnyPlaneGameController : public APlayerController
 {
 	GENERATED_BODY()
 	
-public:
-	UPROPERTY()
-	class UPlaneConfigurationSaveGame* SaveInstance;
-
-	UFUNCTION()
-	void SavePlaneByName(FString PlaneName);
-	UFUNCTION()
-	void SaveWeaponByNameAndHardpoint(FString WeaponName,int HardpointIndex);
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 };

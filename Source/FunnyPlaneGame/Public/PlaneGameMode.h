@@ -13,5 +13,7 @@ UCLASS()
 class FUNNYPLANEGAME_API APlaneGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
+
+
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 };

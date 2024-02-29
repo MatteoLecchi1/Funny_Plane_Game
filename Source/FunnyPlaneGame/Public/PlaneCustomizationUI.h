@@ -16,12 +16,6 @@ class FUNNYPLANEGAME_API UPlaneCustomizationUI : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
-	class UDataTable* PlanesDataTable;
-
-	UPROPERTY(EditAnywhere)
-	class UDataTable* WeaponsDataTable;
-
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	class UButton* BeginMissionButton;
 
