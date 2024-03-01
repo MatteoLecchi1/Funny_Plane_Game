@@ -3,6 +3,7 @@
 #include "FunnyPlaneGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlaneConfigurationSaveGame.h"
+#include "PlaneDefinition.h"
 
 UFunnyPlaneGameInstance* UFunnyPlaneGameInstance::GetGameInstance(const UObject* WorldContextObject)
 {
@@ -19,22 +20,23 @@ void UFunnyPlaneGameInstance::Init()
 	if (SaveInstance == nullptr)
 	{
 		SaveInstance = Cast<UPlaneConfigurationSaveGame>(UGameplayStatics::CreateSaveGameObject(UPlaneConfigurationSaveGame::StaticClass()));
+		PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
+			auto& Plane = SaveInstance->SavedPlane.FindOrAdd(Key);
+			Plane.PlaneKey = Key; 
+			UE_LOG(LogTemp, Warning, TEXT("%s"), * Key.ToString());
+		});
 	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, SaveInstance->SavedPlane);
-	for (FString a : SaveInstance->SavedHardpointWeapons)
-		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Orange, a);
 }
 
 
 void UFunnyPlaneGameInstance::SavePlaneByName(FString PlaneName)
 {
-	SaveInstance->SavedPlane = PlaneName;
+	//SaveInstance->SavedPlane = PlaneName;
 	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
 }
 
 void UFunnyPlaneGameInstance::SaveWeaponByNameAndHardpoint(FString WeaponName, int HardpointIndex)
 {
-	SaveInstance->SavedHardpointWeapons[HardpointIndex] = WeaponName;
-	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), SaveInstance->UserIndex);
+	//SaveInstance->SavedHardpointWeapons[HardpointIndex] = WeaponName;
+	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
 }

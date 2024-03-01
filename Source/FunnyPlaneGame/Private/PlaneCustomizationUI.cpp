@@ -45,6 +45,7 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 	//save Plane 
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 	GameInstance->SavePlaneByName(PlaneItem->Plane.Name);
+
 	//spawn plane as preview
 	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
 

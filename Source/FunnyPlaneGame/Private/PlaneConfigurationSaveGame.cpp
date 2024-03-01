@@ -2,9 +2,3 @@
 
 
 #include "PlaneConfigurationSaveGame.h"
-
-UPlaneConfigurationSaveGame::UPlaneConfigurationSaveGame()
-{
-    SaveSlotName = TEXT("SaveSlot");
-    UserIndex = 0;
-}

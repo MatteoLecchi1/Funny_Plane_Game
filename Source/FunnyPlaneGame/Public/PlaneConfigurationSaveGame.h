@@ -7,9 +7,18 @@
 #include "PlanePawn.h"
 #include "PlaneConfigurationSaveGame.generated.h"
 
-/**
- * 
- */
+USTRUCT(BlueprintType)
+struct FUNNYPLANEGAME_API FSavedPlane
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = Plane)
+	FName PlaneKey;
+
+	UPROPERTY(BlueprintReadWrite, Category = Plane)
+	TArray<FName> SavedHardpointWeapons;
+};
+
 UCLASS()
 class FUNNYPLANEGAME_API UPlaneConfigurationSaveGame : public USaveGame
 {
@@ -17,16 +26,10 @@ class FUNNYPLANEGAME_API UPlaneConfigurationSaveGame : public USaveGame
 
 public:
 
-    UPROPERTY(VisibleAnywhere, Category = Basic)
-    FString SaveSlotName;
+	UPROPERTY()
+	FName CurrentPlaneKey;
 
     UPROPERTY(VisibleAnywhere, Category = Basic)
-    uint32 UserIndex;
+	TMap<FName,FSavedPlane> SavedPlane;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-    FString SavedPlane;
-    UPROPERTY(VisibleAnywhere, Category = Basic)
-    TArray<FString> SavedHardpointWeapons = {"","","","","","","",""};
-
-    UPlaneConfigurationSaveGame();
 };
