@@ -36,32 +36,32 @@ void APlanePawn::BeginPlay()
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
 }
 
-void APlanePawn::AddWingForce(FVector WingPosition, FVector WingNormal, double WingCoefficient)
-{
-	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
-	FVector PlaneVelocity = Component->GetPhysicsLinearVelocity();
-
-	FVector WorldWingNormal = Component->GetComponentTransform().TransformVector(WingNormal);
-	FVector WorldWingPosition = Component->GetComponentTransform().TransformPosition(WingPosition);
-
-	double ForceMagnitude = -FVector::DotProduct(WorldWingNormal, PlaneVelocity) * PlaneVelocity.Size() * WingCoefficient;
-	FVector Force = WorldWingNormal * ForceMagnitude;
-
-	Component->AddForceAtLocation(Force, WorldWingPosition);
-}
-
 // Called every frame
 void APlanePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
-	if (Component->IsSimulatingPhysics()) 
-	{
-
-
+	if (!Component->IsSimulatingPhysics())
+		return;
+	
 	if (bPhysicsMovement)
 	{
+		FTransform PlaneTransform = Component->GetComponentTransform();
+		FVector CenterOfMass = Component->GetBodyInstance()->GetMassSpaceLocal().GetTranslation();
+
+		FVector PlaneVelocity = Component->GetPhysicsLinearVelocity();
+		FVector LocalPlaneVelocity = PlaneTransform.InverseTransformVector(PlaneVelocity);
+		FVector Force = FVector::ZeroVector, Torque = FVector::ZeroVector;
+
+		auto AddWingLocalForce = [&](FVector WingPosition, FVector WingNormal, double WingCoefficient)
+		{
+			double ForceMagnitude = -FVector::DotProduct(WingNormal, LocalPlaneVelocity) * LocalPlaneVelocity.Size() * WingCoefficient;
+			FVector AppliedForce = WingNormal * ForceMagnitude;
+			Force += AppliedForce;
+			Torque += FVector::CrossProduct(WingPosition - CenterOfMass, AppliedForce);
+		};
+
 		double WingPitchAngle = PhysicsParams.WingControlAngles.Pitch * -CurrentPitch;
 		double WingRollAngle = PhysicsParams.WingControlAngles.Roll * CurrentRoll;
 		double RudderAngle = PhysicsParams.WingControlAngles.Yaw * CurrentSteer;
@@ -71,28 +71,33 @@ void APlanePawn::Tick(float DeltaTime)
 		FVector RearWingDirection = FRotator(WingPitchAngle, 0., 0.).RotateVector(FVector::UpVector);
 		FVector RudderDirection = FRotator(0., RudderAngle, 0.).RotateVector(FVector::RightVector);
 
-		AddWingForce(FVector(0., -PhysicsParams.WingOffset, 0.), LeftWingDirection, PhysicsParams.WingLiftCoefficient);
-		AddWingForce(FVector(0., PhysicsParams.WingOffset, 0.), RightWingDirection, PhysicsParams.WingLiftCoefficient);
+		AddWingLocalForce(FVector(0., -PhysicsParams.WingOffset, 0.), LeftWingDirection, PhysicsParams.WingLiftCoefficient);
+		AddWingLocalForce(FVector(0., PhysicsParams.WingOffset, 0.), RightWingDirection, PhysicsParams.WingLiftCoefficient);
 
-		AddWingForce(FVector(0., 0., -PhysicsParams.WingOffset), FVector::RightVector, PhysicsParams.WingLiftCoefficient);
-		AddWingForce(FVector(0., 0., PhysicsParams.WingOffset), FVector::RightVector, PhysicsParams.WingLiftCoefficient);
+		AddWingLocalForce(FVector(0., 0., -PhysicsParams.WingOffset), FVector::RightVector, PhysicsParams.WingLiftCoefficient);
+		AddWingLocalForce(FVector(0., 0., PhysicsParams.WingOffset), FVector::RightVector, PhysicsParams.WingLiftCoefficient);
 
-		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RearWingDirection, PhysicsParams.RearWingLiftCoefficient);
-		AddWingForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RudderDirection, PhysicsParams.WingRudderCoefficient);
+		AddWingLocalForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RearWingDirection, PhysicsParams.RearWingLiftCoefficient);
+		AddWingLocalForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RudderDirection, PhysicsParams.WingRudderCoefficient);
 
 		PhysicsParams.CurrentThrustForce += CurrentThrust * DeltaTime * PhysicsParams.ThrustForceVariation;
 		PhysicsParams.CurrentThrustForce = FMath::Clamp(PhysicsParams.CurrentThrustForce, PhysicsParams.MinThrustForce, PhysicsParams.MaxThrustForce);
 
-		Component->AddForce(Component->GetPhysicsLinearVelocity() * (-PhysicsParams.AirDragFactor * Component->GetPhysicsLinearVelocity().Size()));
-
-		if (!IsAOAOn) {
-			Component->AddForce(Component->GetForwardVector() * PhysicsParams.CurrentThrustForce);
+		if (!IsAOAOn)
+		{
+			Force.X += PhysicsParams.CurrentThrustForce;
 		}
+
+		Force += LocalPlaneVelocity * (-PhysicsParams.AirDragFactor * LocalPlaneVelocity.Size());
+
+		Component->AddForce(PlaneTransform.TransformVector(Force));
+		Component->AddTorqueInRadians(PlaneTransform.TransformVector(Torque));
 	}
 	else
 	{
 		// rotates the plane dependant on CurrentPitch,CurrentSteer and CurrentRoll
-		if (!IsAOAOn) {
+		if (!IsAOAOn)
+		{
 			//without AOA
 			//Pitch
 			Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier, 0, 0));
@@ -101,7 +106,8 @@ void APlanePawn::Tick(float DeltaTime)
 			//Roll
 			Component->AddLocalRotation(FRotator(0, 0, RotationSpeed * CurrentRoll * DeltaTime * RollMultiplier));
 		}
-		else {
+		else
+		{
 			//with AOA
 			//Pitch
 			Component->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime * PitchMultiplier * AOARotationMultiplier, 0, 0));
@@ -163,9 +169,9 @@ void APlanePawn::Tick(float DeltaTime)
 			if(AOALocksCamera)
 				CameraArmComponet->SetWorldRotation(CameraRotationOnAOABegin);
 		}
-
 	}
-	if (!IsAOAOn) {
+	if (!IsAOAOn)
+	{
 		if (!bPhysicsMovement)
 		{
 			// Add a force dependent on Thrust in the forward direction
@@ -174,7 +180,6 @@ void APlanePawn::Tick(float DeltaTime)
 	}
 
 	RechargeShield(DeltaTime);
-	}
 }
 
 // Called to bind functionality to input

@@ -158,8 +158,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void AddWingForce(FVector WingPosition, FVector WingNormal, double WingCoefficient);
-
 	void ProcessPitch(float InPitch);
 	void ProcessSteer(float InSteer);
 	void ProcessThrust(float InThrust);
