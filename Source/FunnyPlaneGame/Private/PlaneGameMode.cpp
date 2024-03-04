@@ -7,7 +7,7 @@ UClass* APlaneGameMode::GetDefaultPawnClassForController_Implementation(AControl
 {
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 
-	auto Row = GameInstance->PlanesDataTable->FindRow<FPlaneDefinition>(GameInstance->SaveInstance->SavedPlane[GameInstance->SaveInstance->CurrentPlaneKey].PlaneKey, TEXT("Plane"));
+	auto Row = GameInstance->PlanesDataTable->FindRow<FPlaneDefinition>(GameInstance->SaveInstance->CurrentPlaneKey, TEXT("Plane"));
 	if (Row && Row->PlaneReferance)
 	{
 		return Row->PlaneReferance;

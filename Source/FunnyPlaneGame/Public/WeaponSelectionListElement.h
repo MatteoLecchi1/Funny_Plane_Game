@@ -17,5 +17,8 @@ class FUNNYPLANEGAME_API UWeaponSelectionListElement : public UUserWidget
 
 public:
 	UPROPERTY(BlueprintReadWrite, Category = UI)
+	FName Key;
+
+	UPROPERTY(BlueprintReadWrite, Category = UI)
 	FHardpointWeaponDefinition Weapon;
 };

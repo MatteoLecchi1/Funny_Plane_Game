@@ -21,7 +21,7 @@ void UFunnyPlaneGameInstance::Init()
 	{
 		SaveInstance = Cast<UPlaneConfigurationSaveGame>(UGameplayStatics::CreateSaveGameObject(UPlaneConfigurationSaveGame::StaticClass()));
 		PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
-			auto& Plane = SaveInstance->SavedPlane.FindOrAdd(Key);
+			auto& Plane = SaveInstance->SavedPlanes.FindOrAdd(Key);
 			Plane.PlaneKey = Key; 
 			UE_LOG(LogTemp, Warning, TEXT("%s"), * Key.ToString());
 		});
@@ -29,14 +29,23 @@ void UFunnyPlaneGameInstance::Init()
 }
 
 
-void UFunnyPlaneGameInstance::SavePlaneByName(FString PlaneName)
+void UFunnyPlaneGameInstance::SavePlaneByName(FName PlaneKey)
 {
-	//SaveInstance->SavedPlane = PlaneName;
+	SaveInstance->CurrentPlaneKey = PlaneKey;
 	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
 }
 
-void UFunnyPlaneGameInstance::SaveWeaponByNameAndHardpoint(FString WeaponName, int HardpointIndex)
+void UFunnyPlaneGameInstance::SaveWeaponByNameAndHardpoint(FName WeaponName, int HardpointIndex)
 {
-	//SaveInstance->SavedHardpointWeapons[HardpointIndex] = WeaponName;
-	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
+	if (SaveInstance->SavedPlanes.Contains(SaveInstance->CurrentPlaneKey))
+	{
+		auto& CurrentPlane = SaveInstance->SavedPlanes[SaveInstance->CurrentPlaneKey];
+		// Resize SavedHardpointWeapons array if HardpointIndex is not present
+		if (!CurrentPlane.SavedHardpointWeapons.IsValidIndex(HardpointIndex))
+		{
+			CurrentPlane.SavedHardpointWeapons.SetNum(HardpointIndex + 1);
+		}
+		CurrentPlane.SavedHardpointWeapons[HardpointIndex] = WeaponName;
+		UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
+	}
 }

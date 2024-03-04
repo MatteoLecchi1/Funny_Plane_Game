@@ -30,6 +30,6 @@ public:
 	FName CurrentPlaneKey;
 
     UPROPERTY(VisibleAnywhere, Category = Basic)
-	TMap<FName,FSavedPlane> SavedPlane;
+	TMap<FName,FSavedPlane> SavedPlanes;
 
 };

@@ -26,6 +26,7 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 	GameInstance->PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
 
 		UPlaneSelectionListEntry* Item = NewObject<UPlaneSelectionListEntry>();
+		Item->Key = Key;
 		Item->Plane = PlaneDefinition;
 		PlaneList->AddItem(Item);
 	});
@@ -44,7 +45,7 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 
 	//save Plane 
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
-	GameInstance->SavePlaneByName(PlaneItem->Plane.Name);
+	GameInstance->SavePlaneByName(PlaneItem->Key);
 
 	//spawn plane as preview
 	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
@@ -92,6 +93,7 @@ void UPlaneCustomizationUI::UpdateWeaponList()
 	GameInstance->WeaponsDataTable->ForeachRow<FHardpointWeaponDefinition>("Weapon", [&](const FName& Key, const FHardpointWeaponDefinition& WeaponDefinition) {
 
 		UWeaponSelectionListElement* Item = NewObject<UWeaponSelectionListElement>();
+		Item->Key = Key;
 		Item->Weapon = WeaponDefinition;
 		WeaponList->AddItem(Item);
 	});
@@ -110,7 +112,7 @@ void UPlaneCustomizationUI::ChangeWeapon()
 
 		// save the weapon and its index in the array
 		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
-		GameInstance->SaveWeaponByNameAndHardpoint(WeaponItem->Weapon.Name,HardpointList->GetIndexForItem(HardpointItem));
+		GameInstance->SaveWeaponByNameAndHardpoint(WeaponItem->Key,HardpointList->GetIndexForItem(HardpointItem));
 	}
 }
 
