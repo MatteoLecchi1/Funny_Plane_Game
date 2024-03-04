@@ -26,7 +26,6 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 	GameInstance->PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
 
 		UPlaneSelectionListEntry* Item = NewObject<UPlaneSelectionListEntry>();
-		Item->Key = Key;
 		Item->Plane = PlaneDefinition;
 		PlaneList->AddItem(Item);
 	});
@@ -45,7 +44,7 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 
 	//save Plane 
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
-	GameInstance->SavePlaneByName(PlaneItem->Key);
+	GameInstance->SavePlaneByName(PlaneItem->Plane.Name);
 	//spawn plane as preview
 	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
 

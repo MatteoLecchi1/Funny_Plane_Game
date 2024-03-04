@@ -15,8 +15,5 @@ class FUNNYPLANEGAME_API UPlaneSelectionListEntry : public UObject, public IUser
 
 public:
 	UPROPERTY(BlueprintReadWrite, Category = UI)
-	FName Key;
-
-	UPROPERTY(BlueprintReadWrite, Category = UI)
 	FPlaneDefinition Plane;
 };

@@ -23,8 +23,7 @@ public:
 	class UPlaneConfigurationSaveGame* SaveInstance;
 
 	UFUNCTION()
-	void SavePlaneByName(FName PlaneName);
-
+	void SavePlaneByName(FString PlaneName);
 	UFUNCTION()
 	void SaveWeaponByNameAndHardpoint(FString WeaponName, int HardpointIndex);
 
