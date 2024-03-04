@@ -49,3 +49,8 @@ void UFunnyPlaneGameInstance::SaveWeaponByNameAndHardpoint(FName WeaponName, int
 		UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
 	}
 }
+
+FSavedPlane& UFunnyPlaneGameInstance::GetCurrentPlane()
+{
+	return SaveInstance->SavedPlanes[SaveInstance->CurrentPlaneKey];
+}

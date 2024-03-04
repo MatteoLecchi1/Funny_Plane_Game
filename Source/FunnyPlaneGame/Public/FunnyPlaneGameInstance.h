@@ -28,6 +28,8 @@ public:
 	UFUNCTION()
 	void SaveWeaponByNameAndHardpoint(FName WeaponKey, int HardpointIndex);
 
+	FSavedPlane& GetCurrentPlane();
+
 	static UFunnyPlaneGameInstance* GetGameInstance(const UObject* WorldContextObject);
 
 protected:

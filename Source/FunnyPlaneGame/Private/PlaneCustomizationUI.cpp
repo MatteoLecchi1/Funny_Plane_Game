@@ -29,6 +29,11 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 		Item->Key = Key;
 		Item->Plane = PlaneDefinition;
 		PlaneList->AddItem(Item);
+
+		if (GameInstance->SaveInstance->CurrentPlaneKey == Key)
+		{
+			PlaneList->SetItemSelection(Item, true);
+		}
 	});
 }
 
@@ -53,6 +58,7 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 	//add all of the planes hardpoints to HUD
 	if (PlaneItem != nullptr)
 	{
+		bool bFirst = true;
 		for (auto HardpointDefinition : PlanePreviewInstance->hardpoints)
 		{
 			UHardpointSelectionListEntry* Item = NewObject<UHardpointSelectionListEntry>();
@@ -78,6 +84,12 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 			}
 			Item->Hardpoint.HardpointReferance = HardpointDefinition;
 			HardpointList->AddItem(Item);
+
+			if (bFirst)
+			{
+				HardpointList->SetItemSelection(Item, true);
+				bFirst = false;
+			}
 		};
 	}
 }
@@ -87,8 +99,12 @@ void UPlaneCustomizationUI::UpdateWeaponList()
 	WeaponList->ClearListItems();
 
 	auto HardpointItem = Cast<UHardpointSelectionListEntry>(HardpointList->GetSelectedItem());
+	int32 HardpointIndex = HardpointList->GetIndexForItem(HardpointItem);
 
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+
+	auto CurrentPlane = GameInstance->GetCurrentPlane();
+	FName SelectedWeapon = CurrentPlane.SavedHardpointWeapons.IsValidIndex(HardpointIndex) ? CurrentPlane.SavedHardpointWeapons[HardpointIndex] : FName();
 
 	GameInstance->WeaponsDataTable->ForeachRow<FHardpointWeaponDefinition>("Weapon", [&](const FName& Key, const FHardpointWeaponDefinition& WeaponDefinition) {
 
@@ -96,6 +112,11 @@ void UPlaneCustomizationUI::UpdateWeaponList()
 		Item->Key = Key;
 		Item->Weapon = WeaponDefinition;
 		WeaponList->AddItem(Item);
+
+		if (Key == SelectedWeapon)
+		{
+			WeaponList->SetItemSelection(Item, true);
+		}
 	});
 }
 
