@@ -21,13 +21,13 @@ void UFunnyPlaneGameInstance::Init()
 		SaveInstance = Cast<UPlaneConfigurationSaveGame>(UGameplayStatics::CreateSaveGameObject(UPlaneConfigurationSaveGame::StaticClass()));
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, SaveInstance->SavedPlane);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Red, SaveInstance->SavedPlane.ToString());
 	for (FString a : SaveInstance->SavedHardpointWeapons)
 		GEngine->AddOnScreenDebugMessage(-1, 1.0, FColor::Orange, a);
 }
 
 
-void UFunnyPlaneGameInstance::SavePlaneByName(FString PlaneName)
+void UFunnyPlaneGameInstance::SavePlaneByName(FName PlaneName)
 {
 	SaveInstance->SavedPlane = PlaneName;
 	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);

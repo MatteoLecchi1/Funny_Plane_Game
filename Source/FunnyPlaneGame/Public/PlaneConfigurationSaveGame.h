@@ -24,7 +24,8 @@ public:
     uint32 UserIndex;
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-    FString SavedPlane;
+    FName SavedPlane;
+
     UPROPERTY(VisibleAnywhere, Category = Basic)
     TArray<FString> SavedHardpointWeapons = {"","","","","","","",""};
 
