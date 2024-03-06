@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Hardpoint.h"
+#include "PlaneConfigurationSaveGame.h"
 #include "PlanePawn.generated.h"
 
 USTRUCT(BlueprintType)
@@ -152,7 +153,12 @@ public:
 	double ShieldRecoverPerSecond = 50.;
 
 	UPROPERTY()
-	TArray <UHardpoint*> hardpoints;
+	TArray <UHardpoint*> Hardpoints;
+
+	UPROPERTY()
+	FSavedPlane Configuration;
+
+	void ApplyConfiguration(FSavedPlane& SavedPlane);
 
 protected:
 	// Called when the game starts or when spawned

@@ -10,6 +10,7 @@
 #include "PlanePlayerHUD.h"
 #include "DeathScreen.h"
 #include "Hardpoint.h"
+#include "PlaneConfigurationSaveGame.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
@@ -28,9 +29,14 @@ void APlanePawn::BeginPlay()
 	CurrentHealth = MaxHealth;
 	CurrentShield = MaxShield;
 
-	GetComponents<UHardpoint>(hardpoints, true);
+	GetComponents<UHardpoint>(Hardpoints, true);
 
 	SetCanBeDamaged(true);
+
+	if (!Configuration.PlaneKey.IsNone())
+	{
+		ApplyConfiguration(Configuration);
+	}
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
@@ -203,6 +209,18 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	InputComponent->BindAction("Evade", IE_Released, this, &APlanePawn::ProcessEvadeReleased);
 	InputComponent->BindAction("LockOn", IE_Pressed, this, &APlanePawn::ProcessLockOnPressed);
 }
+
+// Configuration management
+void APlanePawn::ApplyConfiguration(FSavedPlane& SavedPlane)
+{
+	Configuration = SavedPlane;
+
+	for (int i = 0; i < SavedPlane.SavedHardpointWeapons.Num(); i++)
+	{
+		Hardpoints[i]->AssignWeapon(SavedPlane.SavedHardpointWeapons[i]);
+	}
+}
+
 //damage management
 float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& DamageEvent,class AController* EventInstigator,AActor* DamageCauser) 
 {
@@ -274,7 +292,7 @@ void APlanePawn::ProcessCameraY(float InCameraY)
 }
 void APlanePawn::ProcessFire1Pressed()
 {
-	for (UHardpoint* a : hardpoints) 
+	for (UHardpoint* a : Hardpoints) 
 	{
 		if (a->thisShootButton == ShootButton::DOWN)
 			a->IsShooting=true;
@@ -283,7 +301,7 @@ void APlanePawn::ProcessFire1Pressed()
 void APlanePawn::ProcessFire1Released()
 {
 	{
-		for (UHardpoint* a : hardpoints)
+		for (UHardpoint* a : Hardpoints)
 		{
 			if (a->thisShootButton == ShootButton::DOWN)
 				a->IsShooting = false;
@@ -292,7 +310,7 @@ void APlanePawn::ProcessFire1Released()
 }
 void APlanePawn::ProcessFire2Pressed()
 {
-	for (UHardpoint* a : hardpoints)
+	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::LEFT)
 			a->IsShooting = true;
@@ -300,7 +318,7 @@ void APlanePawn::ProcessFire2Pressed()
 }
 void APlanePawn::ProcessFire2Released()
 {
-	for (UHardpoint* a : hardpoints)
+	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::LEFT)
 			a->IsShooting = false;
@@ -308,7 +326,7 @@ void APlanePawn::ProcessFire2Released()
 }
 void APlanePawn::ProcessFire3Pressed()
 {
-	for (UHardpoint* a : hardpoints)
+	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::UP)
 			a->IsShooting = true;
@@ -316,7 +334,7 @@ void APlanePawn::ProcessFire3Pressed()
 }
 void APlanePawn::ProcessFire3Released()
 {
-	for (UHardpoint* a : hardpoints)
+	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::UP)
 			a->IsShooting = false;

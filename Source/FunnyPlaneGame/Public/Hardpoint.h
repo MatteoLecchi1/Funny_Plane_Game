@@ -45,7 +45,7 @@ public:
 	bool IsShooting = false;
 	UFUNCTION()
 	void ShootWeapon();
-	void AssignWeapon();
+	void AssignWeapon(const FName& WeaponKey);
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

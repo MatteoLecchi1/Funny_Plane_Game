@@ -14,6 +14,6 @@ class FUNNYPLANEGAME_API APlaneGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
 };

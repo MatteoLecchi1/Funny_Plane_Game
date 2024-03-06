@@ -3,6 +3,8 @@
 
 #include "Hardpoint.h"
 #include "HardpointWeapon.h"
+#include "FunnyPlaneGameInstance.h"
+#include "PlaneDefinition.h"
 
 // Sets default values for this component's properties
 UHardpoint::UHardpoint()
@@ -10,14 +12,11 @@ UHardpoint::UHardpoint()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
 // Called when the game starts
 void UHardpoint::BeginPlay()
 {
 	Super::BeginPlay(); 
-	AssignWeapon();
 }
-
 
 // Called every frame
 void UHardpoint::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -34,16 +33,18 @@ void UHardpoint::ShootWeapon()
 		WeaponInstance->Shoot();
 	}
 }
-void UHardpoint::AssignWeapon() 
+
+void UHardpoint::AssignWeapon(const FName& WeaponKey) 
 {
 	if (WeaponInstance)
 	{
 		WeaponInstance->DestroyComponent();
 	}
-	if(HardpointWeapon)
+
+	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+	if (auto Definition = GameInstance->WeaponsDataTable->FindRow<FHardpointWeaponDefinition>(WeaponKey, TEXT("Weapon")))
 	{
-		WeaponInstance = Cast<UHardpointWeapon>(GetOwner()->AddComponentByClass(HardpointWeapon, false, FTransform::Identity, false));
+		WeaponInstance = Cast<UHardpointWeapon>(GetOwner()->AddComponentByClass(Definition->HardpointWeaponReferance, false, FTransform::Identity, false));
 		WeaponInstance->AttachToComponent(this, FAttachmentTransformRules::SnapToTargetIncludingScale);
-		WeaponInstance->PlaneOwner = GetOwner();
 	}
 }
