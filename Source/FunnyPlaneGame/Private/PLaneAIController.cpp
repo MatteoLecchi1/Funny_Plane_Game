@@ -18,12 +18,11 @@ void APLaneAIController::Tick(float DeltaTime)
 	Component->SetSimulatePhysics(true);
 
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "IsFriendly", AllTargets);
-	//set steer
 	auto currentTarget = AllTargets[0];
-	FVector targetRelativePosition = currentTarget->GetActorLocation() - ControlledPlane->GetActorLocation();
-	targetRelativePosition.Normalize();
-	ControlledPlane->CurrentSteer = targetRelativePosition.Y;
-	//set roll
-	FVector targetRotation = currentTarget->GetActorRotation().Euler();
- 	ControlledPlane->CurrentRoll= targetRotation.X/360;
+
+	//set steer and pitch   
+	FVector targetRelativePosition = ControlledPlane->GetActorTransform().InverseTransformPosition(currentTarget->GetActorLocation());
+	FRotator targetRotation = targetRelativePosition.Rotation();
+	ControlledPlane->CurrentSteer = FMath::GetMappedRangeValueClamped(FVector2D(-30., 30), FVector2D(1., -1.), targetRotation.Yaw);
+	ControlledPlane->CurrentPitch = FMath::GetMappedRangeValueClamped(FVector2D(-30., 30), FVector2D(-1., 1.), targetRotation.Pitch);
 }
