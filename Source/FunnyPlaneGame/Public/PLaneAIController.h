@@ -16,6 +16,8 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 
 	UPROPERTY()
 	class APlanePawn* ControlledPlane;
+	UPROPERTY()
+	TArray<AActor*> AllTargets;
 
 protected:
 	// Called when the game starts or when spawned
