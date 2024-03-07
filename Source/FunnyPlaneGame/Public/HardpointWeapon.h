@@ -18,9 +18,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> projectile;
 
-	UPROPERTY(BlueprintReadWrite)
-	AActor* PlaneOwner;
-
 	UPROPERTY(EditAnywhere)
 	float DamageOverride = -1;
 	UPROPERTY(EditAnywhere)

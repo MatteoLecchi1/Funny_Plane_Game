@@ -54,12 +54,16 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 
 	//spawn plane as preview
 	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
+	if (auto CurrentPlane = GameInstance->SaveInstance->GetCurrentPlane())
+	{
+		PlanePreviewInstance->ApplyConfiguration(*CurrentPlane);
+	}
 
 	//add all of the planes hardpoints to HUD
 	if (PlaneItem != nullptr)
 	{
 		bool bFirst = true;
-		for (auto HardpointDefinition : PlanePreviewInstance->hardpoints)
+		for (auto HardpointDefinition : PlanePreviewInstance->Hardpoints)
 		{
 			UHardpointSelectionListEntry* Item = NewObject<UHardpointSelectionListEntry>();
 			Item->Hardpoint.Name = HardpointDefinition->GetAttachSocketName().ToString();
@@ -127,13 +131,14 @@ void UPlaneCustomizationUI::ChangeWeapon()
 
 	if(HardpointItem && WeaponItem)
 	{
-		//add weapon to preview
-		HardpointItem->Hardpoint.HardpointReferance->HardpointWeapon = WeaponItem->Weapon.HardpointWeaponReferance;
-		HardpointItem->Hardpoint.HardpointReferance->AssignWeapon();
-
 		// save the weapon and its index in the array
 		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 		GameInstance->SaveWeaponByNameAndHardpoint(WeaponItem->Key,HardpointList->GetIndexForItem(HardpointItem));
+
+		if (auto CurrentPlane = GameInstance->SaveInstance->GetCurrentPlane())
+		{
+			PlanePreviewInstance->ApplyConfiguration(*CurrentPlane);
+		}
 	}
 }
 

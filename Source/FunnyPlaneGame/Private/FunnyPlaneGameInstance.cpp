@@ -37,15 +37,14 @@ void UFunnyPlaneGameInstance::SavePlaneByName(FName PlaneKey)
 
 void UFunnyPlaneGameInstance::SaveWeaponByNameAndHardpoint(FName WeaponName, int HardpointIndex)
 {
-	if (SaveInstance->SavedPlanes.Contains(SaveInstance->CurrentPlaneKey))
+	if (auto CurrentPlane = SaveInstance->GetCurrentPlane())
 	{
-		auto& CurrentPlane = SaveInstance->SavedPlanes[SaveInstance->CurrentPlaneKey];
 		// Resize SavedHardpointWeapons array if HardpointIndex is not present
-		if (!CurrentPlane.SavedHardpointWeapons.IsValidIndex(HardpointIndex))
+		if (!CurrentPlane->SavedHardpointWeapons.IsValidIndex(HardpointIndex))
 		{
-			CurrentPlane.SavedHardpointWeapons.SetNum(HardpointIndex + 1);
+			CurrentPlane->SavedHardpointWeapons.SetNum(HardpointIndex + 1);
 		}
-		CurrentPlane.SavedHardpointWeapons[HardpointIndex] = WeaponName;
+		CurrentPlane->SavedHardpointWeapons[HardpointIndex] = WeaponName;
 		UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
 	}
 }

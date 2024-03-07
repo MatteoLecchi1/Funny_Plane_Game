@@ -35,18 +35,19 @@ void UHardpointWeapon::Shoot_Implementation()
 		SpawnTransform = SpawnTransform * GetComponentTransform();
 
 		AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, SpawnTransform.GetLocation(), SpawnTransform.Rotator());
-		if (ProjectileInstance->IsValidLowLevel() && PlaneOwner) {
+		if (ProjectileInstance->IsValidLowLevel()) {
 
-			if (PlaneOwner->ActorHasTag("IsFriendly")) {
+			if (GetOwner()->ActorHasTag("IsFriendly")) {
 				ProjectileInstance->Tags.Add(FName("IsFriendly"));
 			}
-			else if (PlaneOwner->ActorHasTag("IsEnemy")) {
+			else if (GetOwner()->ActorHasTag("IsEnemy")) {
 				ProjectileInstance->Tags.Add(FName("IsEnemy"));
 			}
 
-			Cast<APawn>(PlaneOwner)->MoveIgnoreActorAdd(ProjectileInstance);
+			auto PlanePawn = Cast<APawn>(GetOwner());
+			PlanePawn->MoveIgnoreActorAdd(ProjectileInstance);
 
-			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(PlaneOwner->GetVelocity() + SpawnTransform.GetUnitAxis(EAxis::X) * fireSpeed);
+			ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(GetOwner()->GetVelocity() + SpawnTransform.GetUnitAxis(EAxis::X) * fireSpeed);
 
 			if (DamageOverride >= 0) {
 				ProjectileInstance->DamageDealt = DamageOverride;

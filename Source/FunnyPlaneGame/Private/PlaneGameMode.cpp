@@ -15,3 +15,19 @@ UClass* APlaneGameMode::GetDefaultPawnClassForController_Implementation(AControl
 
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
+
+APawn* APlaneGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform)
+{
+	auto Pawn = Super::SpawnDefaultPawnAtTransform_Implementation(NewPlayer, SpawnTransform);
+
+	if (auto PlanePawn = Cast <APlanePawn>(Pawn))
+	{
+		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+		if (auto CurrentPlane = GameInstance->SaveInstance->GetCurrentPlane())
+		{
+			PlanePawn->Configuration = *CurrentPlane;
+		}
+	}
+
+	return Pawn;
+}

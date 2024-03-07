@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
-#include "PlanePawn.h"
 #include "PlaneConfigurationSaveGame.generated.h"
 
 USTRUCT(BlueprintType)
@@ -32,4 +31,5 @@ public:
     UPROPERTY(VisibleAnywhere, Category = Basic)
 	TMap<FName,FSavedPlane> SavedPlanes;
 
+	FSavedPlane* GetCurrentPlane();
 };
