@@ -14,6 +14,13 @@ class FUNNYPLANEGAME_API APlaneGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY()
+	TArray<AActor*> FriendlyActors;
+	UPROPERTY()
+	TArray<AActor*> EnemyActors;
+protected:
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+	void AddActorToArrays(AActor* Actor);
 };

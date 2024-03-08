@@ -18,6 +18,12 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	class APlanePawn* ControlledPlane;
 	UPROPERTY()
 	TArray<AActor*> AllTargets;
+	UPROPERTY(EditAnywhere)
+	float PitchVariation = 30;
+	UPROPERTY(EditAnywhere)
+	float RollVariation = 30;
+	UPROPERTY(EditAnywhere)
+	float YawVariation = 30;
 
 protected:
 	// Called when the game starts or when spawned

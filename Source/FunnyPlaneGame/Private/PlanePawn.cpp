@@ -41,6 +41,7 @@ void APlanePawn::BeginPlay()
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
+
 }
 
 // Called every frame
