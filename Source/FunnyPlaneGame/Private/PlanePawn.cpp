@@ -256,6 +256,7 @@ void APlanePawn::OnPlayerDeath()
 	PC->bShowMouseCursor = true;
 	PC->bEnableClickEvents = true;
 	PC->bEnableMouseOverEvents = true;
+	Destroy();
 }
 void APlanePawn::OnShieldBreak() 
 {

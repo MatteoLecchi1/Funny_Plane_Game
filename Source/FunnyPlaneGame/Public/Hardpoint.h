@@ -45,6 +45,7 @@ public:
 	bool IsShooting = false;
 	UFUNCTION()
 	void ShootWeapon();
+	UFUNCTION()
 	void AssignWeapon(const FName& WeaponKey);
 protected:
 	// Called when the game starts

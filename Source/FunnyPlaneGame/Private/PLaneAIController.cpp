@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PlaneGameMode.h"
+#include "Hardpoint.h"
 
 void APLaneAIController::BeginPlay() 
 {
@@ -38,14 +39,31 @@ void APLaneAIController::Tick(float DeltaTime)
 			}
 			else
 			{
-				//set pitch, roll and yaw
 				FVector targetRelativePosition = ControlledPlane->GetActorTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
-				FRotator targetRelativeRotation = targetRelativePosition.Rotation();
-				FRotator targetRotation = ControlledPlane->GetActorRotation();
-				ControlledPlane->CurrentRoll = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(1., -1.), targetRelativeRotation.Yaw);
-				ControlledPlane->CurrentSteer = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(1., -1.), targetRelativeRotation.Yaw);
-				ControlledPlane->CurrentPitch = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRelativeRotation.Pitch);
 
+				auto AlignmentFactor = abs(FMath::Acos(FVector::DotProduct(ControlledPlane->GetActorForwardVector(), CurrentTarget->GetActorForwardVector())) / UE_HALF_PI); 
+
+				FRotator targetRotation = targetRelativePosition.Rotation();
+
+				auto DeltaRoll = FMath::FindDeltaAngleDegrees(ControlledPlane->GetActorRotation().Roll, CurrentTarget->GetActorRotation().Roll);
+				auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
+				auto RollControl = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(-1., 1.), DeltaRoll);
+				auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
+
+				ControlledPlane->CurrentSteer = FMath::Lerp(-YawControl, 0.f, AlignmentFactor);
+				ControlledPlane->CurrentRoll = FMath::Lerp(RollControl, YawControl, AlignmentFactor);
+				ControlledPlane->CurrentPitch = PitchControl;
+
+				FVector targetRelativeDirection = targetRelativePosition.GetSafeNormal();
+				auto AmingFactor = FMath::Min(1., FMath::Acos(targetRelativeDirection.X));
+
+				if (AmingFactor < AlignmentThreshold)
+				{
+					for(auto H : ControlledPlane->Hardpoints)
+					{
+						H->ShootWeapon();
+					}
+				}
 			}
 		}
 	}

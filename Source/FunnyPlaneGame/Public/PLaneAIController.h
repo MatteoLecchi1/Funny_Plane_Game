@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 {
 	GENERATED_BODY()
@@ -20,12 +20,15 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	TArray<AActor*> AllTargets;
 	UPROPERTY()
 	AActor* CurrentTarget;
+
 	UPROPERTY(EditAnywhere)
 	float PitchVariation = 30;
 	UPROPERTY(EditAnywhere)
 	float RollVariation = 30;
 	UPROPERTY(EditAnywhere)
 	float YawVariation = 30;
+	UPROPERTY(EditAnywhere)
+	float AlignmentThreshold = 0.3;
 
 protected:
 	// Called when the game starts or when spawned
