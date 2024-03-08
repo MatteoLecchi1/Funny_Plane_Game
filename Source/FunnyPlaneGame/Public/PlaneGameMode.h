@@ -19,8 +19,8 @@ public:
 	TArray<AActor*> FriendlyActors;
 	UPROPERTY()
 	TArray<AActor*> EnemyActors;
+	void AddActorToArrays(AActor* Actor);
 protected:
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
-	void AddActorToArrays(AActor* Actor);
 };

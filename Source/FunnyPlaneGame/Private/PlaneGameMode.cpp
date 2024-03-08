@@ -35,10 +35,10 @@ void APlaneGameMode::AddActorToArrays(AActor* Actor)
 {
 	if (Actor->ActorHasTag("IsFriendly")) 
 	{
-		EnemyActors.Add(Actor);
+		FriendlyActors.Add(Actor);
 	}
 	else if (Actor->ActorHasTag("IsEnemy"))
 	{
-		FriendlyActors.Add(Actor);
+		EnemyActors.Add(Actor);
 	}
 }

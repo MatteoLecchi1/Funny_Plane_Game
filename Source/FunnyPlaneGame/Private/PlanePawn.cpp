@@ -11,6 +11,7 @@
 #include "DeathScreen.h"
 #include "Hardpoint.h"
 #include "PlaneConfigurationSaveGame.h"
+#include "PlaneGameMode.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
@@ -41,7 +42,7 @@ void APlanePawn::BeginPlay()
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
-
+	Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->AddActorToArrays(this);
 }
 
 // Called every frame
@@ -162,12 +163,13 @@ void APlanePawn::Tick(float DeltaTime)
 			else
 			{
 				//reset camera rotation if enoght time has passed
-				TimeSinceLastCameraInput += DeltaTime;
 				if (TimeSinceLastCameraInput > TimeCameraToReset) {
 					TargetCameraX = 0.f;
 					TargetCameraY = 0.f;
 				}
 			}
+
+			TimeSinceLastCameraInput += DeltaTime;
 
 			TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
 			CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));

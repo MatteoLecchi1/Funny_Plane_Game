@@ -18,6 +18,8 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	class APlanePawn* ControlledPlane;
 	UPROPERTY()
 	TArray<AActor*> AllTargets;
+	UPROPERTY()
+	AActor* CurrentTarget;
 	UPROPERTY(EditAnywhere)
 	float PitchVariation = 30;
 	UPROPERTY(EditAnywhere)
