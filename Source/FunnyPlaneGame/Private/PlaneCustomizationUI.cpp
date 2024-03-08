@@ -109,17 +109,21 @@ void UPlaneCustomizationUI::UpdateWeaponList()
 
 	auto CurrentPlane = GameInstance->GetCurrentPlane();
 	FName SelectedWeapon = CurrentPlane.SavedHardpointWeapons.IsValidIndex(HardpointIndex) ? CurrentPlane.SavedHardpointWeapons[HardpointIndex] : FName();
+	auto HardpointTier = PlanePreviewInstance->Hardpoints.IsValidIndex(HardpointIndex) ? PlanePreviewInstance->Hardpoints[HardpointIndex]->thisHardpointTier : HardpointTier::TIER0;
 
 	GameInstance->WeaponsDataTable->ForeachRow<FHardpointWeaponDefinition>("Weapon", [&](const FName& Key, const FHardpointWeaponDefinition& WeaponDefinition) {
 
-		UWeaponSelectionListElement* Item = NewObject<UWeaponSelectionListElement>();
-		Item->Key = Key;
-		Item->Weapon = WeaponDefinition;
-		WeaponList->AddItem(Item);
-
-		if (Key == SelectedWeapon)
+		if (WeaponDefinition.Tier <= HardpointTier)
 		{
-			WeaponList->SetItemSelection(Item, true);
+			UWeaponSelectionListElement* Item = NewObject<UWeaponSelectionListElement>();
+			Item->Key = Key;
+			Item->Weapon = WeaponDefinition;
+			WeaponList->AddItem(Item);
+
+			if (Key == SelectedWeapon)
+			{
+				WeaponList->SetItemSelection(Item, true);
+			}
 		}
 	});
 }
