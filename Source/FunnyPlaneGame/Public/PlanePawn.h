@@ -96,6 +96,7 @@ public:
 	bool IsAOAOn = false;
 	UPROPERTY(EditAnywhere, Category = "Movement")
 	double AOARotationMultiplier = 1;
+
 	//Camera
 	UPROPERTY()
 	class USpringArmComponent* CameraArmComponet;
@@ -156,6 +157,9 @@ public:
 	TArray <UHardpoint*> Hardpoints;
 
 	UPROPERTY()
+	USceneComponent* LockedEnemyArrowComponet;
+
+	UPROPERTY()
 	FSavedPlane Configuration;
 
 	void ApplyConfiguration(FSavedPlane& SavedPlane);
@@ -179,6 +183,7 @@ protected:
 	void ProcessEvadePressed();
 	void ProcessEvadeReleased();
 	void ProcessLockOnPressed();
+	void ProcessLockOnReleased();
 	void RechargeShield(float DeltaTime);
 	void OnShieldBreak();
 	void OnPlayerDeath();

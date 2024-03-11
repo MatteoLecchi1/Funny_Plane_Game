@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS()
 class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 {
 	GENERATED_BODY()

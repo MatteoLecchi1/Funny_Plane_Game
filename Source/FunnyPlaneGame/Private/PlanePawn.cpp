@@ -27,6 +27,7 @@ void APlanePawn::BeginPlay()
 	Super::BeginPlay();
 
 	CameraArmComponet = Cast<USpringArmComponent>(GetComponentByClass<USpringArmComponent>());
+	LockedEnemyArrowComponet = Cast<USceneComponent>(GetComponentsByTag(USceneComponent::StaticClass(), "LockedArrow")[0]);
 
 	CurrentHealth = MaxHealth;
 	CurrentShield = MaxShield;
@@ -42,6 +43,9 @@ void APlanePawn::BeginPlay()
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
+
+	LockedEnemyArrowComponet->SetVisibility(false, true);
+
 	Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->AddActorToArrays(this);
 }
 
@@ -70,10 +74,21 @@ void APlanePawn::Tick(float DeltaTime)
 			Force += AppliedForce;
 			Torque += FVector::CrossProduct(WingPosition - CenterOfMass, AppliedForce);
 		};
-
-		double WingPitchAngle = PhysicsParams.WingControlAngles.Pitch * -CurrentPitch;
-		double WingRollAngle = PhysicsParams.WingControlAngles.Roll * CurrentRoll;
-		double RudderAngle = PhysicsParams.WingControlAngles.Yaw * CurrentSteer;
+		double WingPitchAngle;
+		double WingRollAngle;
+		double RudderAngle;
+		if (!IsAOAOn) 
+		{
+			WingPitchAngle = PhysicsParams.WingControlAngles.Pitch * -CurrentPitch;
+			WingRollAngle = PhysicsParams.WingControlAngles.Roll * CurrentRoll;
+			RudderAngle = PhysicsParams.WingControlAngles.Yaw * CurrentSteer;
+		}
+		else
+		{
+			WingPitchAngle = PhysicsParams.WingControlAngles.Pitch * -CurrentPitch * AOARotationMultiplier;
+			WingRollAngle = PhysicsParams.WingControlAngles.Roll * CurrentRoll * AOARotationMultiplier;
+			RudderAngle = PhysicsParams.WingControlAngles.Yaw * CurrentSteer * AOARotationMultiplier;
+		}
 
 		FVector LeftWingDirection = FRotator(WingRollAngle, 0., 0.).RotateVector(FVector::UpVector);
 		FVector RightWingDirection = FRotator(-WingRollAngle, 0., 0.).RotateVector(FVector::UpVector);
@@ -148,6 +163,15 @@ void APlanePawn::Tick(float DeltaTime)
 	}
 	else
 	{
+		if (LockedOnActor->IsValidLowLevel()&& LockedEnemyArrowComponet->IsVisible())
+		{
+			LockedEnemyArrowComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
+		}
+		else
+		{
+			LockedEnemyArrowComponet->SetVisibility(false, true);
+		}
+		
 		if (!IsAOAOn)
 		{
 			if (CurrenCameraX != 0.f || CurrenCameraY != 0.f) {
@@ -212,6 +236,7 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	InputComponent->BindAction("Evade", IE_Pressed, this, &APlanePawn::ProcessEvadePressed);
 	InputComponent->BindAction("Evade", IE_Released, this, &APlanePawn::ProcessEvadeReleased);
 	InputComponent->BindAction("LockOn", IE_Pressed, this, &APlanePawn::ProcessLockOnPressed);
+	InputComponent->BindAction("LockOn", IE_Released, this, &APlanePawn::ProcessLockOnReleased);
 }
 
 // Configuration management
@@ -252,10 +277,16 @@ float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& Damag
 void APlanePawn::OnPlayerDeath()
 {
 	auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PC->SetPause(true);
-	PC->bShowMouseCursor = true;
-	PC->bEnableClickEvents = true;
-	PC->bEnableMouseOverEvents = true;
+
+	if (this == PC->GetPawn()) {
+		
+		PC->SetPause(true);
+		PC->bShowMouseCursor = true;
+		PC->bEnableClickEvents = true;
+		PC->bEnableMouseOverEvents = true;
+	}
+
+	Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->RemoveActorFromArrays(this);
 	Destroy();
 }
 void APlanePawn::OnShieldBreak() 
@@ -356,9 +387,9 @@ void APlanePawn::ProcessEvadeReleased()
 }
 void APlanePawn::ProcessLockOnPressed()
 {
-	if (!IsCameraLockedOn) 
-	{
-		UGameplayStatics::GetAllActorsWithTag(GetWorld(), "IsEnemy", AllEnemiesInMap);
+		ClosestEnemyInMapDistace = std::numeric_limits<float>::max();
+
+		AllEnemiesInMap = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->EnemyActors;
 		for (AActor* a : AllEnemiesInMap)
 		{
 			if (ClosestEnemyInMapDistace < (a->GetActorLocation() - GetActorLocation()).Length())
@@ -367,7 +398,10 @@ void APlanePawn::ProcessLockOnPressed()
 		}
 		LockedOnActor = ClosestEnemyInMap;
 		IsCameraLockedOn = true;
-	}
-	else
-		IsCameraLockedOn = false;
+		LockedEnemyArrowComponet->SetVisibility(false, true);
+}
+void APlanePawn::ProcessLockOnReleased() 
+{
+	IsCameraLockedOn = false;
+	LockedEnemyArrowComponet->SetVisibility(true, true);
 }

@@ -31,6 +31,7 @@ APawn* APlaneGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* N
 
 	return Pawn;
 }
+
 void APlaneGameMode::AddActorToArrays(AActor* Actor) 
 {
 	if (Actor->ActorHasTag("IsFriendly")) 
@@ -40,5 +41,16 @@ void APlaneGameMode::AddActorToArrays(AActor* Actor)
 	else if (Actor->ActorHasTag("IsEnemy"))
 	{
 		EnemyActors.Add(Actor);
+	}
+}
+void APlaneGameMode::RemoveActorFromArrays(AActor* Actor)
+{
+	if (Actor->ActorHasTag("IsFriendly"))
+	{
+		FriendlyActors.Remove(Actor);
+	}
+	else if (Actor->ActorHasTag("IsEnemy"))
+	{
+		EnemyActors.Remove(Actor);
 	}
 }
