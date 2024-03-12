@@ -46,7 +46,9 @@ void APlanePawn::BeginPlay()
 
 	LockedEnemyArrowComponet->SetVisibility(false, true);
 
-	Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->AddActorToArrays(this);
+	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	if(gamemode)
+		gamemode->AddActorToArrays(this);
 }
 
 // Called every frame
@@ -286,7 +288,9 @@ void APlanePawn::OnPlayerDeath()
 		PC->bEnableMouseOverEvents = true;
 	}
 
-	Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->RemoveActorFromArrays(this);
+	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	if (gamemode)
+		gamemode->AddActorToArrays(this);
 	Destroy();
 }
 void APlanePawn::OnShieldBreak() 
