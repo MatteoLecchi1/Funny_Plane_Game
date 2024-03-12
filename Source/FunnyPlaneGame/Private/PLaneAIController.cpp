@@ -21,13 +21,23 @@ void APLaneAIController::Tick(float DeltaTime)
 		ControlledPlane = Cast<APlanePawn>(GetPawn());
 		auto Component = Cast<UPrimitiveComponent>(ControlledPlane->GetRootComponent());
 		Component->SetSimulatePhysics(true);
+
+		auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+
 		if (ControlledPlane->ActorHasTag("IsFriendly"))
 		{
-			AllTargets = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->EnemyActors;
+			AllTargets = gamemode->EnemyActors;
 		}
 		else if (ControlledPlane->ActorHasTag("IsEnemy"))
 		{
-			AllTargets = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->FriendlyActors;
+			if(gamemode->PlayerActor) 
+			{
+				AllTargets.Add(gamemode->PlayerActor);
+			}
+			else
+			{
+				AllTargets = gamemode->FriendlyActors;
+			}
 		}
 
 		if (AllTargets.Num()>0)

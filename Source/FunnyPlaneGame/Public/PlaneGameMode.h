@@ -19,6 +19,9 @@ public:
 	TArray<AActor*> FriendlyActors;
 	UPROPERTY()
 	TArray<AActor*> EnemyActors;
+	UPROPERTY()
+	AActor* PlayerActor;
+
 	void AddActorToArrays(AActor* Actor);
 	void RemoveActorFromArrays(AActor* Actor);
 

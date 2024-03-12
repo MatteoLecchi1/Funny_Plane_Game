@@ -45,10 +45,20 @@ void APlanePawn::BeginPlay()
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
 
 	LockedEnemyArrowComponet->SetVisibility(false, true);
-
+	
+	//add this actor to gamemode lists
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
-	if(gamemode)
-		gamemode->AddActorToArrays(this);
+	if (gamemode) 
+	{
+		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+		{
+			gamemode->PlayerActor = this;
+		}
+		else
+		{
+			gamemode->AddActorToArrays(this);
+		}
+	}
 }
 
 // Called every frame
@@ -289,8 +299,18 @@ void APlanePawn::OnPlayerDeath()
 	}
 
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	//remove this actor from gamemode lists
 	if (gamemode)
-		gamemode->AddActorToArrays(this);
+	{
+		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+		{
+			gamemode->PlayerActor = nullptr;
+		}
+		else
+		{
+			gamemode->RemoveActorFromArrays(this);
+		}
+	}
 	Destroy();
 }
 void APlanePawn::OnShieldBreak() 
