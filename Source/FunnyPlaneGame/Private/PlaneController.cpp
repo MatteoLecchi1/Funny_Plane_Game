@@ -12,6 +12,7 @@ void APlaneController::BeginPlay()
 	Super::BeginPlay();
 	PlayerControlledPlane = Cast<APlanePawn>(this->GetPawn());
 	Cast<UStaticMeshComponent>(PlayerControlledPlane->GetRootComponent())->SetSimulatePhysics(true);
+
 	if (widgetHUDClass)
 	{
 		widgetHUDInstance = CreateWidget<UPlanePlayerHUD>(this, widgetHUDClass);

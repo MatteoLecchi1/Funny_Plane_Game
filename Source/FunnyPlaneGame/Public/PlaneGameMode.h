@@ -22,6 +22,11 @@ public:
 	UPROPERTY()
 	AActor* PlayerActor;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> EnemyMarkerWidget;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> FriendlyMarkerWidget;
+
 	void AddActorToArrays(AActor* Actor);
 	void RemoveActorFromArrays(AActor* Actor);
 
