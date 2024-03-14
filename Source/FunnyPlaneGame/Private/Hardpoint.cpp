@@ -16,6 +16,7 @@ UHardpoint::UHardpoint()
 void UHardpoint::BeginPlay()
 {
 	Super::BeginPlay(); 
+	AssignWeapon(DefaultHardpointWeapon);
 }
 
 // Called every frame

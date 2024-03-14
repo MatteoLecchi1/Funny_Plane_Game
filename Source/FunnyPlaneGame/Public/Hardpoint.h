@@ -32,7 +32,7 @@ public:
 	UHardpoint();
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UHardpointWeapon> HardpointWeapon;
+	FName DefaultHardpointWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	ShootButton thisShootButton = ShootButton::RIGHT;
