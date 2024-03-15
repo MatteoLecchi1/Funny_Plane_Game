@@ -61,7 +61,7 @@ void ATurretAIController::Tick(float DeltaTime)
 				FVector targetRelativeDirection = targetRelativePosition.GetSafeNormal();
 				auto AmingFactor = FMath::Min(1., FMath::Acos(targetRelativeDirection.X));
 
-				if (AmingFactor < AlignmentThreshold)
+				if (AmingFactor < AlignmentThreshold && targetRelativePosition.Length() < TurretRange)
 				{
 					for (auto H : ControlledTurret->Hardpoints)
 					{

@@ -2,6 +2,8 @@
 
 
 #include "TurretPawn.h"
+#include "PlaneGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATurretPawn::ATurretPawn()
@@ -19,6 +21,20 @@ void ATurretPawn::BeginPlay()
 
 	turretBase = Cast<USceneComponent>(GetComponentsByTag(USceneComponent::StaticClass(), "turretBase")[0]);
 	turretGimball = Cast<USceneComponent>(GetComponentsByTag(USceneComponent::StaticClass(), "turretGimball")[0]);
+
+	//add this actor to gamemode lists
+	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	if (gamemode)
+	{
+		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+		{
+			gamemode->PlayerActor = this;
+		}
+		else
+		{
+			gamemode->AddActorToArrays(this);
+		}
+	}
 }
 
 // Called every frame
