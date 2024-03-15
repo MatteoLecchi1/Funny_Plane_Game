@@ -25,7 +25,9 @@ void ATurretPawn::BeginPlay()
 void ATurretPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	turretBase->AddLocalRotation(FRotator(0, RotationSpeed * CurrentYaw * DeltaTime, 0));
 
+	turretGimball->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime, 0, 0));
 }
 
 // Called to bind functionality to input

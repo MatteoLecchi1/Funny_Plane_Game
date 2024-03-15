@@ -23,6 +23,13 @@ public:
 	USceneComponent* turretBase;
 	UPROPERTY()
 	USceneComponent* turretGimball;
+	
+	UPROPERTY()
+	double CurrentYaw = 0;
+	UPROPERTY()
+	double CurrentPitch = 0;
+	UPROPERTY(EditAnywhere)
+	double RotationSpeed = 1;
 
 protected:
 	// Called when the game starts or when spawned
