@@ -30,6 +30,16 @@ public:
 	double CurrentPitch = 0;
 	UPROPERTY(EditAnywhere)
 	double RotationSpeed = 1;
+	
+	//Combat
+		UPROPERTY(EditAnywhere)
+	double MaxHealth = 100.;
+	UPROPERTY()
+	double CurrentHealth = 1.;
+	UPROPERTY(EditAnywhere)
+	double MaxShield = 100.;
+	UPROPERTY()
+	double CurrentShield = 1.;
 
 protected:
 	// Called when the game starts or when spawned
