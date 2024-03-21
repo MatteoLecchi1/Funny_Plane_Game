@@ -32,18 +32,22 @@ public:
 	double RotationSpeed = 1;
 	
 	//Combat
-		UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	double MaxHealth = 100.;
 	UPROPERTY()
 	double CurrentHealth = 1.;
-	UPROPERTY(EditAnywhere)
-	double MaxShield = 100.;
-	UPROPERTY()
-	double CurrentShield = 1.;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual float TakeDamage
+	(
+		float DamageAmount,
+		struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator,
+		AActor* DamageCauser
+	)override;
 
 public:	
 	// Called every frame

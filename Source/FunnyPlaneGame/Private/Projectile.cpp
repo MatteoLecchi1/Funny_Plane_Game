@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
+#include "PlaneGameMode.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -25,7 +26,6 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
-	CombatManager = Cast<ACombatManager>(UGameplayStatics::GetActorOfClass(GetWorld(),ACombatManager::StaticClass()));
 	this->SetLifeSpan(ProjectileLifespan);
 }
 
@@ -33,7 +33,6 @@ void AProjectile::BeginPlay()
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -74,21 +73,22 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 }
 void AProjectile::DestroySelf()
 {
-	if (CombatManager) {
-		if (ActorHasTag("IsFriendly")) {
-			//this array contains all "FriendlyActors" and self
-			TArray<AActor*> TemporaryArray = CombatManager->FriendlyActors;
-			TemporaryArray.Add(this);
-			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
-		}
-		else if (ActorHasTag("IsEnemy")) {
-			TArray<AActor*> TemporaryArray = CombatManager->EnemyActors;
-			TemporaryArray.Add(this);
-			UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
-		}
-		if (ExplosionEffect) {
-			UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation(), FRotator(0.f),FVector(AreaDamageRadius));
-		}
+	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	if (ActorHasTag("IsFriendly")) {
+		//this array contains all "FriendlyActors", the players pawn and self
+		TArray<AActor*> TemporaryArray = gamemode->FriendlyActors;
+		TemporaryArray.Add(this);
+		TemporaryArray.Add(gamemode->PlayerActor);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
+	}
+	else if (ActorHasTag("IsEnemy")) {
+		//this array contains all "EnemyActors" and self
+		TArray<AActor*> TemporaryArray = gamemode->EnemyActors;
+		TemporaryArray.Add(this);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
+	}
+	if (ExplosionEffect) {
+		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation(), FRotator(0.f),FVector(AreaDamageRadius));
 	}
 	Destroy();
 }

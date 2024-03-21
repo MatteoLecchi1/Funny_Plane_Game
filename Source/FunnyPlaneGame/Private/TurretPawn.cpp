@@ -17,6 +17,9 @@ ATurretPawn::ATurretPawn()
 void ATurretPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CurrentHealth = MaxHealth;
+
 	GetComponents<UHardpoint>(Hardpoints, true);
 
 	turretBase = Cast<USceneComponent>(GetComponentsByTag(USceneComponent::StaticClass(), "turretBase")[0]);
@@ -51,5 +54,15 @@ void ATurretPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+float ATurretPawn::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	CurrentHealth -= DamageAmount;
+
+	//if turret health is less than 0
+	if (CurrentHealth <= 0)
+		Destroy();
+
+	return DamageAmount;
 }
 

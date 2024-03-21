@@ -26,11 +26,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	UProjectileMovementComponent* ProjectileComponent;
 
-	UPROPERTY()
-	ACombatManager* CombatManager;
-
 	UPROPERTY(EditAnywhere)
-	float ProjectileLifespan=10; 
+	float ProjectileLifespan=5; 
 	UPROPERTY(EditAnywhere)
 	float DamageDealt = 10;
 	UPROPERTY(EditAnywhere)
