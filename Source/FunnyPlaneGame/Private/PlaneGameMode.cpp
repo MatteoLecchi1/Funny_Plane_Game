@@ -14,7 +14,6 @@ UClass* APlaneGameMode::GetDefaultPawnClassForController_Implementation(AControl
 	{
 		return Row->PlaneReferance;
 	}
-
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 

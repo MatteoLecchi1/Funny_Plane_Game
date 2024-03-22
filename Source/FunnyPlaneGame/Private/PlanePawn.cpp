@@ -66,10 +66,182 @@ void APlanePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	ManageMovement(DeltaTime);
+	ManageCamera(DeltaTime);
+	RechargeShield(DeltaTime);
+}
+
+// Called to bind functionality to input
+void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	InputComponent->BindAxis("Steer", this, &APlanePawn::ProcessSteer);
+	InputComponent->BindAxis("Thrust", this, &APlanePawn::ProcessThrust);
+	InputComponent->BindAxis("Pitch", this, &APlanePawn::ProcessPitch);
+	InputComponent->BindAxis("Roll", this, &APlanePawn::ProcessRoll);
+	InputComponent->BindAxis("CameraX", this, &APlanePawn::ProcessCameraX);
+	InputComponent->BindAxis("CameraY", this, &APlanePawn::ProcessCameraY);
+	InputComponent->BindAction("Fire1", IE_Pressed, this, &APlanePawn::ProcessFire1Pressed);
+	InputComponent->BindAction("Fire1", IE_Released, this, &APlanePawn::ProcessFire1Released);
+	InputComponent->BindAction("Fire2", IE_Pressed, this, &APlanePawn::ProcessFire2Pressed);
+	InputComponent->BindAction("Fire2", IE_Released, this, &APlanePawn::ProcessFire2Released);
+	InputComponent->BindAction("Fire3", IE_Pressed, this, &APlanePawn::ProcessFire3Pressed);
+	InputComponent->BindAction("Fire3", IE_Released, this, &APlanePawn::ProcessFire3Released);
+	InputComponent->BindAction("Evade", IE_Pressed, this, &APlanePawn::ProcessEvadePressed);
+	InputComponent->BindAction("Evade", IE_Released, this, &APlanePawn::ProcessEvadeReleased);
+	InputComponent->BindAction("LockOn", IE_Pressed, this, &APlanePawn::ProcessLockOnPressed);
+	InputComponent->BindAction("LockOn", IE_Released, this, &APlanePawn::ProcessLockOnReleased);
+}
+// Configuration management
+void APlanePawn::ApplyConfiguration(FSavedPlane& SavedPlane)
+{
+	Configuration = SavedPlane;
+
+	for (int i = 0; i < SavedPlane.SavedHardpointWeapons.Num(); i++)
+	{
+		Hardpoints[i]->AssignWeapon(SavedPlane.SavedHardpointWeapons[i]);
+	}
+}
+
+//damage management
+float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& DamageEvent,class AController* EventInstigator,AActor* DamageCauser) 
+{
+	TimeSinceDamageTaken = 0;
+	bool ShieldWasOn = false;
+	if (CurrentShield > 0)
+		ShieldWasOn = true;
+
+	CurrentShield -= DamageAmount;
+
+	if (CurrentShield < 0) 
+	{
+		CurrentHealth -= abs(CurrentShield);
+		CurrentShield = 0;
+		if (ShieldWasOn)
+			OnShieldBreak();
+		
+	}
+	//if players health is less than 0
+	if (CurrentHealth <= 0)
+		OnPlayerDeath();
+
+	return DamageAmount;
+}
+void APlanePawn::OnPlayerDeath()
+{
+	auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	if (this == PC->GetPawn()) {
+		
+		PC->SetPause(true);
+		PC->bShowMouseCursor = true;
+		PC->bEnableClickEvents = true;
+		PC->bEnableMouseOverEvents = true;
+	}
+
+	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	//remove this actor from gamemode lists
+	if (gamemode)
+	{
+		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+		{
+			gamemode->PlayerActor = nullptr;
+		}
+		else
+		{
+			gamemode->RemoveActorFromArrays(this);
+		}
+	}
+	Destroy();
+}
+void APlanePawn::OnShieldBreak() 
+{
+
+}
+void APlanePawn::ManageCamera(float DeltaTime)
+{
+	if (!LockedOnActor)
+	{
+		//assign LockedOnActor if its assigned arleady
+		ClosestEnemyInMapDistace = std::numeric_limits<float>::max();
+
+		AllEnemiesInMap = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->EnemyActors;
+		for (AActor* a : AllEnemiesInMap)
+		{
+			if (ClosestEnemyInMapDistace < (a->GetActorLocation() - GetActorLocation()).Length())
+			{
+				ClosestEnemyInMapDistace = (a->GetActorLocation() - GetActorLocation()).Length();
+				ClosestEnemyInMap = a;
+			}
+		}
+		LockedOnActor = ClosestEnemyInMap;
+	}
+	if (IsCameraLockedOn)
+	{
+		if (LockedOnActor)
+		{
+			CameraArmComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
+		}
+		else
+		{
+			IsCameraLockedOn = false;
+			TargetCameraX = 0.f;
+			TargetCameraY = 0.f;
+			TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
+			CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));
+		}
+	}
+	else
+	{
+		if (LockedOnActor && LockedEnemyArrowComponet->IsVisible())
+		{
+			LockedEnemyArrowComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
+		}
+		else
+		{
+			LockedEnemyArrowComponet->SetVisibility(false, true);
+		}
+
+		if (!IsAOAOn)
+		{
+			if (CurrenCameraX != 0.f || CurrenCameraY != 0.f) {
+				//rotate camera dependant on cameraX and cameraY
+				TargetCameraX += CurrenCameraX * CameraSpeedX;
+				TargetCameraX = FMath::Clamp(TargetCameraX, -175.f, 175.f);
+
+				TargetCameraY += CurrenCameraY * CameraSpeedY;
+				TargetCameraY = FMath::Clamp(TargetCameraY, -175.f, 175.f);
+
+				TimeSinceLastCameraInput = 0.f;
+			}
+			else
+			{
+				//reset camera rotation if enoght time has passed
+				if (TimeSinceLastCameraInput > TimeCameraToReset) {
+					TargetCameraX = 0.f;
+					TargetCameraY = 0.f;
+				}
+			}
+
+			TimeSinceLastCameraInput += DeltaTime;
+
+			TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
+			CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));
+		}
+		else
+		{
+			if (AOALocksCamera)
+				CameraArmComponet->SetWorldRotation(CameraRotationOnAOABegin);
+		}
+	}
+}
+void APlanePawn::ManageMovement(float DeltaTime) 
+{
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	if (!Component->IsSimulatingPhysics())
 		return;
-	
+
 	if (bPhysicsMovement)
 	{
 		FTransform PlaneTransform = Component->GetComponentTransform();
@@ -80,16 +252,16 @@ void APlanePawn::Tick(float DeltaTime)
 		FVector Force = FVector::ZeroVector, Torque = FVector::ZeroVector;
 
 		auto AddWingLocalForce = [&](FVector WingPosition, FVector WingNormal, double WingCoefficient)
-		{
-			double ForceMagnitude = -FVector::DotProduct(WingNormal, LocalPlaneVelocity) * LocalPlaneVelocity.Size() * WingCoefficient;
-			FVector AppliedForce = WingNormal * ForceMagnitude;
-			Force += AppliedForce;
-			Torque += FVector::CrossProduct(WingPosition - CenterOfMass, AppliedForce);
-		};
+			{
+				double ForceMagnitude = -FVector::DotProduct(WingNormal, LocalPlaneVelocity) * LocalPlaneVelocity.Size() * WingCoefficient;
+				FVector AppliedForce = WingNormal * ForceMagnitude;
+				Force += AppliedForce;
+				Torque += FVector::CrossProduct(WingPosition - CenterOfMass, AppliedForce);
+			};
 		double WingPitchAngle;
 		double WingRollAngle;
 		double RudderAngle;
-		if (!IsAOAOn) 
+		if (!IsAOAOn)
 		{
 			WingPitchAngle = PhysicsParams.WingControlAngles.Pitch * -CurrentPitch;
 			WingRollAngle = PhysicsParams.WingControlAngles.Roll * CurrentRoll;
@@ -157,165 +329,6 @@ void APlanePawn::Tick(float DeltaTime)
 		TargetThrust += CurrentThrust * DeltaTime;
 		TargetThrust = FMath::Clamp(TargetThrust, MinTargetThrust, MaxTargetThrust);
 	}
-	
-	if (IsCameraLockedOn) 
-	{
-		if (LockedOnActor->IsValidLowLevel()) 
-		{
-			CameraArmComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
-		}
-		else
-		{
-			IsCameraLockedOn = false;
-			TargetCameraX = 0.f;
-			TargetCameraY = 0.f; 
-			TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
-			CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));
-		}
-	}
-	else
-	{
-		if (LockedOnActor->IsValidLowLevel()&& LockedEnemyArrowComponet->IsVisible())
-		{
-			LockedEnemyArrowComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
-		}
-		else
-		{
-			LockedEnemyArrowComponet->SetVisibility(false, true);
-		}
-		
-		if (!IsAOAOn)
-		{
-			if (CurrenCameraX != 0.f || CurrenCameraY != 0.f) {
-				//rotate camera dependant on cameraX and cameraY
-				TargetCameraX += CurrenCameraX * CameraSpeedX;
-				TargetCameraX = FMath::Clamp(TargetCameraX, -175.f, 175.f);
-
-				TargetCameraY += CurrenCameraY * CameraSpeedY;
-				TargetCameraY = FMath::Clamp(TargetCameraY, -175.f, 175.f);
-
-				TimeSinceLastCameraInput = 0.f;
-			}
-			else
-			{
-				//reset camera rotation if enoght time has passed
-				if (TimeSinceLastCameraInput > TimeCameraToReset) {
-					TargetCameraX = 0.f;
-					TargetCameraY = 0.f;
-				}
-			}
-
-			TimeSinceLastCameraInput += DeltaTime;
-
-			TargetCameraRotation = FVector(0.f, (float)TargetCameraY, (float)TargetCameraX);
-			CameraArmComponet->SetRelativeRotation(FRotator::MakeFromEuler(TargetCameraRotation));
-		}
-		else 
-		{
-			if(AOALocksCamera)
-				CameraArmComponet->SetWorldRotation(CameraRotationOnAOABegin);
-		}
-	}
-	if (!IsAOAOn)
-	{
-		if (!bPhysicsMovement)
-		{
-			// Add a force dependent on Thrust in the forward direction
-			Component->SetAllPhysicsLinearVelocity(Component->GetForwardVector() * (TargetThrust / MaxTargetThrust) * Speed);
-		}
-	}
-
-	RechargeShield(DeltaTime);
-}
-
-// Called to bind functionality to input
-void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	InputComponent->BindAxis("Steer", this, &APlanePawn::ProcessSteer);
-	InputComponent->BindAxis("Thrust", this, &APlanePawn::ProcessThrust);
-	InputComponent->BindAxis("Pitch", this, &APlanePawn::ProcessPitch);
-	InputComponent->BindAxis("Roll", this, &APlanePawn::ProcessRoll);
-	InputComponent->BindAxis("CameraX", this, &APlanePawn::ProcessCameraX);
-	InputComponent->BindAxis("CameraY", this, &APlanePawn::ProcessCameraY);
-	InputComponent->BindAction("Fire1", IE_Pressed, this, &APlanePawn::ProcessFire1Pressed);
-	InputComponent->BindAction("Fire1", IE_Released, this, &APlanePawn::ProcessFire1Released);
-	InputComponent->BindAction("Fire2", IE_Pressed, this, &APlanePawn::ProcessFire2Pressed);
-	InputComponent->BindAction("Fire2", IE_Released, this, &APlanePawn::ProcessFire2Released);
-	InputComponent->BindAction("Fire3", IE_Pressed, this, &APlanePawn::ProcessFire3Pressed);
-	InputComponent->BindAction("Fire3", IE_Released, this, &APlanePawn::ProcessFire3Released);
-	InputComponent->BindAction("Evade", IE_Pressed, this, &APlanePawn::ProcessEvadePressed);
-	InputComponent->BindAction("Evade", IE_Released, this, &APlanePawn::ProcessEvadeReleased);
-	InputComponent->BindAction("LockOn", IE_Pressed, this, &APlanePawn::ProcessLockOnPressed);
-	InputComponent->BindAction("LockOn", IE_Released, this, &APlanePawn::ProcessLockOnReleased);
-}
-
-// Configuration management
-void APlanePawn::ApplyConfiguration(FSavedPlane& SavedPlane)
-{
-	Configuration = SavedPlane;
-
-	for (int i = 0; i < SavedPlane.SavedHardpointWeapons.Num(); i++)
-	{
-		Hardpoints[i]->AssignWeapon(SavedPlane.SavedHardpointWeapons[i]);
-	}
-}
-
-//damage management
-float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& DamageEvent,class AController* EventInstigator,AActor* DamageCauser) 
-{
-	TimeSinceDamageTaken = 0;
-	bool ShieldWasOn = false;
-	if (CurrentShield > 0)
-		ShieldWasOn = true;
-
-	CurrentShield -= DamageAmount;
-
-	if (CurrentShield < 0) 
-	{
-		CurrentHealth -= abs(CurrentShield);
-		CurrentShield = 0;
-		if (ShieldWasOn)
-			OnShieldBreak();
-		
-	}
-	//if players health is less than 0
-	if (CurrentHealth <= 0)
-		OnPlayerDeath();
-
-	return DamageAmount;
-}
-void APlanePawn::OnPlayerDeath()
-{
-	auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-	if (this == PC->GetPawn()) {
-		
-		PC->SetPause(true);
-		PC->bShowMouseCursor = true;
-		PC->bEnableClickEvents = true;
-		PC->bEnableMouseOverEvents = true;
-	}
-
-	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
-	//remove this actor from gamemode lists
-	if (gamemode)
-	{
-		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
-		{
-			gamemode->PlayerActor = nullptr;
-		}
-		else
-		{
-			gamemode->RemoveActorFromArrays(this);
-		}
-	}
-	Destroy();
-}
-void APlanePawn::OnShieldBreak() 
-{
-
 }
 void APlanePawn::RechargeShield(float DeltaTime)
 {
@@ -411,16 +424,6 @@ void APlanePawn::ProcessEvadeReleased()
 }
 void APlanePawn::ProcessLockOnPressed()
 {
-		ClosestEnemyInMapDistace = std::numeric_limits<float>::max();
-
-		AllEnemiesInMap = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->EnemyActors;
-		for (AActor* a : AllEnemiesInMap)
-		{
-			if (ClosestEnemyInMapDistace < (a->GetActorLocation() - GetActorLocation()).Length())
-				ClosestEnemyInMapDistace = (a->GetActorLocation() - GetActorLocation()).Length();
-			ClosestEnemyInMap = a;
-		}
-		LockedOnActor = ClosestEnemyInMap;
 		IsCameraLockedOn = true;
 		LockedEnemyArrowComponet->SetVisibility(false, true);
 }

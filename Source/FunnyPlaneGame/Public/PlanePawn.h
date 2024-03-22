@@ -184,7 +184,10 @@ protected:
 	void ProcessEvadeReleased();
 	void ProcessLockOnPressed();
 	void ProcessLockOnReleased();
+
 	void RechargeShield(float DeltaTime);
+	void ManageCamera(float DeltaTime);
+	void ManageMovement(float DeltaTime);
 	void OnShieldBreak();
 	void OnPlayerDeath();
 	
