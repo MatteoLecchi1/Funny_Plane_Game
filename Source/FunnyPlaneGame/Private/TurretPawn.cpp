@@ -29,14 +29,7 @@ void ATurretPawn::BeginPlay()
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
 	if (gamemode)
 	{
-		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
-		{
-			gamemode->PlayerActor = this;
-		}
-		else
-		{
-			gamemode->AddActorToArrays(this);
-		}
+		gamemode->AddActorToArrays(this);
 	}
 }
 

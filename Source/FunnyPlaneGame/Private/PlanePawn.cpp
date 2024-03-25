@@ -67,7 +67,10 @@ void APlanePawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ManageMovement(DeltaTime);
+
+	if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 	ManageCamera(DeltaTime);
+
 	RechargeShield(DeltaTime);
 }
 
@@ -161,15 +164,15 @@ void APlanePawn::OnShieldBreak()
 }
 void APlanePawn::ManageCamera(float DeltaTime)
 {
-	if (!LockedOnActor)
+	auto GameMode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	if (!LockedOnActor->IsValidLowLevel() && GameMode->EnemyActors.Num()>0)
 	{
-		//assign LockedOnActor if its assigned arleady
+		//assign LockedOnActor if it's not assigned arleady
 		ClosestEnemyInMapDistace = std::numeric_limits<float>::max();
 
-		AllEnemiesInMap = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->EnemyActors;
-		for (AActor* a : AllEnemiesInMap)
+		for (AActor* a : GameMode->EnemyActors)
 		{
-			if (ClosestEnemyInMapDistace < (a->GetActorLocation() - GetActorLocation()).Length())
+			if (ClosestEnemyInMapDistace > (a->GetActorLocation() - GetActorLocation()).Length())
 			{
 				ClosestEnemyInMapDistace = (a->GetActorLocation() - GetActorLocation()).Length();
 				ClosestEnemyInMap = a;
@@ -179,7 +182,7 @@ void APlanePawn::ManageCamera(float DeltaTime)
 	}
 	if (IsCameraLockedOn)
 	{
-		if (LockedOnActor)
+		if (LockedOnActor->IsValidLowLevel())
 		{
 			CameraArmComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
 		}
@@ -194,7 +197,7 @@ void APlanePawn::ManageCamera(float DeltaTime)
 	}
 	else
 	{
-		if (LockedOnActor && LockedEnemyArrowComponet->IsVisible())
+		if (LockedOnActor->IsValidLowLevel() && LockedEnemyArrowComponet->IsVisible())
 		{
 			LockedEnemyArrowComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
 		}
@@ -424,8 +427,8 @@ void APlanePawn::ProcessEvadeReleased()
 }
 void APlanePawn::ProcessLockOnPressed()
 {
-		IsCameraLockedOn = true;
-		LockedEnemyArrowComponet->SetVisibility(false, true);
+	IsCameraLockedOn = true;
+	LockedEnemyArrowComponet->SetVisibility(false, true);
 }
 void APlanePawn::ProcessLockOnReleased() 
 {

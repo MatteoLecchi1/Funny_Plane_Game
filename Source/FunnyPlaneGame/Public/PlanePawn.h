@@ -126,7 +126,7 @@ public:
 
 	UPROPERTY()
 	bool IsCameraLockedOn = false;
-	AActor* LockedOnActor =this;
+	AActor* LockedOnActor = nullptr;
 	UPROPERTY()
 	FRotator Rotator = FRotator::ZeroRotator;
 
