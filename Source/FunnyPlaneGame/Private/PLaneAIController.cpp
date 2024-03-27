@@ -16,7 +16,8 @@ void APLaneAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetPawn()) {
+	if (IsValid(GetPawn())) 
+	{
 
 		ControlledPlane = Cast<APlanePawn>(GetPawn());
 		auto Component = Cast<UPrimitiveComponent>(ControlledPlane->GetRootComponent());
@@ -24,56 +25,96 @@ void APLaneAIController::Tick(float DeltaTime)
 
 		auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
 
-		if (ControlledPlane->ActorHasTag("IsFriendly"))
+		if (!IsValid(CurrentTarget)) 
 		{
-			AllTargets = gamemode->EnemyActors;
-		}
-		else if (ControlledPlane->ActorHasTag("IsEnemy"))
-		{
-			if(gamemode->PlayerActor) 
-			{
-				AllTargets.Add(gamemode->PlayerActor);
-			}
-			else
-			{
-				AllTargets = gamemode->FriendlyActors;
-			}
-		}
+			AllTargets.Empty();
 
-		if (AllTargets.Num()>0)
-		{
-			if (!CurrentTarget->IsValidLowLevelFast()) 
+			if (ControlledPlane->ActorHasTag("IsFriendly"))
+			{
+				AllTargets = gamemode->EnemyActors;
+			}
+			else if (ControlledPlane->ActorHasTag("IsEnemy"))
+			{
+				if (gamemode->PlayerActor)
+				{
+					AllTargets.Add(gamemode->PlayerActor);
+				}
+				else
+				{
+					AllTargets = gamemode->FriendlyActors;
+				}
+			}
+			if (AllTargets.Num() > 0)
 			{
 				FRandomStream stream;
-				CurrentTarget = AllTargets[stream.FRandRange(0, AllTargets.Num() - 1)];
-			}
-			else
-			{
-				FVector targetRelativePosition = ControlledPlane->GetActorTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
+				int TargetIndex = stream.FRandRange(0, AllTargets.Num() - 1);
+				int i = TargetIndex;
 
-				auto AlignmentFactor = abs(FMath::Acos(FVector::DotProduct(ControlledPlane->GetActorForwardVector(), CurrentTarget->GetActorForwardVector())) / UE_HALF_PI); 
-
-				FRotator targetRotation = targetRelativePosition.Rotation();
-
-				auto DeltaRoll = FMath::FindDeltaAngleDegrees(ControlledPlane->GetActorRotation().Roll, CurrentTarget->GetActorRotation().Roll);
-				auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
-				auto RollControl = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(-1., 1.), DeltaRoll);
-				auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
-
-				ControlledPlane->CurrentSteer = FMath::Lerp(-YawControl, 0.f, AlignmentFactor);
-				ControlledPlane->CurrentRoll = FMath::Lerp(RollControl, YawControl, AlignmentFactor);
-				ControlledPlane->CurrentPitch = PitchControl;
-
-				FVector targetRelativeDirection = targetRelativePosition.GetSafeNormal();
-				auto AmingFactor = FMath::Min(1., FMath::Acos(targetRelativeDirection.X));
-
-				if (AmingFactor < AlignmentThreshold)
+				while (i != -1 || !IsValid(CurrentTarget))
 				{
-					for(auto H : ControlledPlane->Hardpoints)
+					//sta roba non va
+					auto PossibleTarget = AllTargets[i];
+					if (auto PossiblePlaneTarget = Cast<APlanePawn>(PossibleTarget))
 					{
-						H->ShootWeapon();
+						if (!PossiblePlaneTarget->IsAlreadyTargeted)
+						{
+							PossiblePlaneTarget->IsAlreadyTargeted = true;
+							CurrentTarget = PossibleTarget;
+						}
+						else
+						{
+							i++;
+							if (i == AllTargets.Num())
+							{
+								i = 0;
+							}
+							if (i == TargetIndex)
+							{
+								i = -1;
+							}
+						}
 					}
 				}
+				
+			}
+		}
+		else
+		{
+			FVector targetRelativePosition = ControlledPlane->GetActorTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
+
+			auto AlignmentFactor = abs(FMath::Acos(FVector::DotProduct(ControlledPlane->GetActorForwardVector(), CurrentTarget->GetActorForwardVector())) / UE_HALF_PI); 
+
+			FRotator targetRotation = targetRelativePosition.Rotation();
+
+			auto DeltaRoll = FMath::FindDeltaAngleDegrees(ControlledPlane->GetActorRotation().Roll, CurrentTarget->GetActorRotation().Roll);
+			auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
+			auto RollControl = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(-1., 1.), DeltaRoll);
+			auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
+
+			ControlledPlane->CurrentSteer = FMath::Lerp(-YawControl, 0.f, AlignmentFactor);
+			ControlledPlane->CurrentRoll = FMath::Lerp(RollControl, YawControl, AlignmentFactor);
+			ControlledPlane->CurrentPitch = PitchControl;
+
+			FVector targetRelativeDirection = targetRelativePosition.GetSafeNormal();
+			auto AmingFactor = FMath::Min(1., FMath::Acos(targetRelativeDirection.X));
+
+			if (AmingFactor < AlignmentThreshold)
+			{
+				for(auto H : ControlledPlane->Hardpoints)
+				{
+					H->ShootWeapon();
+				}
+			}
+		}
+	}
+	else 
+	{
+		if (IsValid(CurrentTarget))
+		{
+			if (auto PossiblePalneTarget = Cast<APlanePawn>(CurrentTarget))
+			{
+				PossiblePalneTarget->IsAlreadyTargeted = true;
+				CurrentTarget = nullptr;
 			}
 		}
 	}

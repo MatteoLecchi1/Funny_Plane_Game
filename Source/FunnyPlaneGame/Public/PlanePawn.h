@@ -154,6 +154,9 @@ public:
 	double ShieldRecoverPerSecond = 50.;
 
 	UPROPERTY()
+	bool IsAlreadyTargeted = false;
+
+	UPROPERTY()
 	TArray <UHardpoint*> Hardpoints;
 
 	UPROPERTY()

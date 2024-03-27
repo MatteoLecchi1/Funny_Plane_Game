@@ -165,7 +165,7 @@ void APlanePawn::OnShieldBreak()
 void APlanePawn::ManageCamera(float DeltaTime)
 {
 	auto GameMode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
-	if (!LockedOnActor->IsValidLowLevel() && GameMode->EnemyActors.Num()>0)
+	if (!IsValid(LockedOnActor) && GameMode->EnemyActors.Num()>0)
 	{
 		//assign LockedOnActor if it's not assigned arleady
 		ClosestEnemyInMapDistace = std::numeric_limits<float>::max();
@@ -182,7 +182,7 @@ void APlanePawn::ManageCamera(float DeltaTime)
 	}
 	if (IsCameraLockedOn)
 	{
-		if (LockedOnActor->IsValidLowLevel())
+		if (IsValid(LockedOnActor))
 		{
 			CameraArmComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
 		}
@@ -197,7 +197,7 @@ void APlanePawn::ManageCamera(float DeltaTime)
 	}
 	else
 	{
-		if (LockedOnActor->IsValidLowLevel() && LockedEnemyArrowComponet->IsVisible())
+		if (IsValid(LockedOnActor) && LockedEnemyArrowComponet->IsVisible())
 		{
 			LockedEnemyArrowComponet->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(this->GetActorLocation(), LockedOnActor->GetActorLocation()));
 		}
