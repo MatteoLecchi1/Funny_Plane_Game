@@ -35,7 +35,7 @@ void APLaneAIController::Tick(float DeltaTime)
 			}
 			else if (ControlledPlane->ActorHasTag("IsEnemy"))
 			{
-				if (gamemode->PlayerActor)
+				if (Cast<APlanePawn>(gamemode->PlayerActor)->IsAlreadyTargeted)
 				{
 					AllTargets.Add(gamemode->PlayerActor);
 				}
@@ -50,7 +50,7 @@ void APLaneAIController::Tick(float DeltaTime)
 				int TargetIndex = stream.FRandRange(0, AllTargets.Num() - 1);
 				int i = TargetIndex;
 
-				while (i != -1 || !IsValid(CurrentTarget))
+				while (i != -1)
 				{
 					//sta roba non va
 					auto PossibleTarget = AllTargets[i];
@@ -60,6 +60,7 @@ void APLaneAIController::Tick(float DeltaTime)
 						{
 							PossiblePlaneTarget->IsAlreadyTargeted = true;
 							CurrentTarget = PossibleTarget;
+							i = -1;
 						}
 						else
 						{
