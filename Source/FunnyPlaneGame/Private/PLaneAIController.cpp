@@ -23,61 +23,9 @@ void APLaneAIController::Tick(float DeltaTime)
 		auto Component = Cast<UPrimitiveComponent>(ControlledPlane->GetRootComponent());
 		Component->SetSimulatePhysics(true);
 
-		auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
-
 		if (!IsValid(CurrentTarget)) 
 		{
-			AllTargets.Empty();
-
-			if (ControlledPlane->ActorHasTag("IsFriendly"))
-			{
-				AllTargets = gamemode->EnemyActors;
-			}
-			else if (ControlledPlane->ActorHasTag("IsEnemy"))
-			{
-				if (Cast<APlanePawn>(gamemode->PlayerActor)->IsAlreadyTargeted)
-				{
-					AllTargets.Add(gamemode->PlayerActor);
-				}
-				else
-				{
-					AllTargets = gamemode->FriendlyActors;
-				}
-			}
-			if (AllTargets.Num() > 0)
-			{
-				FRandomStream stream;
-				int TargetIndex = stream.FRandRange(0, AllTargets.Num() - 1);
-				int i = TargetIndex;
-
-				while (i != -1)
-				{
-					//sta roba non va
-					auto PossibleTarget = AllTargets[i];
-					if (auto PossiblePlaneTarget = Cast<APlanePawn>(PossibleTarget))
-					{
-						if (!PossiblePlaneTarget->IsAlreadyTargeted)
-						{
-							PossiblePlaneTarget->IsAlreadyTargeted = true;
-							CurrentTarget = PossibleTarget;
-							i = -1;
-						}
-						else
-						{
-							i++;
-							if (i == AllTargets.Num())
-							{
-								i = 0;
-							}
-							if (i == TargetIndex)
-							{
-								i = -1;
-							}
-						}
-					}
-				}
-				
-			}
+			RerollTarget();
 		}
 		else
 		{
@@ -116,6 +64,63 @@ void APLaneAIController::Tick(float DeltaTime)
 			{
 				PossiblePalneTarget->IsAlreadyTargeted = true;
 				CurrentTarget = nullptr;
+			}
+		}
+	}
+}
+void APLaneAIController::RerollTarget()
+{
+	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+
+	TArray<AActor*> AllTargets;
+	AllTargets.Empty();
+
+	if (ControlledPlane->ActorHasTag("IsFriendly"))
+	{
+		AllTargets = gamemode->EnemyActors;
+	}
+	else if (ControlledPlane->ActorHasTag("IsEnemy"))
+	{
+		if (!Cast<APlanePawn>(gamemode->PlayerActor)->IsAlreadyTargeted)
+		{
+			AllTargets.Add(gamemode->PlayerActor);
+		}
+		else
+		{
+			AllTargets = gamemode->FriendlyActors;
+		}
+	}
+	if (AllTargets.Num() > 0)
+	{
+		FRandomStream stream;
+		int TargetIndex = stream.FRandRange(0, AllTargets.Num() - 1);
+		int i = TargetIndex;
+
+		while (i != -1)
+		{
+			//sta roba non va
+			auto PossibleTarget = AllTargets[i];
+			if (auto PossiblePlaneTarget = Cast<APlanePawn>(PossibleTarget))
+			{
+				if (!PossiblePlaneTarget->IsAlreadyTargeted)
+				{
+					PossiblePlaneTarget->IsAlreadyTargeted = true;
+					CurrentTarget = PossibleTarget;
+					i = -1;
+				}
+				else
+				{
+					i++;
+					if (i == AllTargets.Num())
+					{
+						i = 0;
+					}
+					if (i == TargetIndex)
+					{
+						CurrentTarget = PossibleTarget;
+						i = -1;
+					}
+				}
 			}
 		}
 	}

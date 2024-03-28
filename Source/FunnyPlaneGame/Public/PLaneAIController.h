@@ -17,8 +17,6 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	UPROPERTY()
 	class APlanePawn* ControlledPlane;
 	UPROPERTY()
-	TArray<AActor*> AllTargets;
-	UPROPERTY()
 	AActor* CurrentTarget;
 
 	UPROPERTY(EditAnywhere)
@@ -29,6 +27,8 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	float YawVariation = 30;
 	UPROPERTY(EditAnywhere)
 	float AlignmentThreshold = 0.3;
+
+	 void RerollTarget();
 
 protected:
 	// Called when the game starts or when spawned
