@@ -291,9 +291,8 @@ void APlanePawn::ManageMovement(float DeltaTime)
 		AddWingLocalForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RearWingDirection, PhysicsParams.RearWingLiftCoefficient);
 		AddWingLocalForce(FVector(PhysicsParams.RudderOffset, 0., 0.), RudderDirection, PhysicsParams.WingRudderCoefficient);
 
-		PhysicsParams.CurrentThrustForce += CurrentThrust * DeltaTime * PhysicsParams.ThrustForceVariation;
-		PhysicsParams.CurrentThrustForce = FMath::Clamp(PhysicsParams.CurrentThrustForce, PhysicsParams.MinThrustForce, PhysicsParams.MaxThrustForce);
-
+		PhysicsParams.CurrentThrustForce = CurrentThrust * PhysicsParams.ThrustForceVariation + PhysicsParams.MinThrustForce;
+		
 		if (!IsAOAOn)
 		{
 			Force.X += PhysicsParams.CurrentThrustForce;
