@@ -29,8 +29,15 @@ public:
 	float fireRate = 10;
 	UPROPERTY(EditAnywhere)
 	float fireSpread = 0;
+	UPROPERTY()
 	float fireDelay = 0;
+	UPROPERTY()
 	bool shouldFire = false;
+
+	UPROPERTY(EditAnywhere)
+	int MaxAmmo = 100;
+	UPROPERTY()
+	int CurrentAmmo = 0;
 
 	UPROPERTY()
 	FVector projectileSpawnLocation;
@@ -45,4 +52,5 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shooting")
 	void Shoot();
+	void ReloadPercentage(int Percentage);
 };

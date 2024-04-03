@@ -31,7 +31,12 @@ void UHardpoint::ShootWeapon()
 {
 	if (WeaponInstance)
 	{
-		WeaponInstance->Shoot();
+		if (WeaponInstance->CurrentAmmo > 0 && WeaponInstance->fireDelay > 1 / WeaponInstance->fireRate)
+		{
+			WeaponInstance->Shoot();
+			WeaponInstance->CurrentAmmo--;
+			WeaponInstance->fireDelay = 0;
+		}
 	}
 }
 

@@ -98,7 +98,6 @@ void APLaneAIController::RerollTarget()
 
 		while (i != -1)
 		{
-			//sta roba non va
 			auto PossibleTarget = AllTargets[i];
 			if (auto PossiblePlaneTarget = Cast<APlanePawn>(PossibleTarget))
 			{
