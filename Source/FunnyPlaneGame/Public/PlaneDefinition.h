@@ -57,3 +57,18 @@ struct FUNNYPLANEGAME_API FPlaneDefinition : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Plane)
 	UTexture2D* Image;
 };
+
+USTRUCT(BlueprintType)
+struct FUNNYPLANEGAME_API FMissionDefinition : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
+	FString	Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
+	float IconNumber;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
+	FString	Description;
+};

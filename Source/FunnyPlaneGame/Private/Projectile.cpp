@@ -2,7 +2,6 @@
 
 
 #include "Projectile.h"
-#include "CombatManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"

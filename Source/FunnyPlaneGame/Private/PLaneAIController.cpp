@@ -81,7 +81,7 @@ void APLaneAIController::RerollTarget()
 	}
 	else if (ControlledPlane->ActorHasTag("IsEnemy"))
 	{
-		if (!Cast<APlanePawn>(gamemode->PlayerActor)->IsAlreadyTargeted)
+		if (!Cast<APlanePawn>(gamemode->PlayerActor)->IsAlreadyTargeted || gamemode->FriendlyActors.Num() == 0)
 		{
 			AllTargets.Add(gamemode->PlayerActor);
 		}
