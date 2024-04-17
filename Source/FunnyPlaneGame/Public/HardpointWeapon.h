@@ -16,9 +16,6 @@ public:
 	UHardpointWeapon();
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AProjectile> projectile;
-
-	UPROPERTY(EditAnywhere)
 	float DamageOverride = -1;
 	UPROPERTY(EditAnywhere)
 	float AreaDamageRadiusOverride = -1;
@@ -50,7 +47,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Shooting")
-	void Shoot();
+	UFUNCTION(Category = "Shooting")
+	virtual void Shoot();
 	void ReloadPercentage(int Percentage);
 };
