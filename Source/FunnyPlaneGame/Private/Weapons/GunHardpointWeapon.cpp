@@ -6,7 +6,7 @@
 #include "Projectile.h"
 #include "PlanePawn.h"
 
-void UGunHardpointWeapon::Shoot() 
+void UGunHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
 
 	//spawn projectile and assign

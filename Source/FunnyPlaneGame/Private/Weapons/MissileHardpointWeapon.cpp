@@ -4,16 +4,17 @@
 #include "Weapons/MissileHardpointWeapon.h"
 #include "Engine/World.h"
 #include "Projectile.h"
+#include "Weapons/projectiles/MissileProjectile.h"
 #include "PlanePawn.h"
 
-void UMissileHardpointWeapon::Shoot() 
+void UMissileHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
 	//spawn projectile and assign
 	FTransform SpawnTransform = GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
 	SpawnTransform.SetRotation((SpawnTransform.Rotator().Add(RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread), 0.f)).Quaternion());
 	SpawnTransform = SpawnTransform * GetComponentTransform();
 
-	AProjectile* ProjectileInstance = GetWorld()->SpawnActor<AProjectile>(projectile, SpawnTransform.GetLocation(), SpawnTransform.Rotator());
+	AMissileProjectile* ProjectileInstance = GetWorld()->SpawnActor<AMissileProjectile>(projectile, SpawnTransform.GetLocation(), SpawnTransform.Rotator());
 	if (ProjectileInstance->IsValidLowLevel()) {
 
 		if (GetOwner()->ActorHasTag("IsFriendly")) {
@@ -35,5 +36,13 @@ void UMissileHardpointWeapon::Shoot()
 			ProjectileInstance->AreaDamageRadius = AreaDamageRadiusOverride;
 		}
 		ProjectileInstance->ProjectileMesh->SetGenerateOverlapEvents(true);
+
+		//homing system
+		if(PossibleTarget)
+		{
+			ProjectileInstance->HomingTarget = PossibleTarget;
+			ProjectileInstance->ProjectileComponent->bIsHomingProjectile = true;
+			ProjectileInstance->ProjectileComponent->HomingTargetComponent = PossibleTarget->GetRootComponent();
+		}
 	}
 }

@@ -13,6 +13,11 @@ UCLASS()
 class FUNNYPLANEGAME_API AMissileProjectile : public AProjectile
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	AActor* HomingTarget;
+
 protected:
 	virtual void BeginPlay() override;
 };

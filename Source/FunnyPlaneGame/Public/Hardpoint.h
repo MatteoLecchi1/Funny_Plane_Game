@@ -40,11 +40,13 @@ public:
 	HardpointTier thisHardpointTier = HardpointTier::TIER0;
 	UPROPERTY(BlueprintReadOnly)
 	class UHardpointWeapon* WeaponInstance;
+	UPROPERTY()
+	class AActor* CurrentTarget;
 
 	UPROPERTY()
 	bool IsShooting = false;
 	UFUNCTION()
-	void ShootWeapon();
+	void ShootWeapon(AActor* PossibleTarget);
 	UFUNCTION()
 	void AssignWeapon(const FName& WeaponKey);
 protected:

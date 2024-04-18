@@ -51,7 +51,7 @@ void APLaneAIController::Tick(float DeltaTime)
 			{
 				for(auto H : ControlledPlane->Hardpoints)
 				{
-					H->ShootWeapon();
+					H->ShootWeapon(CurrentTarget);
 				}
 			}
 		}

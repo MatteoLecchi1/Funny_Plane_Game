@@ -19,5 +19,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> projectile;
 
-	void Shoot() override;
+	void Shoot(AActor* PossibleTarget) override;
 };

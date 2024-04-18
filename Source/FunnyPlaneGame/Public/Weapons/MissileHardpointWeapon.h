@@ -17,7 +17,7 @@ class FUNNYPLANEGAME_API UMissileHardpointWeapon : public UHardpointWeapon
 public:
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AProjectile> projectile;
+	TSubclassOf<class AMissileProjectile> projectile;
 
-	void Shoot() override;
+	void Shoot(AActor* PossibleTarget) override;
 };

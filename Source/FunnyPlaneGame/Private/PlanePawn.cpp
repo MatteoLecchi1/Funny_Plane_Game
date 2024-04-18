@@ -370,7 +370,10 @@ void APlanePawn::ProcessFire1Pressed()
 	for (UHardpoint* a : Hardpoints) 
 	{
 		if (a->thisShootButton == ShootButton::DOWN)
-			a->IsShooting=true;
+		{
+			a->CurrentTarget = LockedOnActor;
+			a->IsShooting = true;
+		}
 	}
 }
 void APlanePawn::ProcessFire1Released()
@@ -379,7 +382,10 @@ void APlanePawn::ProcessFire1Released()
 		for (UHardpoint* a : Hardpoints)
 		{
 			if (a->thisShootButton == ShootButton::DOWN)
+			{
+				a->CurrentTarget = LockedOnActor;
 				a->IsShooting = false;
+			}
 		}
 	}
 }
@@ -388,7 +394,10 @@ void APlanePawn::ProcessFire2Pressed()
 	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::LEFT)
+		{
+			a->CurrentTarget = LockedOnActor;
 			a->IsShooting = true;
+		}
 	}
 }
 void APlanePawn::ProcessFire2Released()
@@ -396,7 +405,10 @@ void APlanePawn::ProcessFire2Released()
 	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::LEFT)
+		{
+			a->CurrentTarget = LockedOnActor;
 			a->IsShooting = false;
+		}
 	}
 }
 void APlanePawn::ProcessFire3Pressed()
@@ -404,7 +416,10 @@ void APlanePawn::ProcessFire3Pressed()
 	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::UP)
+		{
+			a->CurrentTarget = LockedOnActor;
 			a->IsShooting = true;
+		}
 	}
 }
 void APlanePawn::ProcessFire3Released()
@@ -412,7 +427,10 @@ void APlanePawn::ProcessFire3Released()
 	for (UHardpoint* a : Hardpoints)
 	{
 		if (a->thisShootButton == ShootButton::UP)
+		{
+			a->CurrentTarget = LockedOnActor;
 			a->IsShooting = false;
+		}
 	}
 }
 void APlanePawn::ProcessEvadePressed()

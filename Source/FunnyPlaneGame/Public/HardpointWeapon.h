@@ -48,6 +48,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	UFUNCTION(Category = "Shooting")
-	virtual void Shoot();
+	virtual void Shoot(AActor* PossibleTarget);
 	void ReloadPercentage(int Percentage);
 };

@@ -24,16 +24,16 @@ void UHardpoint::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (IsShooting)
-		ShootWeapon();
+		ShootWeapon(CurrentTarget);
 }
 
-void UHardpoint::ShootWeapon()
+void UHardpoint::ShootWeapon(AActor* PossibleTarget)
 {
 	if (WeaponInstance)
 	{
 		if (WeaponInstance->CurrentAmmo > 0 && WeaponInstance->fireDelay > 1 / WeaponInstance->fireRate)
 		{
-			WeaponInstance->Shoot();
+			WeaponInstance->Shoot(PossibleTarget);
 			WeaponInstance->CurrentAmmo--;
 			WeaponInstance->fireDelay = 0;
 		}

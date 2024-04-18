@@ -65,7 +65,7 @@ void ATurretAIController::Tick(float DeltaTime)
 				{
 					for (auto H : ControlledTurret->Hardpoints)
 					{
-						H->ShootWeapon();
+						H->ShootWeapon(CurrentTarget);
 					}
 				}
 			}

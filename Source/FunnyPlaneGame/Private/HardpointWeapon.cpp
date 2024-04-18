@@ -26,7 +26,7 @@ void UHardpointWeapon::TickComponent(float DeltaTime, enum ELevelTick TickType, 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	fireDelay += DeltaTime;
 }
-void UHardpointWeapon::Shoot()
+void UHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
 
 }
