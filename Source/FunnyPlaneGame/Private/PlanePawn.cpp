@@ -68,10 +68,29 @@ void APlanePawn::Tick(float DeltaTime)
 
 	ManageMovement(DeltaTime);
 
+	//if this is player
 	if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
-	ManageCamera(DeltaTime);
+	{
+		ManageCamera(DeltaTime);
+		for (UHardpoint* a : Hardpoints)
+		{
+			if (IsDownFireing && a->thisShootButton == ShootButton::DOWN)
+			{
+				a->ShootWeapon(LockedOnActor);
+			}
+			else if(IsLeftFireing && a->thisShootButton == ShootButton::LEFT)
+			{
+				a->ShootWeapon(LockedOnActor);
+			}
+			else if(IsUpFireing && a->thisShootButton == ShootButton::UP)
+			{
+				a->ShootWeapon(LockedOnActor);
+			}
+		}
+	}
 
 	RechargeShield(DeltaTime);
+
 }
 
 // Called to bind functionality to input
@@ -172,10 +191,13 @@ void APlanePawn::ManageCamera(float DeltaTime)
 
 		for (AActor* a : GameMode->EnemyActors)
 		{
-			if (ClosestEnemyInMapDistace > (a->GetActorLocation() - GetActorLocation()).Length())
+			if(IsValid(a))
 			{
-				ClosestEnemyInMapDistace = (a->GetActorLocation() - GetActorLocation()).Length();
-				ClosestEnemyInMap = a;
+				if (ClosestEnemyInMapDistace > (a->GetActorLocation() - GetActorLocation()).Length())
+				{
+					ClosestEnemyInMapDistace = (a->GetActorLocation() - GetActorLocation()).Length();
+					ClosestEnemyInMap = a;
+				}
 			}
 		}
 		LockedOnActor = ClosestEnemyInMap;
@@ -367,71 +389,27 @@ void APlanePawn::ProcessCameraY(float InCameraY)
 }
 void APlanePawn::ProcessFire1Pressed()
 {
-	for (UHardpoint* a : Hardpoints) 
-	{
-		if (a->thisShootButton == ShootButton::DOWN)
-		{
-			a->CurrentTarget = LockedOnActor;
-			a->IsShooting = true;
-		}
-	}
+	IsDownFireing = true;
 }
 void APlanePawn::ProcessFire1Released()
 {
-	{
-		for (UHardpoint* a : Hardpoints)
-		{
-			if (a->thisShootButton == ShootButton::DOWN)
-			{
-				a->CurrentTarget = LockedOnActor;
-				a->IsShooting = false;
-			}
-		}
-	}
+	IsDownFireing = false;
 }
 void APlanePawn::ProcessFire2Pressed()
 {
-	for (UHardpoint* a : Hardpoints)
-	{
-		if (a->thisShootButton == ShootButton::LEFT)
-		{
-			a->CurrentTarget = LockedOnActor;
-			a->IsShooting = true;
-		}
-	}
+	IsLeftFireing = true;
 }
 void APlanePawn::ProcessFire2Released()
 {
-	for (UHardpoint* a : Hardpoints)
-	{
-		if (a->thisShootButton == ShootButton::LEFT)
-		{
-			a->CurrentTarget = LockedOnActor;
-			a->IsShooting = false;
-		}
-	}
+	IsLeftFireing = false;
 }
 void APlanePawn::ProcessFire3Pressed()
 {
-	for (UHardpoint* a : Hardpoints)
-	{
-		if (a->thisShootButton == ShootButton::UP)
-		{
-			a->CurrentTarget = LockedOnActor;
-			a->IsShooting = true;
-		}
-	}
+	IsDownFireing = true;
 }
 void APlanePawn::ProcessFire3Released()
 {
-	for (UHardpoint* a : Hardpoints)
-	{
-		if (a->thisShootButton == ShootButton::UP)
-		{
-			a->CurrentTarget = LockedOnActor;
-			a->IsShooting = false;
-		}
-	}
+	IsDownFireing = false;
 }
 void APlanePawn::ProcessEvadePressed()
 {

@@ -23,9 +23,6 @@ public:
 	UStaticMeshComponent* ProjectileMesh;
 
 	UPROPERTY(EditAnywhere)
-	UProjectileMovementComponent* ProjectileComponent;
-
-	UPROPERTY(EditAnywhere)
 	float ProjectileLifespan=5; 
 	UPROPERTY(EditAnywhere)
 	float DamageDealt = 10;

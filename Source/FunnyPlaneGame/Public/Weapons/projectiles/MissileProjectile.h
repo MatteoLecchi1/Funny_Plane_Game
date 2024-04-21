@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Projectile.h"
+#include "Components/PointLightComponent.h"
 #include "MissileProjectile.generated.h"
 
 /**
@@ -18,6 +19,20 @@ public:
 	UPROPERTY()
 	AActor* HomingTarget;
 
+	UPROPERTY(EditAnywhere)
+	float PitchVariation = 30;
+	UPROPERTY(EditAnywhere)
+	float YawVariation = 30;
+
+	UPROPERTY(EditAnywhere)
+	float TurnSpeed = 30;
+	UPROPERTY(EditAnywhere)
+	float Speed = 50000;
+
+	UPROPERTY(EditAnywhere)
+	float Homingvalue = 0;
+
 protected:
+	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
 };

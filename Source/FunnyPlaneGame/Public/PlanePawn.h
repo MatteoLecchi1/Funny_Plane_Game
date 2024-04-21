@@ -158,6 +158,13 @@ public:
 	TArray <UHardpoint*> Hardpoints;
 
 	UPROPERTY()
+	bool IsUpFireing = false;
+	UPROPERTY()
+	bool IsDownFireing = false;
+	UPROPERTY()
+	bool IsLeftFireing = false;
+
+	UPROPERTY()
 	USceneComponent* LockedEnemyArrowComponet;
 
 	UPROPERTY()

@@ -9,40 +9,39 @@
 
 void UMissileHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
-	//spawn projectile and assign
-	FTransform SpawnTransform = GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
-	SpawnTransform.SetRotation((SpawnTransform.Rotator().Add(RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread), 0.f)).Quaternion());
-	SpawnTransform = SpawnTransform * GetComponentTransform();
+	for(int i = 0; i < ShotAmmount; i++)
+	{
+		//spawn projectile and assign
+		FTransform SpawnTransform = GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
+		SpawnTransform.SetRotation((SpawnTransform.Rotator().Add(RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread), 0.f)).Quaternion());
+		SpawnTransform = SpawnTransform * GetComponentTransform();
 
-	AMissileProjectile* ProjectileInstance = GetWorld()->SpawnActor<AMissileProjectile>(projectile, SpawnTransform.GetLocation(), SpawnTransform.Rotator());
-	if (ProjectileInstance->IsValidLowLevel()) {
+		AMissileProjectile* ProjectileInstance = GetWorld()->SpawnActor<AMissileProjectile>(projectile, SpawnTransform.GetLocation(), SpawnTransform.Rotator());
+		if (ProjectileInstance->IsValidLowLevel()) {
 
-		if (GetOwner()->ActorHasTag("IsFriendly")) {
-			ProjectileInstance->Tags.Add(FName("IsFriendly"));
-		}
-		else if (GetOwner()->ActorHasTag("IsEnemy")) {
-			ProjectileInstance->Tags.Add(FName("IsEnemy"));
-		}
+			if (GetOwner()->ActorHasTag("IsFriendly")) {
+				ProjectileInstance->Tags.Add(FName("IsFriendly"));
+			}
+			else if (GetOwner()->ActorHasTag("IsEnemy")) {
+				ProjectileInstance->Tags.Add(FName("IsEnemy"));
+			}
 
-		auto PlanePawn = Cast<APawn>(GetOwner());
-		PlanePawn->MoveIgnoreActorAdd(ProjectileInstance);
+			auto PlanePawn = Cast<APawn>(GetOwner());
+			PlanePawn->MoveIgnoreActorAdd(ProjectileInstance);
 
-		ProjectileInstance->ProjectileMesh->SetPhysicsLinearVelocity(GetOwner()->GetVelocity() + SpawnTransform.GetUnitAxis(EAxis::X) * fireSpeed);
+			if (DamageOverride >= 0) {
+				ProjectileInstance->DamageDealt = DamageOverride;
+			}
+			if (AreaDamageRadiusOverride >= 0) {
+				ProjectileInstance->AreaDamageRadius = AreaDamageRadiusOverride;
+			}
+			ProjectileInstance->ProjectileMesh->SetGenerateOverlapEvents(true);
 
-		if (DamageOverride >= 0) {
-			ProjectileInstance->DamageDealt = DamageOverride;
-		}
-		if (AreaDamageRadiusOverride >= 0) {
-			ProjectileInstance->AreaDamageRadius = AreaDamageRadiusOverride;
-		}
-		ProjectileInstance->ProjectileMesh->SetGenerateOverlapEvents(true);
-
-		//homing system
-		if(PossibleTarget)
-		{
-			ProjectileInstance->HomingTarget = PossibleTarget;
-			ProjectileInstance->ProjectileComponent->bIsHomingProjectile = true;
-			ProjectileInstance->ProjectileComponent->HomingTargetComponent = PossibleTarget->GetRootComponent();
+			//homing system
+			if (IsValid(PossibleTarget))
+			{
+				ProjectileInstance->HomingTarget = PossibleTarget;
+			}
 		}
 	}
 }

@@ -23,8 +23,6 @@ void UHardpoint::BeginPlay()
 void UHardpoint::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (IsShooting)
-		ShootWeapon(CurrentTarget);
 }
 
 void UHardpoint::ShootWeapon(AActor* PossibleTarget)

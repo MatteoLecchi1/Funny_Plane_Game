@@ -43,8 +43,6 @@ public:
 	UPROPERTY()
 	class AActor* CurrentTarget;
 
-	UPROPERTY()
-	bool IsShooting = false;
 	UFUNCTION()
 	void ShootWeapon(AActor* PossibleTarget);
 	UFUNCTION()

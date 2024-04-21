@@ -18,6 +18,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AMissileProjectile> projectile;
+	UPROPERTY(EditAnywhere)
+	int32 ShotAmmount = 1;
 
 	void Shoot(AActor* PossibleTarget) override;
 };

@@ -7,6 +7,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "PlaneGameMode.h"
 #include "Hardpoint.h"
+#include "TurretPawn.h"
 
 void APLaneAIController::BeginPlay() 
 {
@@ -119,6 +120,19 @@ void APLaneAIController::RerollTarget()
 						CurrentTarget = PossibleTarget;
 						i = -1;
 					}
+				}
+			}
+			else
+			{
+				i++;
+				if (i == AllTargets.Num())
+				{
+					i = 0;
+				}
+				if (i == TargetIndex)
+				{
+					CurrentTarget = PossibleTarget;
+					i = -1;
 				}
 			}
 		}
