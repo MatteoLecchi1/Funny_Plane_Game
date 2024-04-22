@@ -18,8 +18,13 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AMissileProjectile> projectile;
+
 	UPROPERTY(EditAnywhere)
 	int32 ShotAmmount = 1;
+	UPROPERTY(EditAnywhere)
+	float DelayBetweenShots = 0.5f; 
 
 	void Shoot(AActor* PossibleTarget) override;
+	UFUNCTION()
+	void ShootSingleMissile(AActor* PossibleTarget);
 };
