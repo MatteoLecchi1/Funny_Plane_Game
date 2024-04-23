@@ -42,7 +42,11 @@ void APlaneController::UpdateHealthAndShield()
 
 void APlaneController::OnControlledPlaneDeath()
 {
-
+	SetPause(true);
+	bShowMouseCursor = true;
+	bEnableClickEvents = true;
+	bEnableMouseOverEvents = true;
+	UnPossess();
 	if (widgetDeathScreenInstance)
 		widgetDeathScreenInstance->AddToPlayerScreen();
 }

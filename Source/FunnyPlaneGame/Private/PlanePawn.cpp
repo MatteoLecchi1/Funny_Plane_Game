@@ -12,6 +12,7 @@
 #include "Hardpoint.h"
 #include "PlaneConfigurationSaveGame.h"
 #include "PlaneGameMode.h"
+#include "PlaneController.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
@@ -153,13 +154,9 @@ float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& Damag
 void APlanePawn::OnPlayerDeath()
 {
 	auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-	if (this == PC->GetPawn()) {
-		
-		PC->SetPause(true);
-		PC->bShowMouseCursor = true;
-		PC->bEnableClickEvents = true;
-		PC->bEnableMouseOverEvents = true;
+	if (auto PPC = Cast<APlaneController>(PC)) 
+	{
+		PPC->OnControlledPlaneDeath();
 	}
 
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());

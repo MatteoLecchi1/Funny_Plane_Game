@@ -15,10 +15,10 @@ void UDeathScreen::NativeConstruct()
 
 void UDeathScreen::OnRetryButtonPressed()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), GetWorld()->GetCurrentLevel()->GetFName());
+	UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), GetWorld()->GetCurrentLevel());
 }
 
 void UDeathScreen::OnMainMenuButtonPressed()
 {
-
+	UGameplayStatics::OpenLevel(GetWorld(),"LV_MainMenu");
 }
