@@ -5,6 +5,7 @@
 #include "PlaneConfigurationSaveGame.h"
 #include "PlaneDefinition.h"
 
+
 UFunnyPlaneGameInstance* UFunnyPlaneGameInstance::GetGameInstance(const UObject* WorldContextObject)
 {
 	return Cast<UFunnyPlaneGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject));

@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class FUNNYPLANEGAME_API UWeaponSelectionListElement : public UUserWidget
+class FUNNYPLANEGAME_API UWeaponSelectionListElement : public UUserWidget, public IUserObjectListEntry
 {
 	GENERATED_BODY()
 

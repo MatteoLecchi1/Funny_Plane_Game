@@ -12,6 +12,7 @@
 #include "Engine/DataTable.h"
 #include "PlaneConfigurationSaveGame.h"
 #include "FunnyPlaneGameInstance.h"
+#include "UI/MissionSelectionUI.h"
 
 void UPlaneCustomizationUI::NativeConstruct()
 {
@@ -149,6 +150,13 @@ void UPlaneCustomizationUI::ChangeWeapon()
 
 void UPlaneCustomizationUI::OnBeginMissionButtonPressed()
 {
-	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
-	UGameplayStatics::OpenLevel(GetWorld(), "LV_TestMap");
+	this->RemoveFromParent();
+	if (MissionSelectionWidgetClass)
+	{
+		MissionSelectionWidget = CreateWidget<UMissionSelectionUI>(UGameplayStatics::GetPlayerController(GetWorld(), 0), MissionSelectionWidgetClass);
+		if (MissionSelectionWidget) {
+			MissionSelectionWidget->AddToViewport();
+			MissionSelectionWidget->UpdateMissionList(); 
+		}
+	}
 }

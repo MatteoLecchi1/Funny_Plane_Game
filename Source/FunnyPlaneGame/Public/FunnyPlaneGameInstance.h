@@ -19,6 +19,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UDataTable* WeaponsDataTable;
 
+	UPROPERTY(EditAnywhere)
+	class UDataTable* MissionsDataTable;
+
+
 	UPROPERTY()
 	class UPlaneConfigurationSaveGame* SaveInstance;
 

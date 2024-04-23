@@ -71,4 +71,7 @@ struct FUNNYPLANEGAME_API FMissionDefinition : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
 	FString	Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
+	FString	LevelName;
 };

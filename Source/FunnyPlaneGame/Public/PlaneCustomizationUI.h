@@ -29,6 +29,11 @@ public:
 	UPROPERTY()
 	class APlanePawn* PlanePreviewInstance;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<class UMissionSelectionUI> MissionSelectionWidgetClass;
+	UPROPERTY()
+	class UMissionSelectionUI* MissionSelectionWidget;
+
 
 	virtual void NativeConstruct() override;
 
