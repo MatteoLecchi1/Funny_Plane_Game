@@ -13,13 +13,14 @@
 #include "PlaneConfigurationSaveGame.h"
 #include "PlaneGameMode.h"
 #include "PlaneController.h"
+#include "Projectile.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	SetIsSpatiallyLoaded(false);
+	SetIsSpatiallyLoaded(false);  
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +45,8 @@ void APlanePawn::BeginPlay()
 
 	auto Component = Cast<UPrimitiveComponent>(GetRootComponent());
 	Component->SetPhysicsLinearVelocity(Component->GetForwardVector() * 1000.f);
+
+	Cast<UStaticMeshComponent>(Component)->OnComponentHit.AddDynamic(this, &APlanePawn::OnHit);
 
 	LockedEnemyArrowComponet->SetVisibility(false, true);
 	
@@ -153,19 +156,17 @@ float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& Damag
 }
 void APlanePawn::OnPlayerDeath()
 {
-	auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (auto PPC = Cast<APlaneController>(PC)) 
-	{
-		PPC->OnControlledPlaneDeath();
-	}
-
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
 	//remove this actor from gamemode lists
 	if (gamemode)
 	{
 		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 		{
-			gamemode->PlayerActor = nullptr;
+			gamemode->PlayerActor = nullptr; auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+			if (auto PPC = Cast<APlaneController>(PC))
+			{
+				PPC->OnControlledPlaneDeath();
+			}
 		}
 		else
 		{
@@ -426,4 +427,11 @@ void APlanePawn::ProcessLockOnReleased()
 {
 	IsCameraLockedOn = false;
 	LockedEnemyArrowComponet->SetVisibility(true, true);
+}
+void APlanePawn::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) 
+{
+	if (HitComponent->GetOwner()->StaticClass() != AProjectile::StaticClass())
+	{
+		this->OnPlayerDeath();
+	}
 }
