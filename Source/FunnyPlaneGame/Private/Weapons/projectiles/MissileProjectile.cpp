@@ -15,9 +15,9 @@ void AMissileProjectile::Tick(float DeltaTime)
 	if(HomingTarget)
 	{
 		FVector targetRelativePosition = this->GetActorTransform().InverseTransformPosition(HomingTarget->GetActorLocation());
-
+		targetRelativePosition.Normalize();
 		//check if the missile surpassed or was missfired
-		if (FVector::DotProduct(this->GetActorForwardVector(),targetRelativePosition) >= Homingvalue)
+		if (targetRelativePosition.X <= Homingvalue)
 		{
 			HomingTarget = nullptr;
 		}
