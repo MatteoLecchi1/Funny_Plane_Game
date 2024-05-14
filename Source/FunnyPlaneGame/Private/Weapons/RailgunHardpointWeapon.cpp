@@ -42,7 +42,7 @@ void URailgunHardpointWeapon::Shoot(AActor* PossibleTarget)
 	{
 		UGameplayStatics::ApplyDamage(Hit.GetActor(), DamageOverride, UGameplayStatics::GetPlayerController(GetWorld(), 0), GetOwner(), nullptr);
 
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageOverride, Hit.Location, AreaDamageRadiusOverride, nullptr, TemporaryArray, GetOwner(), UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageOverride, Hit.Location, AreaDamageRadiusOverride, nullptr, TemporaryArray, GetOwner(), UGameplayStatics::GetPlayerController(GetWorld(), 0), true, ECollisionChannel::ECC_GameTraceChannel2);
 
 		if (ExplosionEffect)
 		{

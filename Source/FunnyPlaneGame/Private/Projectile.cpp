@@ -76,13 +76,13 @@ void AProjectile::DestroySelf()
 		TArray<AActor*> TemporaryArray = gamemode->FriendlyActors;
 		TemporaryArray.Add(this);
 		TemporaryArray.Add(gamemode->PlayerActor);
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true, ECollisionChannel::ECC_GameTraceChannel2);
 	}
 	else if (ActorHasTag("IsEnemy")) {
 		//this array contains all "EnemyActors" and self
 		TArray<AActor*> TemporaryArray = gamemode->EnemyActors;
 		TemporaryArray.Add(this);
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true, ECollisionChannel::ECC_GameTraceChannel2);
 	}
 	if (ExplosionEffect) {
 		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation(), FRotator(0.f),FVector(AreaDamageRadius));
