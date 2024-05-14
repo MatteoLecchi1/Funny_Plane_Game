@@ -30,6 +30,16 @@ public:
 	double CurrentPitch = 0;
 	UPROPERTY(EditAnywhere)
 	double RotationSpeed = 1;
+
+	UPROPERTY(EditAnywhere)
+	double MaxPitch = -1;
+	UPROPERTY(EditAnywhere)
+	double MinPitch = -1;
+
+	UPROPERTY(EditAnywhere)
+	double MaxYaw = -1;
+	UPROPERTY(EditAnywhere)
+	double MinYaw = -1;
 	
 	//Combat
 	UPROPERTY(EditAnywhere)
