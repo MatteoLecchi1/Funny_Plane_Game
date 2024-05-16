@@ -17,9 +17,6 @@ void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FTimerDelegate SpawnDelegate;
-	SpawnDelegate.BindUFunction(this, FName("SpawnActor"));
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, SpawnDelegate, DelaybetweenSpawns, false);
 }
 
 // Called every frame
@@ -29,13 +26,7 @@ void ASpawner::Tick(float DeltaTime)
 }
 void ASpawner::SpawnActor()
 {
-	FTimerDelegate SpawnDelegate;
-	SpawnDelegate.BindUFunction(this, FName("SpawnActor"));
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, SpawnDelegate, DelaybetweenSpawns, false);
-	if (ShouldSpawn) 
-	{
-		APlanePawn* PlaneInstance = GetWorld()->SpawnActor<APlanePawn>(SpawnClass, GetActorLocation(), GetActorRotation());
-		PlaneInstance->SpawnDefaultController();
-	}
+	APlanePawn* PlaneInstance = GetWorld()->SpawnActor<APlanePawn>(SpawnClass, GetActorLocation(), GetActorRotation());
+	PlaneInstance->SpawnDefaultController();
 }
 
