@@ -28,15 +28,13 @@ void APlaneController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UpdateHealthAndShield();
-	widgetHUDInstance->UpdateSpeed(PlayerControlledPlane->GetRootComponent()->GetComponentVelocity().Length());
+	UpdateHealth();
 }
-void APlaneController::UpdateHealthAndShield()
+void APlaneController::UpdateHealth()
 {
 	if (widgetHUDInstance)
 	{
 		widgetHUDInstance->UpdateHealth(PlayerControlledPlane->CurrentHealth, PlayerControlledPlane->MaxHealth);
-		widgetHUDInstance->UpdateShield(PlayerControlledPlane->CurrentShield, PlayerControlledPlane->MaxShield);
 	}
 }
 

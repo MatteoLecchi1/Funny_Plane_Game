@@ -32,7 +32,6 @@ void APlanePawn::BeginPlay()
 	LockedEnemyArrowComponet = Cast<USceneComponent>(GetComponentsByTag(USceneComponent::StaticClass(), "LockedArrow")[0]);
 
 	CurrentHealth = MaxHealth;
-	CurrentShield = MaxShield;
 
 	GetComponents<UHardpoint>(Hardpoints, true);
 
@@ -92,9 +91,6 @@ void APlanePawn::Tick(float DeltaTime)
 			}
 		}
 	}
-
-	RechargeShield(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -133,21 +129,8 @@ void APlanePawn::ApplyConfiguration(FSavedPlane& SavedPlane)
 //damage management
 float APlanePawn::TakeDamage(float DamageAmount,struct FDamageEvent const& DamageEvent,class AController* EventInstigator,AActor* DamageCauser) 
 {
-	TimeSinceDamageTaken = 0;
-	bool ShieldWasOn = false;
-	if (CurrentShield > 0)
-		ShieldWasOn = true;
-
-	CurrentShield -= DamageAmount;
-
-	if (CurrentShield < 0) 
-	{
-		CurrentHealth -= abs(CurrentShield);
-		CurrentShield = 0;
-		if (ShieldWasOn)
-			OnShieldBreak();
+		CurrentHealth -= DamageAmount;
 		
-	}
 	//if players health is less than 0
 	if (CurrentHealth <= 0)
 		OnPlayerDeath();
@@ -174,10 +157,6 @@ void APlanePawn::OnPlayerDeath()
 		}
 	}
 	Destroy();
-}
-void APlanePawn::OnShieldBreak() 
-{
-
 }
 void APlanePawn::ManageCamera(float DeltaTime)
 {
@@ -352,14 +331,7 @@ void APlanePawn::ManageMovement(float DeltaTime)
 		TargetThrust = FMath::Clamp(TargetThrust, MinTargetThrust, MaxTargetThrust);
 	}
 }
-void APlanePawn::RechargeShield(float DeltaTime)
-{
-	TimeSinceDamageTaken += DeltaTime;
-	if (TimeSinceDamageTaken > TimeBeforeShieldStartsRecover && CurrentShield < MaxShield) 
-	{
-		CurrentShield += ShieldRecoverPerSecond * DeltaTime;
-	}
-}
+
 // input processing
 void APlanePawn::ProcessThrust(float InThrust)
 {

@@ -140,16 +140,6 @@ public:
 	double MaxHealth = 100.;
 	UPROPERTY()
 	double CurrentHealth = 1.;
-	UPROPERTY(EditAnywhere)
-	double MaxShield = 100.;
-	UPROPERTY()
-	double CurrentShield = 1.;
-	UPROPERTY()
-	double TimeSinceDamageTaken = 0.;
-	UPROPERTY(EditAnywhere)
-	double TimeBeforeShieldStartsRecover = 5.;
-	UPROPERTY(EditAnywhere)
-	double ShieldRecoverPerSecond = 50.;
 
 	UPROPERTY()
 	bool IsAlreadyTargeted = false;
@@ -193,10 +183,8 @@ protected:
 	void ProcessLockOnPressed();
 	void ProcessLockOnReleased();
 
-	void RechargeShield(float DeltaTime);
 	void ManageCamera(float DeltaTime);
 	void ManageMovement(float DeltaTime);
-	void OnShieldBreak();
 	void OnPlayerDeath();
 	
 	virtual float TakeDamage
