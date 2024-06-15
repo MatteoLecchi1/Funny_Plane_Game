@@ -14,6 +14,7 @@
 #include "PlaneGameMode.h"
 #include "PlaneController.h"
 #include "Projectile.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 APlanePawn::APlanePawn()
@@ -56,6 +57,8 @@ void APlanePawn::BeginPlay()
 		if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 		{
 			gamemode->PlayerActor = this;
+			if(CrosshairClass)
+				CosshairInstance = GetWorld()->SpawnActor<AActor>(CrosshairClass, GetActorLocation() + GetActorForwardVector()*50000, GetActorRotation());
 		}
 		else
 		{
@@ -75,6 +78,10 @@ void APlanePawn::Tick(float DeltaTime)
 	if (this == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 	{
 		ManageCamera(DeltaTime);
+
+		if(CosshairInstance)
+			ManageCrosshair();
+
 		for (UHardpoint* a : Hardpoints)
 		{
 			if (IsDownFireing && a->thisShootButton == ShootButton::DOWN)
@@ -156,6 +163,13 @@ void APlanePawn::OnPlayerDeath()
 			gamemode->RemoveActorFromArrays(this);
 		}
 	}
+
+	if (ExplosionEffect) {
+		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation(), FRotator(0.f), FVector(1));
+	}
+	if (CosshairInstance) {
+		CosshairInstance->Destroy();
+	}
 	Destroy();
 }
 void APlanePawn::ManageCamera(float DeltaTime)
@@ -236,6 +250,27 @@ void APlanePawn::ManageCamera(float DeltaTime)
 			if (AOALocksCamera)
 				CameraArmComponet->SetWorldRotation(CameraRotationOnAOABegin);
 		}
+	}
+}
+void APlanePawn::ManageCrosshair()
+{
+	FVector TraceStart = GetActorLocation();
+	FVector TraceEnd = TraceStart + GetActorForwardVector() * 50000;
+
+	//add ignored actors
+	FCollisionQueryParams QueryParams;
+
+	QueryParams.AddIgnoredActor(this);
+
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty, QueryParams);
+	if (Hit.bBlockingHit)
+	{
+		CosshairInstance->SetActorLocation(Hit.ImpactPoint);
+	}
+	else 
+	{
+		CosshairInstance->SetActorLocation(TraceEnd);
 	}
 }
 void APlanePawn::ManageMovement(float DeltaTime) 

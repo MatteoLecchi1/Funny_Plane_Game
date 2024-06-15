@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Hardpoint.h"
 #include "PlaneConfigurationSaveGame.h"
+#include "NiagaraComponent.h"
 #include "PlanePawn.generated.h"
 
 USTRUCT(BlueprintType)
@@ -100,7 +101,7 @@ public:
 	class USpringArmComponent* CameraArmComponet;
 	UPROPERTY()
 	FRotator CameraRotationOnAOABegin = FRotator::ZeroRotator;;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category = "Camera")
 	bool AOALocksCamera = false;
 	UPROPERTY()
 	double CurrenCameraX = 0;
@@ -110,18 +111,27 @@ public:
 	double CurrenCameraY = 0;
 	UPROPERTY()
 	double TargetCameraY = 0;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	double CameraSpeedX = 1;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	double CameraSpeedY = 1;
 
 	UPROPERTY()
 	FVector TargetCameraRotation = FVector::ZeroVector;
 
 	float TimeSinceLastCameraInput = 100.f;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Camera")
 	float TimeCameraToReset = 2.f;
+	
+	//UI
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<AActor> CrosshairClass;
+	UPROPERTY()
+	AActor* CosshairInstance;
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
 
+	//lock on system
 	UPROPERTY()
 	bool IsCameraLockedOn = false;
 	AActor* LockedOnActor = nullptr;
@@ -136,7 +146,7 @@ public:
 	float ClosestEnemyInMapDistace= std::numeric_limits<float>::max();
 
 	//Combat
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	double MaxHealth = 100.;
 	UPROPERTY()
 	double CurrentHealth = 1.;
@@ -157,6 +167,11 @@ public:
 	UPROPERTY()
 	USceneComponent* LockedEnemyArrowComponet;
 
+	//VFX
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	UNiagaraSystem* ExplosionEffect;
+
+	//Save system
 	UPROPERTY()
 	FSavedPlane Configuration;
 
@@ -184,9 +199,11 @@ protected:
 	void ProcessLockOnReleased();
 
 	void ManageCamera(float DeltaTime);
+	void ManageCrosshair();
+
 	void ManageMovement(float DeltaTime);
+
 	void OnPlayerDeath();
-	
 	virtual float TakeDamage
 	(
 		float DamageAmount,

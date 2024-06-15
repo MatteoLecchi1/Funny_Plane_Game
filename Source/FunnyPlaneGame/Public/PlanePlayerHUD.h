@@ -17,7 +17,6 @@ class FUNNYPLANEGAME_API UPlanePlayerHUD : public UUserWidget
 public:
 
 	void UpdateHealth(float CurrentHealth,float MaxHealth);
-	void UpdateSpeed(float CurrentSpeed);
 
 	UPROPERTY(EditAnywhere,meta = (BindWidget))
 	class UProgressBar* HealthBar;
