@@ -47,21 +47,27 @@ void ATurretAIController::Tick(float DeltaTime)
 			}
 			else
 			{
-				//calculate alignment factor
-				FVector targetRelativePosition = ControlledTurret->turretGimball->GetComponentTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
+				//calculate target rotation
+				FVector targetGimballRelativePosition = ControlledTurret->turretGimball->GetComponentTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
 
-				FRotator targetRotation = targetRelativePosition.Rotation();
+				FVector targetActorRelativePosition = ControlledTurret->GetActorTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
 
-				auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
+				FRotator targetRotation = targetGimballRelativePosition.Rotation();
+				FRotator actorTargetRotation = targetActorRelativePosition.Rotation();
+
+				auto turretgimballrotation = ControlledTurret->turretBase->GetRelativeRotation().Yaw;
+				auto turretgimballrotation1 = actorTargetRotation.Yaw;
+
+				auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), actorTargetRotation.Yaw - ControlledTurret->turretBase->GetRelativeRotation().Yaw);
 				auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
-				
-				ControlledTurret->CurrentPitch = PitchControl;
-				ControlledTurret->CurrentYaw = YawControl;
 
-				FVector targetRelativeDirection = targetRelativePosition.GetSafeNormal();
+				ControlledTurret->CurrentYaw = YawControl;
+				ControlledTurret->CurrentPitch = PitchControl;
+
+				FVector targetRelativeDirection = targetGimballRelativePosition.GetSafeNormal();
 				auto AmingFactor = FMath::Min(1., FMath::Acos(targetRelativeDirection.X));
 
-				if (AmingFactor < AlignmentThreshold && targetRelativePosition.Length() < TurretRange)
+				if (AmingFactor < AlignmentThreshold && targetGimballRelativePosition.Length() < TurretRange)
 				{
 					for (auto H : ControlledTurret->Hardpoints)
 					{

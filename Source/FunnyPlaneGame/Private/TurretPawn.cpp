@@ -41,18 +41,21 @@ void ATurretPawn::Tick(float DeltaTime)
 
 	//RotateBase
 	turretBase->AddLocalRotation(FRotator(0, RotationSpeed * CurrentYaw * DeltaTime, 0));
-	//clamp Base rotation
-	if (turretBase->GetRelativeRotation().Yaw > MaxYaw)
-	{
-		turretBase->SetRelativeRotation(FRotator(0, MaxYaw, 0));
-	}
-	else if (turretBase->GetRelativeRotation().Yaw < MinYaw)
-	{
-		turretBase->SetRelativeRotation(FRotator(0, MinYaw, 0));
-	}
-
 	//RotateGimball
 	turretGimball->AddLocalRotation(FRotator(RotationSpeed * CurrentPitch * DeltaTime, 0, 0));
+
+	if (!FreeRotation)
+	{
+		//clamp Base rotation
+		if (turretBase->GetRelativeRotation().Yaw > MaxYaw)
+		{
+			turretBase->SetRelativeRotation(FRotator(0, MaxYaw, 0));
+		}
+		else if (turretBase->GetRelativeRotation().Yaw < MinYaw)
+		{
+			turretBase->SetRelativeRotation(FRotator(0, MinYaw, 0));
+		}
+	}
 	//clamp gimball rotation
 	if (turretGimball->GetRelativeRotation().Pitch > MaxPitch)
 	{
@@ -60,7 +63,7 @@ void ATurretPawn::Tick(float DeltaTime)
 	}
 	else if (turretGimball->GetRelativeRotation().Pitch < MinPitch)
 	{
-		turretGimball->SetRelativeRotation(FRotator(MinPitch, 0 ,0));
+		turretGimball->SetRelativeRotation(FRotator(MinPitch, 0, 0));
 	}
 }
 

@@ -23,6 +23,9 @@ public:
 	USceneComponent* turretBase;
 	UPROPERTY()
 	USceneComponent* turretGimball;
+
+	UPROPERTY(EditAnywhere)
+	bool FreeRotation = true;
 	
 	UPROPERTY()
 	double CurrentYaw = 0;
