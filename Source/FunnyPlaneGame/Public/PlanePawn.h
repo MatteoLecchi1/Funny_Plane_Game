@@ -103,6 +103,8 @@ public:
 	FRotator CameraRotationOnAOABegin = FRotator::ZeroRotator;;
 	UPROPERTY(EditAnywhere,Category = "Camera")
 	bool AOALocksCamera = false;
+	UPROPERTY(EditAnywhere)
+	bool IsCameraLockAToggle = false;
 	UPROPERTY()
 	double CurrenCameraX = 0;
 	UPROPERTY()
@@ -197,6 +199,8 @@ protected:
 	void ProcessEvadeReleased();
 	void ProcessLockOnPressed();
 	void ProcessLockOnReleased();
+	void ProcessLockOnNextPressed();
+	void ProcessLockOnPrevPressed();
 
 	void ManageCamera(float DeltaTime);
 	void ManageCrosshair();

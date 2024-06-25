@@ -32,7 +32,7 @@ void APlaneController::Tick(float DeltaTime)
 }
 void APlaneController::UpdateHealth()
 {
-	if (widgetHUDInstance)
+	if (widgetHUDInstance && PlayerControlledPlane)
 	{
 		widgetHUDInstance->UpdateHealth(PlayerControlledPlane->CurrentHealth, PlayerControlledPlane->MaxHealth);
 	}

@@ -121,6 +121,8 @@ void APlanePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	InputComponent->BindAction("Evade", IE_Released, this, &APlanePawn::ProcessEvadeReleased);
 	InputComponent->BindAction("LockOn", IE_Pressed, this, &APlanePawn::ProcessLockOnPressed);
 	InputComponent->BindAction("LockOn", IE_Released, this, &APlanePawn::ProcessLockOnReleased);
+	InputComponent->BindAction("LockOnNext", IE_Pressed, this, &APlanePawn::ProcessLockOnNextPressed);
+	InputComponent->BindAction("LockOnPrev", IE_Pressed, this, &APlanePawn::ProcessLockOnPrevPressed);
 }
 // Configuration management
 void APlanePawn::ApplyConfiguration(FSavedPlane& SavedPlane)
@@ -427,14 +429,67 @@ void APlanePawn::ProcessEvadeReleased()
 }
 void APlanePawn::ProcessLockOnPressed()
 {
-	IsCameraLockedOn = true;
-	LockedEnemyArrowComponet->SetVisibility(false, true);
+ 	if(!IsCameraLockAToggle)
+	{
+		IsCameraLockedOn = true;
+		LockedEnemyArrowComponet->SetVisibility(false, true);
+	}
+	else 
+	{
+		if (IsCameraLockedOn)
+		{
+
+			IsCameraLockedOn = false;
+			LockedEnemyArrowComponet->SetVisibility(true, true);
+		}
+		else
+		{
+			IsCameraLockedOn = true;
+			LockedEnemyArrowComponet->SetVisibility(false, true);
+		}
+	}
 }
 void APlanePawn::ProcessLockOnReleased() 
 {
-	IsCameraLockedOn = false;
-	LockedEnemyArrowComponet->SetVisibility(true, true);
+	if(!IsCameraLockAToggle)
+	{
+		IsCameraLockedOn = false;
+		LockedEnemyArrowComponet->SetVisibility(true, true);
+	}
 }
+void APlanePawn::ProcessLockOnNextPressed()
+{
+	auto GameMode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	if (IsValid(LockedOnActor) && GameMode->EnemyActors.Num() > 1)
+	{
+		int EnemyInArrayIndex;
+		GameMode->EnemyActors.Find(LockedOnActor, EnemyInArrayIndex);
+
+		EnemyInArrayIndex++;
+
+		if (EnemyInArrayIndex >= GameMode->EnemyActors.Num())
+			EnemyInArrayIndex = 0;
+
+		LockedOnActor = GameMode->EnemyActors[EnemyInArrayIndex];
+	}
+}
+void APlanePawn::ProcessLockOnPrevPressed()
+{
+	auto GameMode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	if (IsValid(LockedOnActor) && GameMode->EnemyActors.Num() > 1)
+	{
+		int EnemyInArrayIndex;
+		GameMode->EnemyActors.Find(LockedOnActor, EnemyInArrayIndex);
+
+		EnemyInArrayIndex--;
+
+		if (EnemyInArrayIndex < 0)
+			EnemyInArrayIndex = GameMode->EnemyActors.Num() - 1;
+
+		LockedOnActor = GameMode->EnemyActors[EnemyInArrayIndex];
+	}
+}
+
 void APlanePawn::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) 
 {
 	if (HitComponent->GetOwner()->StaticClass() != AProjectile::StaticClass())

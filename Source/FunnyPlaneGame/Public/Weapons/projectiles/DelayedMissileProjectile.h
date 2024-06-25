@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Projectile.h"
-#include "MissileProjectile.generated.h"
+#include "DelayedMissileProjectile.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FUNNYPLANEGAME_API AMissileProjectile : public AProjectile
+class FUNNYPLANEGAME_API ADelayedMissileProjectile : public AProjectile
 {
 	GENERATED_BODY()
-
-public:
+	
+	public:
 	UPROPERTY()
 	AActor* HomingTarget;
 
@@ -25,6 +25,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float Homingvalue = 0;
+
+	UPROPERTY(EditAnywhere)
+	float TimeBeforeHoming = 0;
 
 protected:
 	virtual void Tick(float DeltaTime) override;
