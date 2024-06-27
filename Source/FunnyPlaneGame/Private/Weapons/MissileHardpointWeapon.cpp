@@ -10,6 +10,8 @@
 
 void UMissileHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
+	Super::Shoot(PossibleTarget);
+
 	for(int i = 0; i < ShotAmmount; i++)
 	{
 		FTimerHandle TimerHandle;
@@ -20,6 +22,7 @@ void UMissileHardpointWeapon::Shoot(AActor* PossibleTarget)
 }
 void UMissileHardpointWeapon::ShootSingleMissile(AActor* PossibleTarget) 
 {
+
 	//spawn projectile and assign
 	FTransform SpawnTransform = GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
 	SpawnTransform.SetRotation((SpawnTransform.Rotator().Add(RandomStream.FRandRange(-fireSpread, fireSpread), RandomStream.FRandRange(-fireSpread, fireSpread), 0.f)).Quaternion());
@@ -52,4 +55,6 @@ void UMissileHardpointWeapon::ShootSingleMissile(AActor* PossibleTarget)
 			ProjectileInstance->HomingTarget = PossibleTarget;
 		}
 	}
+
+	SpawnBarrelEffect(SpawnTransform);
 }

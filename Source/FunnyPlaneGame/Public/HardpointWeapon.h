@@ -35,11 +35,11 @@ public:
 	int MaxAmmo = 100;
 	UPROPERTY()
 	int CurrentAmmo = 0;
-
 	UPROPERTY()
-	FVector projectileSpawnLocation;
 	FRandomStream RandomStream;
-		 
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* BarrelEffect;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,4 +50,5 @@ public:
 	UFUNCTION(Category = "Shooting")
 	virtual void Shoot(AActor* PossibleTarget);
 	void ReloadPercentage(int Percentage);
+	void SpawnBarrelEffect(FTransform SpawnTransform);
 };

@@ -9,6 +9,7 @@
 
 void URailgunHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
+	Super::Shoot(PossibleTarget);
 
 	//spawn projectile and assign
 	FTransform SpawnTransform = GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
@@ -49,16 +50,20 @@ void URailgunHardpointWeapon::Shoot(AActor* PossibleTarget)
 			UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, Hit.Location, FRotator(0.f), FVector(AreaDamageRadiusOverride));
 		}
 	}
-	if (TrailEffect)
+
+	if (TrailEffect) //spawns the trail vfx
 	{
 		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TrailEffect, SpawnTransform.GetLocation(), FRotator(0.f));
 		if(Hit.bBlockingHit)
 		{
-			NiagaraComp->SetNiagaraVariableVec3("BeamEndLocation", Hit.Location);
+			NiagaraComp->SetVectorParameter("BeamEndLocation", Hit.Location);
 		}
 		else
 		{
-			NiagaraComp->SetNiagaraVariableVec3("BeamEndLocation", TraceStart + GetForwardVector() * range);
+			NiagaraComp->SetVectorParameter("BeamEndLocation", TraceStart + GetForwardVector() * range);
 		}
 	}
+
+	SpawnBarrelEffect(SpawnTransform);
+
 }

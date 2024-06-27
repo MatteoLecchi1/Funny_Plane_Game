@@ -10,6 +10,8 @@
 
 void UDelayedMissileHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
+	Super::Shoot(PossibleTarget);
+
 	for (int i = 0; i < ShotAmmount; i++)
 	{
 		FTimerHandle TimerHandle;
@@ -52,5 +54,7 @@ void UDelayedMissileHardpointWeapon::ShootSingleMissile(AActor* PossibleTarget)
 			ProjectileInstance->HomingTarget = PossibleTarget;
 		}
 	}
+
+	SpawnBarrelEffect(SpawnTransform);
 }
 

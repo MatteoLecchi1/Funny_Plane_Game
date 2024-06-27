@@ -8,6 +8,7 @@
 
 void UGunHardpointWeapon::Shoot(AActor* PossibleTarget)
 {
+	Super::Shoot(PossibleTarget);
 
 	//spawn projectile and assign
 	FTransform SpawnTransform = GetSocketTransform("ProjectileSpawnLocation1", ERelativeTransformSpace::RTS_Component);
@@ -37,5 +38,7 @@ void UGunHardpointWeapon::Shoot(AActor* PossibleTarget)
 		}
 		ProjectileInstance->ProjectileMesh->SetGenerateOverlapEvents(true);
 	}
+
+	SpawnBarrelEffect(SpawnTransform);
 }
 

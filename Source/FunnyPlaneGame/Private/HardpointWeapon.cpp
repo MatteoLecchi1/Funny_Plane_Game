@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "Projectile.h"
 #include "PlanePawn.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 UHardpointWeapon::UHardpointWeapon()
@@ -36,6 +37,13 @@ void UHardpointWeapon::ReloadPercentage(int Percentage)
 	if (CurrentAmmo > MaxAmmo) 
 	{
 		CurrentAmmo = MaxAmmo;
+	}
+}
+void UHardpointWeapon::SpawnBarrelEffect(FTransform SpawnTransform)
+{
+	if (BarrelEffect)
+	{
+		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BarrelEffect, SpawnTransform.GetLocation(), SpawnTransform.GetRotation().Rotator());
 	}
 }
 
