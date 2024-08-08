@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float range = 50000.f;
 	UPROPERTY(EditAnywhere, Category = "Collision")
-	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
+	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_GameTraceChannel1;
 
 	UPROPERTY(EditAnywhere, Category = "VFX")
 	UNiagaraSystem* ExplosionEffect;

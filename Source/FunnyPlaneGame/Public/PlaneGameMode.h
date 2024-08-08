@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "MissionDefinition.h"
 #include "PlaneGameMode.generated.h"
 
 /**
@@ -27,8 +28,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> FriendlyMarkerWidget;
 
+	UPROPERTY(EditAnywhere)
+	FMissionDefinition MissionDefinition;
+	UPROPERTY()
+	int CurrentObjective;
+	UPROPERTY()
+	TArray<AActor*> Targets;
+
 	void AddActorToArrays(AActor* Actor);
 	void RemoveActorFromArrays(AActor* Actor);
+	void JumpToNextObjective();
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;

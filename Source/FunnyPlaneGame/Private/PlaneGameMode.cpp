@@ -4,6 +4,7 @@
 #include "PlaneDefinition.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "MissionDefinition.h"
 
 UClass* APlaneGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
@@ -70,4 +71,8 @@ void APlaneGameMode::RemoveActorFromArrays(AActor* Actor)
 	{
 		EnemyActors.Remove(Actor);
 	}
+}
+void APlaneGameMode::JumpToNextObjective() 
+{
+
 }
