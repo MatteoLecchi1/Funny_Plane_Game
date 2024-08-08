@@ -24,5 +24,10 @@ After defeating this boss you will unlock its laser cannon and vertically launch
 ![alt text](https://github.com/MatteoLecchi1/Funny_Plane_Game/blob/main/Sreenshots/Shipboss.PNG?raw=true)
 Boss example
 
+### Missions
+Each mission has a set objectives, these range from destroying enemy ground forces to defeating the enemy boss.
+Most objectives are about destroying something, variety is achived by the context of the objective 
+and how the players build interacts with said context.
+
 ## Narrative
-the game is called funny plane game, there is non narrative, only gameplay
+the game is called funny plane game, there is no narrative, only gameplay
