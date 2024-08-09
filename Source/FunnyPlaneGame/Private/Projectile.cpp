@@ -34,7 +34,7 @@ void AProjectile::Tick(float DeltaTime)
 void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->StaticClass() != TSubclassOf<AProjectile>()){
-	if (ActorHasTag("IsFriendly")) 
+	if (ActorHasTag("IsFriendlyProjectile")) 
 	{
 		if (OtherActor->ActorHasTag("IsFriendly"))
 		{	//friendly hits friendly
@@ -50,7 +50,7 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 			DestroySelf();
 		}
 	}
-	else if(ActorHasTag("IsEnemy"))
+	else if(ActorHasTag("IsEnemyProjectile"))
 	{
 		if (OtherActor->ActorHasTag("IsFriendly"))
 		{	//enemy hits friendly
@@ -71,14 +71,14 @@ void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 void AProjectile::DestroySelf()
 {
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
-	if (ActorHasTag("IsFriendly")) {
+	if (ActorHasTag("IsFriendlyProjectile")) {
 		//this array contains all "FriendlyActors", the players pawn and self
 		TArray<AActor*> TemporaryArray = gamemode->FriendlyActors;
 		TemporaryArray.Add(this);
 		TemporaryArray.Add(gamemode->PlayerActor);
 		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageDealt, GetActorLocation(), AreaDamageRadius, nullptr, TemporaryArray, this, UGameplayStatics::GetPlayerController(GetWorld(), 0), true, ECollisionChannel::ECC_GameTraceChannel2);
 	}
-	else if (ActorHasTag("IsEnemy")) {
+	else if (ActorHasTag("IsEnemyProjectile")) {
 		//this array contains all "EnemyActors" and self
 		TArray<AActor*> TemporaryArray = gamemode->EnemyActors;
 		TemporaryArray.Add(this);

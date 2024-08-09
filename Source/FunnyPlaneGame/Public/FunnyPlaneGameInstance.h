@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "PlaneConfigurationSaveGame.h"
+#include "MissionDefinition.h"
 #include "FunnyPlaneGameInstance.generated.h"
 
 UCLASS()
@@ -21,6 +22,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UDataTable* MissionsDataTable;
+
+	struct FMissionDefinition CurrentMission;
 
 
 	UPROPERTY()

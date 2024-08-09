@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> FriendlyMarkerWidget;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	FMissionDefinition MissionDefinition;
 	UPROPERTY()
 	int CurrentObjective;
@@ -38,7 +38,14 @@ public:
 	void AddActorToArrays(AActor* Actor);
 	void RemoveActorFromArrays(AActor* Actor);
 	void JumpToNextObjective();
+	void AssignTargets();
+	void UpdateTargets(AActor* Actor);
+	void SpawnActorsFromSpawnerTag(FName Tag);
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
 };

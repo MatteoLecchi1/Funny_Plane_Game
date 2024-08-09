@@ -79,8 +79,19 @@ float ATurretPawn::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 
 	//if turret health is less than 0
 	if (CurrentHealth <= 0)
-		Destroy();
+		OnDestroy();
 
 	return DamageAmount;
+}
+
+void ATurretPawn::OnDestroy() 
+{
+	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
+	//remove this actor from gamemode lists
+	if (gamemode)
+	{
+		gamemode->RemoveActorFromArrays(this);
+	}
+	Destroy();
 }
 

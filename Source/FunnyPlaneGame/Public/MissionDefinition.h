@@ -5,7 +5,7 @@
 #include "MissionDefinition.generated.h"
 
 UENUM(BlueprintType)
-enum class Objectivetype : uint8
+enum class ObjectiveType : uint8
 {
 	DESTROYALLENEMIES = 0	UMETA(DisplayName = "DESTROY ALL ENEMIES"),
 	DESTROYSPECIFICENEMIES = 1	UMETA(DisplayName = "DESTROY SPECIFIC ENEMIES"),
@@ -17,10 +17,13 @@ struct FUNNYPLANEGAME_API FObjectiveDefinition
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objective)
-	Objectivetype Type;
+	ObjectiveType Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objective)
-	TArray<FName> SpawnerTags;
+	FName ObjectiveTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objective)
+	FName SpawnerTags;
 };
 
 USTRUCT(BlueprintType)

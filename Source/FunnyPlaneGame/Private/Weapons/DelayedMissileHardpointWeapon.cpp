@@ -31,10 +31,10 @@ void UDelayedMissileHardpointWeapon::ShootSingleMissile(AActor* PossibleTarget)
 	if (ProjectileInstance->IsValidLowLevel())
 	{
 		if (GetOwner()->ActorHasTag("IsFriendly")) {
-			ProjectileInstance->Tags.Add(FName("IsFriendly"));
+			ProjectileInstance->Tags.Add(FName("IsFriendlyProjectile"));
 		}
 		else if (GetOwner()->ActorHasTag("IsEnemy")) {
-			ProjectileInstance->Tags.Add(FName("IsEnemy"));
+			ProjectileInstance->Tags.Add(FName("IsEnemyProjectile"));
 		}
 
 		auto PlanePawn = Cast<APawn>(GetOwner());

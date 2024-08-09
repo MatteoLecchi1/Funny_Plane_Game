@@ -9,6 +9,7 @@
 #include "Components/ListView.h"
 #include "PlaneDefinition.h"
 #include "UI/MissionSelectionListEntry.h"
+#include "MissionDefinition.h"
 
 void UMissionSelectionUI::UpdateMissionList()
 {

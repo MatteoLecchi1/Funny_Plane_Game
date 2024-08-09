@@ -5,6 +5,7 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "MissionDefinition.h"
+#include "LevelObjects/Spawner.h"
 
 UClass* APlaneGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
@@ -34,6 +35,18 @@ APawn* APlaneGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* N
 	return Pawn;
 }
 
+void APlaneGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+	if (GameInstance)
+	{
+		MissionDefinition = GameInstance->CurrentMission;
+		CurrentObjective = -1;
+		JumpToNextObjective();
+	}
+}
 void APlaneGameMode::AddActorToArrays(AActor* Actor) 
 {
 	if (Actor->ActorHasTag("IsFriendly")) 
@@ -70,9 +83,75 @@ void APlaneGameMode::RemoveActorFromArrays(AActor* Actor)
 	else if (Actor->ActorHasTag("IsEnemy"))
 	{
 		EnemyActors.Remove(Actor);
+		UpdateTargets(Actor);
 	}
 }
 void APlaneGameMode::JumpToNextObjective() 
 {
+	CurrentObjective++;
+	if (CurrentObjective == MissionDefinition.Objectives.Num()) 
+	{
+		//mission end
+		GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "mission end");
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "objective end");
 
+		SpawnActorsFromSpawnerTag(MissionDefinition.Objectives[CurrentObjective].SpawnerTags);
+
+		AssignTargets();
+	}
+}
+void APlaneGameMode::AssignTargets()
+{
+	FObjectiveDefinition Objective = MissionDefinition.Objectives[CurrentObjective];
+	switch(Objective.Type)
+	{
+	case(ObjectiveType::DESTROYALLENEMIES):
+
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), "IsEnemy", Targets);
+		break;
+
+	case(ObjectiveType::DESTROYSPECIFICENEMIES):
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(), Objective.ObjectiveTag, Targets);
+		break;
+
+	default:
+		break;
+	}
+}
+void APlaneGameMode::UpdateTargets(AActor* Actor) 
+{
+	FObjectiveDefinition Objective = MissionDefinition.Objectives[CurrentObjective];
+	switch (Objective.Type)
+	{
+	case(ObjectiveType::DESTROYALLENEMIES):
+		Targets.Remove(Actor);
+		break;
+
+	case(ObjectiveType::DESTROYSPECIFICENEMIES):
+		if (Actor->ActorHasTag(Objective.ObjectiveTag))
+		{
+			Targets.Remove(Actor);
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	if (Targets.IsEmpty())
+	{
+		JumpToNextObjective();
+	}
+}
+void APlaneGameMode::SpawnActorsFromSpawnerTag(FName Tag) 
+{
+	TArray<AActor*>  selectedSpawners;
+	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), ASpawner::StaticClass(), Tag, selectedSpawners);
+	for (AActor* spawner : selectedSpawners)
+	{
+		Cast<ASpawner>(spawner)->SpawnActor();
+	}
 }
