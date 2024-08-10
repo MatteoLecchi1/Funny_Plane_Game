@@ -35,6 +35,9 @@ public:
 	UFUNCTION()
 	void SaveWeaponByNameAndHardpoint(FName WeaponKey, int HardpointIndex);
 
+	UFUNCTION()
+	void UnlockMission(FName MissionToUnlock);
+
 	FSavedPlane& GetCurrentPlane();
 
 	static UFunnyPlaneGameInstance* GetGameInstance(const UObject* WorldContextObject);

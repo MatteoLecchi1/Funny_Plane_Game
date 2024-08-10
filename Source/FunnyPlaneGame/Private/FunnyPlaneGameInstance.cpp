@@ -54,3 +54,12 @@ FSavedPlane& UFunnyPlaneGameInstance::GetCurrentPlane()
 {
 	return SaveInstance->SavedPlanes[SaveInstance->CurrentPlaneKey];
 }
+void UFunnyPlaneGameInstance::UnlockMission(FName MissionToUnlock) 
+{
+	MissionsDataTable->ForeachRow<FMissionDefinition>("Mission", [&](const FName& Key, const FMissionDefinition& MissionDefinition) {
+		if(MissionDefinition.Name == MissionToUnlock)
+		{
+
+		}
+	});
+}

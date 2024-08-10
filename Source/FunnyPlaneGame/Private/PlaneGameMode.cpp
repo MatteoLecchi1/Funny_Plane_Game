@@ -38,13 +38,22 @@ APawn* APlaneGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* N
 void APlaneGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
-	if (GameInstance)
+}
+void APlaneGameMode::Tick(float DeltaTime)
+{
+	if (Timer == 1) {
+		Timer = -1;
+		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+		if (GameInstance)
+		{
+			MissionDefinition = GameInstance->CurrentMission;
+			CurrentObjective = -1;
+			JumpToNextObjective();
+		}
+	}
+	else if (Timer == 0)
 	{
-		MissionDefinition = GameInstance->CurrentMission;
-		CurrentObjective = -1;
-		JumpToNextObjective();
+		Timer = 1;
 	}
 }
 void APlaneGameMode::AddActorToArrays(AActor* Actor) 
@@ -91,12 +100,17 @@ void APlaneGameMode::JumpToNextObjective()
 	CurrentObjective++;
 	if (CurrentObjective == MissionDefinition.Objectives.Num()) 
 	{
-		//mission end
-		GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "mission end");
+		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
+		for (FName missionToUnlock : MissionDefinition.MissionsToUnlock) {
+			GameInstance->UnlockMission(missionToUnlock);
+		}
+		FTimerHandle TimerHandle;
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, FName("ExitMission"));
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, Delegate, 5.f, false);
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0, FColor::Red, "objective end");
 
 		SpawnActorsFromSpawnerTag(MissionDefinition.Objectives[CurrentObjective].SpawnerTags);
 
@@ -110,7 +124,7 @@ void APlaneGameMode::AssignTargets()
 	{
 	case(ObjectiveType::DESTROYALLENEMIES):
 
-		UGameplayStatics::GetAllActorsWithTag(GetWorld(), "IsEnemy", Targets);
+		Targets = EnemyActors;
 		break;
 
 	case(ObjectiveType::DESTROYSPECIFICENEMIES):
@@ -154,4 +168,8 @@ void APlaneGameMode::SpawnActorsFromSpawnerTag(FName Tag)
 	{
 		Cast<ASpawner>(spawner)->SpawnActor();
 	}
+}
+void APlaneGameMode::ExitMission() 
+{
+	UGameplayStatics::OpenLevel(GetWorld(), "LV_MainMenu");
 }

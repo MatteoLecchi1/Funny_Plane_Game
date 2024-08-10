@@ -47,6 +47,9 @@ struct FUNNYPLANEGAME_API FMissionDefinition : public FTableRowBase
 	TArray<FObjectiveDefinition> Objectives;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
+	bool IsUnlocked;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
 	TArray<FName> MissionsToUnlock;
 };
 

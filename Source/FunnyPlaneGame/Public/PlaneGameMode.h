@@ -34,6 +34,8 @@ public:
 	int CurrentObjective;
 	UPROPERTY()
 	TArray<AActor*> Targets;
+	UPROPERTY()
+	int Timer = 0;
 
 	void AddActorToArrays(AActor* Actor);
 	void RemoveActorFromArrays(AActor* Actor);
@@ -41,6 +43,7 @@ public:
 	void AssignTargets();
 	void UpdateTargets(AActor* Actor);
 	void SpawnActorsFromSpawnerTag(FName Tag);
+	void ExitMission();
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
@@ -48,4 +51,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 };

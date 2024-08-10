@@ -15,10 +15,12 @@ void UMissionSelectionUI::UpdateMissionList()
 {
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 
-	GameInstance->MissionsDataTable->ForeachRow<FMissionDefinition>("Plane", [&](const FName& Key, const FMissionDefinition& PlaneDefinition) {
-
-		UMissionSelectionListEntry* Item = NewObject<UMissionSelectionListEntry>();
-		Item->Mission = PlaneDefinition;
-		MissionList->AddItem(Item);
+	GameInstance->MissionsDataTable->ForeachRow<FMissionDefinition>("Mission", [&](const FName& Key, const FMissionDefinition& MissionDefinition) {
+		if(MissionDefinition.IsUnlocked)
+		{
+			UMissionSelectionListEntry* Item = NewObject<UMissionSelectionListEntry>();
+			Item->Mission = MissionDefinition;
+			MissionList->AddItem(Item);
+		}
 	});
 }
