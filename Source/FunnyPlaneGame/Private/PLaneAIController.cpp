@@ -19,15 +19,23 @@ void APLaneAIController::Tick(float DeltaTime)
 
 	if (IsValid(GetPawn())) 
 	{
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(GetPawn());
+
 		CollisionAvoidanceTimer -= DeltaTime;
 
 		FVector TraceStart = GetPawn()->GetActorLocation();
-		FVector TraceEnd = GetPawn()->GetActorLocation() + GetPawn()->GetActorForwardVector() * CollisionAvoidanceDistance;
+		FVector TraceEnd = GetPawn()->GetActorLocation() + GetPawn()->GetActorForwardVector() * CollisionAvoidanceDistanceForward;
 
-		FHitResult Hit;
-		GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty);
+		FHitResult Hitfront;
+		GetWorld()->LineTraceSingleByChannel(Hitfront, TraceStart, TraceEnd, TraceChannelProperty, CollisionParams);
 
-		if (Hit.bBlockingHit)
+		TraceEnd = GetPawn()->GetActorLocation() + FVector(0,0,-1) * CollisionAvoidanceDistanceDown;
+
+		FHitResult HitDown;
+		GetWorld()->LineTraceSingleByChannel(HitDown, TraceStart, TraceEnd, TraceChannelProperty, CollisionParams);
+
+		if (Hitfront.bBlockingHit || HitDown.bBlockingHit)
 		{
 			AvoidCollision();
 			CollisionAvoidanceTimer = CollisionAvoidanceTimerMax;
@@ -160,9 +168,9 @@ void APLaneAIController::TurnToTargetAndAttack()
 		FRotator targetRotation = targetRelativePosition.Rotation();
 
 		auto DeltaRoll = FMath::FindDeltaAngleDegrees(ControlledPlane->GetActorRotation().Roll, CurrentTarget->GetActorRotation().Roll);
-		auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
-		auto RollControl = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(-1., 1.), DeltaRoll);
-		auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
+		auto YawControl = FMath::Clamp(targetRotation.Yaw, -1, 1);
+		auto RollControl = FMath::Clamp(DeltaRoll, -1, 1);
+		auto PitchControl = FMath::Clamp(targetRotation.Pitch, -1, 1);
 
 		ControlledPlane->CurrentSteer = FMath::Lerp(-YawControl, 0.f, AlignmentFactor);
 		ControlledPlane->CurrentRoll = FMath::Lerp(RollControl, YawControl, AlignmentFactor);

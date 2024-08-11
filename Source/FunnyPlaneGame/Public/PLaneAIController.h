@@ -29,10 +29,12 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	float AlignmentThreshold = 0.3;
 
 	UPROPERTY(EditAnywhere)
-	float CollisionAvoidanceDistance = 1000.f;
+	float CollisionAvoidanceDistanceForward = 1000.f;
+	UPROPERTY(EditAnywhere)
+	float CollisionAvoidanceDistanceDown = 1000.f;
 	UPROPERTY(EditAnywhere)
 	float CollisionAvoidanceTimerMax = 3.f;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	float CollisionAvoidanceTimer = 0.f;
 	UPROPERTY()
 	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
