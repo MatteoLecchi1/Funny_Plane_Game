@@ -19,42 +19,26 @@ void APLaneAIController::Tick(float DeltaTime)
 
 	if (IsValid(GetPawn())) 
 	{
+		CollisionAvoidanceTimer -= DeltaTime;
 
-		ControlledPlane = Cast<APlanePawn>(GetPawn());
-		auto Component = Cast<UPrimitiveComponent>(ControlledPlane->GetRootComponent());
-		Component->SetSimulatePhysics(true);
+		FVector TraceStart = GetPawn()->GetActorLocation();
+		FVector TraceEnd = GetPawn()->GetActorLocation() + GetPawn()->GetActorForwardVector() * CollisionAvoidanceDistance;
 
-		if (!IsValid(CurrentTarget)) 
+		FHitResult Hit;
+		GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty);
+
+		if (Hit.bBlockingHit)
 		{
-			RerollTarget();
+			AvoidCollision();
+			CollisionAvoidanceTimer = CollisionAvoidanceTimerMax;
+		}
+		else if (CollisionAvoidanceTimer > 0)
+		{
+			AvoidCollision();
 		}
 		else
 		{
-			FVector targetRelativePosition = ControlledPlane->GetActorTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
-
-			auto AlignmentFactor = abs(FMath::Acos(FVector::DotProduct(ControlledPlane->GetActorForwardVector(), CurrentTarget->GetActorForwardVector())) / UE_HALF_PI); 
-
-			FRotator targetRotation = targetRelativePosition.Rotation();
-
-			auto DeltaRoll = FMath::FindDeltaAngleDegrees(ControlledPlane->GetActorRotation().Roll, CurrentTarget->GetActorRotation().Roll);
-			auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
-			auto RollControl = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(-1., 1.), DeltaRoll);
-			auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
-
-			ControlledPlane->CurrentSteer = FMath::Lerp(-YawControl, 0.f, AlignmentFactor);
-			ControlledPlane->CurrentRoll = FMath::Lerp(RollControl, YawControl, AlignmentFactor);
-			ControlledPlane->CurrentPitch = PitchControl;
-
-			FVector targetRelativeDirection = targetRelativePosition.GetSafeNormal();
-			auto AmingFactor = FMath::Min(1., FMath::Acos(targetRelativeDirection.X));
-
-			if (AmingFactor < AlignmentThreshold)
-			{
-				for(auto H : ControlledPlane->Hardpoints)
-				{
-					H->ShootWeapon(CurrentTarget);
-				}
-			}
+			TurnToTargetAndAttack();
 		}
 	}
 	else 
@@ -134,6 +118,64 @@ void APLaneAIController::RerollTarget()
 					CurrentTarget = PossibleTarget;
 					i = -1;
 				}
+			}
+		}
+	}
+}
+void APLaneAIController::AvoidCollision() 
+{
+	FVector TargetWorldLocation = ControlledPlane->GetActorLocation() + FVector(0,0, std::numeric_limits<float>::max());
+
+	FVector targetRelativePosition = ControlledPlane->GetActorTransform().InverseTransformPosition(TargetWorldLocation);
+
+	auto AlignmentFactor = abs(FMath::Acos(FVector::DotProduct(ControlledPlane->GetActorForwardVector(), FVector(0, 0, 1))) / UE_HALF_PI);
+
+	FRotator targetRotation = targetRelativePosition.Rotation();
+
+	auto DeltaRoll = FMath::FindDeltaAngleDegrees(ControlledPlane->GetActorRotation().Roll, 0);
+	auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
+	auto RollControl = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(-1., 1.), DeltaRoll);
+	auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
+
+	ControlledPlane->CurrentSteer = FMath::Lerp(-YawControl, 0.f, AlignmentFactor);
+	ControlledPlane->CurrentRoll = FMath::Lerp(RollControl, YawControl, AlignmentFactor);
+	ControlledPlane->CurrentPitch = PitchControl;
+}
+void APLaneAIController::TurnToTargetAndAttack()
+{
+	ControlledPlane = Cast<APlanePawn>(GetPawn());
+	auto Component = Cast<UPrimitiveComponent>(ControlledPlane->GetRootComponent());
+	Component->SetSimulatePhysics(true);
+
+	if (!IsValid(CurrentTarget))
+	{
+		RerollTarget();
+	}
+	else
+	{
+		FVector targetRelativePosition = ControlledPlane->GetActorTransform().InverseTransformPosition(CurrentTarget->GetActorLocation());
+
+		auto AlignmentFactor = abs(FMath::Acos(FVector::DotProduct(ControlledPlane->GetActorForwardVector(), CurrentTarget->GetActorForwardVector())) / UE_HALF_PI);
+
+		FRotator targetRotation = targetRelativePosition.Rotation();
+
+		auto DeltaRoll = FMath::FindDeltaAngleDegrees(ControlledPlane->GetActorRotation().Roll, CurrentTarget->GetActorRotation().Roll);
+		auto YawControl = FMath::GetMappedRangeValueClamped(FVector2D(-YawVariation, YawVariation), FVector2D(-1., 1.), targetRotation.Yaw);
+		auto RollControl = FMath::GetMappedRangeValueClamped(FVector2D(-RollVariation, RollVariation), FVector2D(-1., 1.), DeltaRoll);
+		auto PitchControl = FMath::GetMappedRangeValueClamped(FVector2D(-PitchVariation, PitchVariation), FVector2D(-1., 1.), targetRotation.Pitch);
+
+		ControlledPlane->CurrentSteer = FMath::Lerp(-YawControl, 0.f, AlignmentFactor);
+		ControlledPlane->CurrentRoll = FMath::Lerp(RollControl, YawControl, AlignmentFactor);
+		ControlledPlane->CurrentPitch = PitchControl;
+
+		FVector targetRelativeDirection = targetRelativePosition.GetSafeNormal();
+		auto AmingFactor = FMath::Min(1., FMath::Acos(targetRelativeDirection.X));
+
+		if (AmingFactor < AlignmentThreshold)
+		{
+			for (auto H : ControlledPlane->Hardpoints)
+			{
+				H->ShootWeapon(CurrentTarget);
 			}
 		}
 	}

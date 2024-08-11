@@ -43,6 +43,7 @@ public:
 	void AssignTargets();
 	void UpdateTargets(AActor* Actor);
 	void SpawnActorsFromSpawnerTag(FName Tag);
+	UFUNCTION()
 	void ExitMission();
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;

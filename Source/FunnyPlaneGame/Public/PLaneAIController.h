@@ -28,7 +28,18 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	UPROPERTY(EditAnywhere)
 	float AlignmentThreshold = 0.3;
 
+	UPROPERTY(EditAnywhere)
+	float CollisionAvoidanceDistance = 1000.f;
+	UPROPERTY(EditAnywhere)
+	float CollisionAvoidanceTimerMax = 3.f;
+	UPROPERTY(EditAnywhere)
+	float CollisionAvoidanceTimer = 0.f;
+	UPROPERTY()
+	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
+
 	 void RerollTarget();
+	 void AvoidCollision();
+	 void TurnToTargetAndAttack();
 
 protected:
 	// Called when the game starts or when spawned

@@ -22,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class APlanePawn> SpawnClass;
 	UPROPERTY(EditAnywhere)
-	bool ShouldSpawn = true;
+	bool ShouldSpawn = false;
 	UPROPERTY()
 	FTimerHandle TimerHandle;
 
