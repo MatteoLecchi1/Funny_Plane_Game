@@ -17,7 +17,7 @@ One of the main features of this games are bosses, each boss has their own gimmi
 For example, the Ship boss "B15 MARK-2" is a ship that fires cannons, missiles and AA guns at you, 
 the challange of this boss is to avoid 3 damage sources at the same time while focusing damage on the greatest of 3 threats.
 
-this boss also has a second phase that activates when all weapons are destroyed,
+This boss also has a second phase that activates when all weapons are destroyed,
 where it will start flyng and repair all weapons, swapping the cannons for laser cannons that damage everything in a starght line.
 
 After defeating this boss you will unlock its laser cannon and vertically launched micro-missiles
@@ -30,4 +30,4 @@ Most objectives are about destroying something, variety is achived by the contex
 and how the players build interacts with said context.
 
 ## Narrative
-the game is called funny plane game, there is no narrative, only gameplay
+The game is called funny plane game, there is no narrative, only gameplay
