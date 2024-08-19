@@ -3,14 +3,19 @@ Funny Plane Game is an action game where you __customize__ and __pilot__ your pl
 Advance in the main campaign full of unique missions that require you to constantly change your build to accomplish each objective
 fight against unique __bosses__ each having their own gimmik
 
+[![YouTube](http://i.ytimg.com/vi/Rf68lT4ZmM4/hqdefault.jpg)](https://www.youtube.com/watch?v=Rf68lT4ZmM4)
+
+Gameplay video
+
 ### Customization
 In this game you are able to customize your planes however you like, limited only by the planes hardpoints and their tier
 Each plane has a set of hardponts, these are where you attach your weapons.
 Each hardpoint has a tier that limits what weapons you can attach to it, the larger the number, the stronger the weapons you can attach
 
 You will also unlock new weapons when defeating a boss, this weapon will resemble one of the boss's weapons
-![alt text](https://github.com/MatteoLecchi1/Funny_Plane_Game/blob/main/Sreenshots/Buildcrafting.PNG?raw=true)
-Buildcrafting example
+[![YouTube](http://i.ytimg.com/vi/1P2-fci2l2g/hqdefault.jpg)](https://www.youtube.com/watch?v=1P2-fci2l2g)
+
+Buildcrafting example video
 
 ### Bosses
 One of the main features of this games are bosses, each boss has their own gimmiks and will challange you in a different way.
