@@ -22,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class APlanePawn> SpawnClass;
 	UPROPERTY(EditAnywhere)
-	bool ShouldSpawn = false;
+	bool IsContinuousSpawn = false;
 	UPROPERTY()
 	FTimerHandle TimerHandle;
 
@@ -34,5 +34,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION()
-	void SpawnActor();
+	void SpawnActor(); 
+	UFUNCTION()
+	void SpawnSingleActor();
 };

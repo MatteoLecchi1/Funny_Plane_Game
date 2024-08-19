@@ -19,7 +19,7 @@ struct FUNNYPLANEGAME_API FHardpointWeaponDefinition : public FTableRowBase
 	FString	Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	HardpointTier Tier;
+	HardpointTier Tier = HardpointTier::TIER0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	TSubclassOf<class UHardpointWeapon> HardpointWeaponReferance;

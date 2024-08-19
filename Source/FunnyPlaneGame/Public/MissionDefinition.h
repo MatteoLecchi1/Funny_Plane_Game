@@ -17,7 +17,7 @@ struct FUNNYPLANEGAME_API FObjectiveDefinition
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objective)
-	ObjectiveType Type;
+	ObjectiveType Type = ObjectiveType::DESTROYALLENEMIES;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objective)
 	FName ObjectiveTag;
@@ -35,7 +35,7 @@ struct FUNNYPLANEGAME_API FMissionDefinition : public FTableRowBase
 	FString	Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
-	float IconNumber;
+	float IconNumber = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
 	FString	Description;
@@ -47,7 +47,7 @@ struct FUNNYPLANEGAME_API FMissionDefinition : public FTableRowBase
 	TArray<FObjectiveDefinition> Objectives;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
-	bool IsUnlocked;
+	bool IsUnlocked = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mission)
 	TArray<FName> MissionsToUnlock;
