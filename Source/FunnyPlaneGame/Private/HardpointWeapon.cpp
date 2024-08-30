@@ -19,6 +19,7 @@ void UHardpointWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	ReloadPercentage(100);
+
 }
 
 // Called every frame
@@ -41,9 +42,6 @@ void UHardpointWeapon::ReloadPercentage(int Percentage)
 }
 void UHardpointWeapon::SpawnBarrelEffect(FTransform SpawnTransform)
 {
-	if (BarrelEffect)
-	{
-		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), BarrelEffect, SpawnTransform.GetLocation(), SpawnTransform.GetRotation().Rotator());
-	}
+
 }
 
