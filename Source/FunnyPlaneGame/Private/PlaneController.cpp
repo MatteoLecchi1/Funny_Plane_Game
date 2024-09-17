@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlanePlayerHUD.h"
 #include "DeathScreen.h"
+#include "Camera/CameraComponent.h"
 
 void APlaneController::BeginPlay()
 {

@@ -16,7 +16,7 @@ void UMissionSelectionUI::UpdateMissionList()
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 
 	GameInstance->MissionsDataTable->ForeachRow<FMissionDefinition>("Mission", [&](const FName& Key, const FMissionDefinition& MissionDefinition) {
-		if(MissionDefinition.IsUnlocked)
+		if(GameInstance->SaveInstance->UnlockedMissions[Key].IsUnlocked)
 		{
 			UMissionSelectionListEntry* Item = NewObject<UMissionSelectionListEntry>();
 			Item->Mission = MissionDefinition;

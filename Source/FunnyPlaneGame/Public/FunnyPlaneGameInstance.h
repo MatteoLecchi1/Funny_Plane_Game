@@ -27,7 +27,7 @@ public:
 
 
 	UPROPERTY()
-	class UPlaneConfigurationSaveGame* SaveInstance;
+	class UFunnyPlaneGameSaveGame* SaveInstance;
 
 	UFUNCTION()
 	void SavePlaneByName(FName PlaneKey);

@@ -27,6 +27,8 @@ class FUNNYPLANEGAME_API APLaneAIController : public AAIController
 	float YawVariation = 30;
 	UPROPERTY(EditAnywhere)
 	float AlignmentThreshold = 0.3;
+	UPROPERTY(EditAnywhere)
+	float Thrust = 0.75;
 
 	UPROPERTY(EditAnywhere)
 	float CollisionAvoidanceDistanceForward = 1000.f;

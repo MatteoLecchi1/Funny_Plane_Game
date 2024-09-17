@@ -11,7 +11,7 @@ UClass* APlaneGameMode::GetDefaultPawnClassForController_Implementation(AControl
 {
 	auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 
-	auto Row = GameInstance->PlanesDataTable->FindRow<FPlaneDefinition>(GameInstance->SaveInstance->CurrentPlaneKey, TEXT("Plane"));
+	auto Row = GameInstance->PlanesDataTable->FindRow<FPlaneDefinition>(GameInstance->SaveInstance->PlaneConfig.CurrentPlaneKey, TEXT("Plane"));
 	if (Row && Row->PlaneReferance)
 	{
 		return Row->PlaneReferance;
@@ -26,7 +26,7 @@ APawn* APlaneGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* N
 	if (auto PlanePawn = Cast <APlanePawn>(Pawn))
 	{
 		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
-		if (auto CurrentPlane = GameInstance->SaveInstance->GetCurrentPlane())
+		if (auto CurrentPlane = GameInstance->SaveInstance->PlaneConfig.GetCurrentPlane())
 		{
 			PlanePawn->Configuration = *CurrentPlane;
 		}
@@ -104,6 +104,7 @@ void APlaneGameMode::JumpToNextObjective()
 		for (FName missionToUnlock : MissionDefinition.MissionsToUnlock) {
 			GameInstance->UnlockMission(missionToUnlock);
 		}
+
 		FTimerHandle TimerHandle;
 		FTimerDelegate Delegate;
 		Delegate.BindUFunction(this, FName("ExitMission"));

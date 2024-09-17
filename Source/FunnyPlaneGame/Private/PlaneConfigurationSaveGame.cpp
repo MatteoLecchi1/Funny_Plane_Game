@@ -2,7 +2,7 @@
 
 #include "PlaneConfigurationSaveGame.h"
 
-FSavedPlane* UPlaneConfigurationSaveGame::GetCurrentPlane()
+FSavedPlane* FPlaneConfigurationSaveGame::GetCurrentPlane()
 {
 	if (SavedPlanes.Contains(CurrentPlaneKey))
 	{

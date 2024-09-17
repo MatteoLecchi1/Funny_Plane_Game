@@ -31,7 +31,7 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 		Item->Plane = PlaneDefinition;
 		PlaneList->AddItem(Item);
 
-		if (GameInstance->SaveInstance->CurrentPlaneKey == Key)
+		if (GameInstance->SaveInstance->PlaneConfig.CurrentPlaneKey == Key)
 		{
 			PlaneList->SetItemSelection(Item, true);
 		}
@@ -55,7 +55,7 @@ void UPlaneCustomizationUI::UpdateHardpointList()
 
 	//spawn plane as preview
 	PlanePreviewInstance = GetWorld()->SpawnActor<APlanePawn>(PlaneItem->Plane.PlaneReferance);
-	if (auto CurrentPlane = GameInstance->SaveInstance->GetCurrentPlane())
+	if (auto CurrentPlane = GameInstance->SaveInstance->PlaneConfig.GetCurrentPlane())
 	{
 		PlanePreviewInstance->ApplyConfiguration(*CurrentPlane);
 	}
@@ -140,7 +140,7 @@ void UPlaneCustomizationUI::ChangeWeapon()
 		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 		GameInstance->SaveWeaponByNameAndHardpoint(WeaponItem->Key,HardpointList->GetIndexForItem(HardpointItem));
 
-		if (auto CurrentPlane = GameInstance->SaveInstance->GetCurrentPlane())
+		if (auto CurrentPlane = GameInstance->SaveInstance->PlaneConfig.GetCurrentPlane())
 		{
 			PlanePreviewInstance->ApplyConfiguration(*CurrentPlane);
 		}

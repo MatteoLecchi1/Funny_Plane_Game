@@ -18,8 +18,8 @@ struct FUNNYPLANEGAME_API FSavedPlane
 	TArray<FName> SavedHardpointWeapons;
 };
 
-UCLASS()
-class FUNNYPLANEGAME_API UPlaneConfigurationSaveGame : public USaveGame
+USTRUCT(BlueprintType)
+struct FUNNYPLANEGAME_API FPlaneConfigurationSaveGame
 {
 	GENERATED_BODY()
 
@@ -32,4 +32,28 @@ public:
 	TMap<FName,FSavedPlane> SavedPlanes;
 
 	FSavedPlane* GetCurrentPlane();
+};
+USTRUCT(BlueprintType)
+struct FUNNYPLANEGAME_API FSavedMission
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, Category = Plane)
+	FName MissionKey;
+
+	UPROPERTY(BlueprintReadWrite, Category = Plane)
+	bool IsUnlocked;
+};
+UCLASS()
+class FUNNYPLANEGAME_API UFunnyPlaneGameSaveGame : public USaveGame
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TMap<FName, FSavedMission> UnlockedMissions;
+
+	UPROPERTY()
+	FPlaneConfigurationSaveGame PlaneConfig;
 };

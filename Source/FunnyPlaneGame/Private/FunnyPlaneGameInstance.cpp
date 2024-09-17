@@ -15,16 +15,23 @@ void UFunnyPlaneGameInstance::Init()
 {
 	Super::Init();
 
-	SaveInstance = Cast<UPlaneConfigurationSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("SlotName"), 0));
+	SaveInstance = Cast<UFunnyPlaneGameSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("SlotName"), 0));
 
 	// If savegame not present create an empty one
 	if (SaveInstance == nullptr)
 	{
-		SaveInstance = Cast<UPlaneConfigurationSaveGame>(UGameplayStatics::CreateSaveGameObject(UPlaneConfigurationSaveGame::StaticClass()));
+		SaveInstance = Cast<UFunnyPlaneGameSaveGame>(UGameplayStatics::CreateSaveGameObject(UFunnyPlaneGameSaveGame::StaticClass()));
 		PlanesDataTable->ForeachRow<FPlaneDefinition>("Plane", [&](const FName& Key, const FPlaneDefinition& PlaneDefinition) {
-			auto& Plane = SaveInstance->SavedPlanes.FindOrAdd(Key);
+			auto& Plane = SaveInstance->PlaneConfig.SavedPlanes.FindOrAdd(Key);
 			Plane.PlaneKey = Key; 
 			UE_LOG(LogTemp, Warning, TEXT("%s"), * Key.ToString());
+		}); 
+
+		MissionsDataTable->ForeachRow<FMissionDefinition>("Mission", [&](const FName& Key, const FMissionDefinition& MissionDefinition) {
+			auto& Mission = SaveInstance->UnlockedMissions.FindOrAdd(Key);
+			Mission.MissionKey = Key;
+			Mission.IsUnlocked = MissionDefinition.IsUnlocked;
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *Key.ToString());
 		});
 	}
 }
@@ -32,13 +39,13 @@ void UFunnyPlaneGameInstance::Init()
 
 void UFunnyPlaneGameInstance::SavePlaneByName(FName PlaneKey)
 {
-	SaveInstance->CurrentPlaneKey = PlaneKey;
+	SaveInstance->PlaneConfig.CurrentPlaneKey = PlaneKey;
 	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
 }
 
 void UFunnyPlaneGameInstance::SaveWeaponByNameAndHardpoint(FName WeaponName, int HardpointIndex)
 {
-	if (auto CurrentPlane = SaveInstance->GetCurrentPlane())
+	if (auto CurrentPlane = SaveInstance->PlaneConfig.GetCurrentPlane())
 	{
 		// Resize SavedHardpointWeapons array if HardpointIndex is not present
 		if (!CurrentPlane->SavedHardpointWeapons.IsValidIndex(HardpointIndex))
@@ -52,14 +59,10 @@ void UFunnyPlaneGameInstance::SaveWeaponByNameAndHardpoint(FName WeaponName, int
 
 FSavedPlane& UFunnyPlaneGameInstance::GetCurrentPlane()
 {
-	return SaveInstance->SavedPlanes[SaveInstance->CurrentPlaneKey];
+	return SaveInstance->PlaneConfig.SavedPlanes[SaveInstance->PlaneConfig.CurrentPlaneKey];
 }
-void UFunnyPlaneGameInstance::UnlockMission(FName MissionToUnlock) 
+void UFunnyPlaneGameInstance::UnlockMission(FName MissionKey) 
 {
-	MissionsDataTable->ForeachRow<FMissionDefinition>("Mission", [&](const FName& Key, const FMissionDefinition& MissionDefinition) {
-		if(MissionDefinition.Name == MissionToUnlock)
-		{
-
-		}
-	});
+	SaveInstance->UnlockedMissions[MissionKey].IsUnlocked = true;
+	UGameplayStatics::SaveGameToSlot(SaveInstance, TEXT("SlotName"), 0);
 }

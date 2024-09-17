@@ -186,5 +186,7 @@ void APLaneAIController::TurnToTargetAndAttack()
 				H->ShootWeapon(CurrentTarget);
 			}
 		}
+
+		ControlledPlane->CurrentThrust = Thrust;
 	}
 }
