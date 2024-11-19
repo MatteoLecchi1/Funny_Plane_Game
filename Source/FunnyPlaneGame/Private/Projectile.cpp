@@ -15,7 +15,7 @@ AProjectile::AProjectile()
 
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
 	ProjectileMesh -> SetSimulatePhysics(true);
-
+	RootComponent = ProjectileMesh;
 }
 
 // Called when the game starts or when spawned

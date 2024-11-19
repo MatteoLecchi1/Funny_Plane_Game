@@ -20,11 +20,16 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float range = 50000.f;
-	UPROPERTY(EditAnywhere, Category = "Collision")
+	UPROPERTY(EditAnywhere)
+	float Radius = 100.f;
+	UPROPERTY(EditAnywhere, Category = "MyCollision")
 	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_GameTraceChannel1;
 
 	UPROPERTY(EditAnywhere, Category = "VFX")
 	UNiagaraSystem* ExplosionEffect;
 	UPROPERTY(EditAnywhere, Category = "VFX")
 	UNiagaraSystem* TrailEffect;
+
+
+	void SpawnTrailEffect(FVector start, FVector End);
 };

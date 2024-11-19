@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PlanePawn.h"
+#include "TurretPawn.h"
 #include "TimerManager.h"
 #include "Spawner.generated.h"
 
@@ -20,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float DelaybetweenSpawns = 50;
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class APlanePawn> SpawnClass;
+	TSubclassOf<class AActor> SpawnClass;
 	UPROPERTY(EditAnywhere)
 	bool IsContinuousSpawn = false;
 	UPROPERTY()
@@ -37,4 +38,6 @@ public:
 	void SpawnActor(); 
 	UFUNCTION()
 	void SpawnSingleActor();
+	UFUNCTION()
+	void SpawnSingleActorAndAttach(AActor* Actor);
 };

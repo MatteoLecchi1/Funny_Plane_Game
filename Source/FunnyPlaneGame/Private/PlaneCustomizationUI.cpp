@@ -114,7 +114,7 @@ void UPlaneCustomizationUI::UpdateWeaponList()
 
 	GameInstance->WeaponsDataTable->ForeachRow<FHardpointWeaponDefinition>("Weapon", [&](const FName& Key, const FHardpointWeaponDefinition& WeaponDefinition) {
 
-		if (WeaponDefinition.Tier <= HardpointTier)
+		if (WeaponDefinition.Tier <= HardpointTier && WeaponDefinition.IsEquippableByPlayer && WeaponDefinition.IsUnlocked)
 		{
 			UWeaponSelectionListElement* Item = NewObject<UWeaponSelectionListElement>();
 			Item->Key = Key;

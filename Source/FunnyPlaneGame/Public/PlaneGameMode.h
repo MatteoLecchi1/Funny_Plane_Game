@@ -36,6 +36,8 @@ public:
 	TArray<AActor*> Targets;
 	UPROPERTY()
 	int Timer = 0;
+	UPROPERTY()
+	TArray<AActor*> Bosses;
 
 	void AddActorToArrays(AActor* Actor);
 	void RemoveActorFromArrays(AActor* Actor);
@@ -43,6 +45,7 @@ public:
 	void AssignTargets();
 	void UpdateTargets(AActor* Actor);
 	void SpawnActorsFromSpawnerTag(FName Tag);
+	void UpdateBosses();
 	UFUNCTION()
 	void ExitMission();
 

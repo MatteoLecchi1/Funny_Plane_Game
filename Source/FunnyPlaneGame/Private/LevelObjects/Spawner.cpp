@@ -40,7 +40,28 @@ void ASpawner::SpawnActor()
 }
 void ASpawner::SpawnSingleActor()
 {
-	APlanePawn* PlaneInstance = GetWorld()->SpawnActor<APlanePawn>(SpawnClass, GetActorLocation(), GetActorRotation());
-	PlaneInstance->SpawnDefaultController();
+	AActor* SpawnedInstance = GetWorld()->SpawnActor<APlanePawn>(SpawnClass, GetActorLocation(), GetActorRotation());
+	if (APlanePawn* PlaneInstance = Cast<APlanePawn>(SpawnedInstance)) {
+		PlaneInstance->SpawnDefaultController();
+	}
+	if (ATurretPawn* TurretInstance = Cast<ATurretPawn>(SpawnedInstance)) {
+		TurretInstance->SpawnDefaultController();
+	}
 }
+void ASpawner::SpawnSingleActorAndAttach(AActor* Actor)
+{
+	FActorSpawnParameters ActorSpawnParameters;
+	ActorSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AActor* SpawnedInstance = GetWorld()->SpawnActor<AActor>(SpawnClass, GetActorLocation(), GetActorRotation(), ActorSpawnParameters);
+	if (!SpawnedInstance->IsValidLowLevel()) return;
 
+	if (APlanePawn* PlaneInstance = Cast<APlanePawn>(SpawnedInstance)) {
+		PlaneInstance->SpawnDefaultController();
+	}
+	if (ATurretPawn* TurretInstance = Cast<ATurretPawn>(SpawnedInstance)) {
+		TurretInstance->SpawnDefaultController();
+	}
+	if (Actor != nullptr) {
+		SpawnedInstance->AttachToActor(Actor, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+}

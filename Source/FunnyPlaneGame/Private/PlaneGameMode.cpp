@@ -5,6 +5,7 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "MissionDefinition.h"
+#include "Pawns/BossPawn.h"
 #include "LevelObjects/Spawner.h"
 
 UClass* APlaneGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -98,7 +99,7 @@ void APlaneGameMode::RemoveActorFromArrays(AActor* Actor)
 void APlaneGameMode::JumpToNextObjective() 
 {
 	CurrentObjective++;
-	if (CurrentObjective == MissionDefinition.Objectives.Num()) 
+	if (CurrentObjective >= MissionDefinition.Objectives.Num()) 
 	{
 		auto GameInstance = UFunnyPlaneGameInstance::GetGameInstance(GetWorld());
 		for (FName missionToUnlock : MissionDefinition.MissionsToUnlock) {
@@ -112,8 +113,9 @@ void APlaneGameMode::JumpToNextObjective()
 	}
 	else
 	{
-
 		SpawnActorsFromSpawnerTag(MissionDefinition.Objectives[CurrentObjective].SpawnerTags);
+
+		UpdateBosses();
 
 		AssignTargets();
 	}
@@ -161,10 +163,20 @@ void APlaneGameMode::UpdateTargets(AActor* Actor)
 		JumpToNextObjective();
 	}
 }
+void APlaneGameMode::UpdateBosses() 
+{
+	for (AActor* Boss : Bosses)
+	{
+		Cast<ABossPawn>(Boss)->OnJumpToNextObjective(CurrentObjective);
+	}
+}
 void APlaneGameMode::SpawnActorsFromSpawnerTag(FName Tag) 
 {
 	TArray<AActor*>  selectedSpawners;
 	UGameplayStatics::GetAllActorsOfClassWithTag(GetWorld(), ASpawner::StaticClass(), Tag, selectedSpawners);
+
+	if (selectedSpawners.Num() == 0) return;
+
 	for (AActor* spawner : selectedSpawners)
 	{
 		Cast<ASpawner>(spawner)->SpawnActor();

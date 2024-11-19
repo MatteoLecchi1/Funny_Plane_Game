@@ -49,6 +49,10 @@ public:
 	double MaxHealth = 100.;
 	UPROPERTY()
 	double CurrentHealth = 1.;
+	//VFX
+	UPROPERTY(EditAnywhere, Category = "VFX")
+	UNiagaraSystem* ExplosionEffect;
+
 
 protected:
 	// Called when the game starts or when spawned

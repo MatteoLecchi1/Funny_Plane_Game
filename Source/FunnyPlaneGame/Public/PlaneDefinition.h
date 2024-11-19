@@ -21,6 +21,13 @@ struct FUNNYPLANEGAME_API FHardpointWeaponDefinition : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	HardpointTier Tier = HardpointTier::TIER0;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	bool IsUnlocked = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	bool IsEquippableByPlayer;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	TSubclassOf<class UHardpointWeapon> HardpointWeaponReferance;
 };

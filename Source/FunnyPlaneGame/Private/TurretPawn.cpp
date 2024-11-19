@@ -4,6 +4,7 @@
 #include "TurretPawn.h"
 #include "PlaneGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 ATurretPawn::ATurretPawn()
@@ -91,6 +92,9 @@ void ATurretPawn::OnDestroy()
 	if (gamemode)
 	{
 		gamemode->RemoveActorFromArrays(this);
+	}
+	if (ExplosionEffect) {
+		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation(), FRotator(0.f), FVector(1));
 	}
 	Destroy();
 }

@@ -34,36 +34,59 @@ void URailgunHardpointWeapon::Shoot(AActor* PossibleTarget)
 	}
 	else if (GetOwner()->ActorHasTag("IsEnemy")) 
 	{
-		QueryParams.AddIgnoredActors(gamemode->EnemyActors); TemporaryArray = gamemode->EnemyActors;
+		QueryParams.AddIgnoredActors(gamemode->EnemyActors);
+		TemporaryArray = gamemode->EnemyActors;
+	}
+
+	SpawnBarrelEffect(SpawnTransform);
+
+	FHitResult ShpereHit;
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
+	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(TraceChannelProperty));
+
+	UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), TraceStart, TraceEnd, Radius, ObjectTypesArray, false, TemporaryArray, EDrawDebugTrace::None, ShpereHit, true);
+	if (ShpereHit.bBlockingHit)
+	{
+		UGameplayStatics::ApplyDamage(ShpereHit.GetActor(), DamageOverride, UGameplayStatics::GetPlayerController(GetWorld(), 0), GetOwner(), nullptr);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageOverride, ShpereHit.Location, AreaDamageRadiusOverride, nullptr, TemporaryArray, GetOwner(), UGameplayStatics::GetPlayerController(GetWorld(), 0), true, ECollisionChannel::ECC_GameTraceChannel2);
+
+		if (ExplosionEffect)
+		{
+			UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, ShpereHit.Location, FRotator(0.f), FVector(AreaDamageRadiusOverride));
+		}
+		if (TrailEffect) 
+		{
+			SpawnTrailEffect(SpawnTransform.GetLocation(), ShpereHit.Location);
+		}
+		return;
 	}
 
 	FHitResult Hit;
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty, QueryParams);
-	if (Hit.bBlockingHit)
+
+	if(Hit.bBlockingHit)
 	{
 		UGameplayStatics::ApplyDamage(Hit.GetActor(), DamageOverride, UGameplayStatics::GetPlayerController(GetWorld(), 0), GetOwner(), nullptr);
-
 		UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageOverride, Hit.Location, AreaDamageRadiusOverride, nullptr, TemporaryArray, GetOwner(), UGameplayStatics::GetPlayerController(GetWorld(), 0), true, ECollisionChannel::ECC_GameTraceChannel2);
 
 		if (ExplosionEffect)
 		{
 			UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, Hit.Location, FRotator(0.f), FVector(AreaDamageRadiusOverride));
 		}
+		if (TrailEffect)
+		{
+			SpawnTrailEffect(SpawnTransform.GetLocation(), Hit.Location);
+		}
+		return;
 	}
 
-	if (TrailEffect) //spawns the trail vfx
+	if (TrailEffect) 
 	{
-		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TrailEffect, SpawnTransform.GetLocation(), FRotator(0.f));
-		if(Hit.bBlockingHit)
-		{
-			NiagaraComp->SetVectorParameter("BeamEndLocation", Hit.Location);
-		}
-		else
-		{
-			NiagaraComp->SetVectorParameter("BeamEndLocation", TraceStart + GetForwardVector() * range);
-		}
+		SpawnTrailEffect(SpawnTransform.GetLocation(), TraceStart + GetForwardVector() * range);
 	}
-
-	SpawnBarrelEffect(SpawnTransform);
-
+}
+void URailgunHardpointWeapon::SpawnTrailEffect(FVector start, FVector End)
+{
+	UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TrailEffect, start, FRotator(0.f));
+	NiagaraComp->SetVectorParameter("BeamEndLocation", End);
 }
