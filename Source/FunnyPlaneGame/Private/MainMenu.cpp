@@ -26,7 +26,6 @@ void UMainMenu::OnStartButtonPressed()
 		}
 	}
 }
-
 void UMainMenu::OnExitButtonPressed()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(),UGameplayStatics::GetPlayerController(GetWorld(),0),EQuitPreference::Quit,true);

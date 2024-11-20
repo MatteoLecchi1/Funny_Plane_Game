@@ -26,7 +26,7 @@ struct FUNNYPLANEGAME_API FHardpointWeaponDefinition : public FTableRowBase
 	bool IsUnlocked = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	bool IsEquippableByPlayer;
+	bool IsEquippableByPlayer = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	TSubclassOf<class UHardpointWeapon> HardpointWeaponReferance;

@@ -37,14 +37,17 @@ void URailgunHardpointWeapon::Shoot(AActor* PossibleTarget)
 		QueryParams.AddIgnoredActors(gamemode->EnemyActors);
 		TemporaryArray = gamemode->EnemyActors;
 	}
-
+	if (AActor* OwnerOfOwner = GetOwner()->GetOwner()) 
+	{
+		TemporaryArray.Add(OwnerOfOwner);
+	}
 	SpawnBarrelEffect(SpawnTransform);
 
 	FHitResult ShpereHit;
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
 	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(TraceChannelProperty));
 
-	UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), TraceStart, TraceEnd, Radius, ObjectTypesArray, false, TemporaryArray, EDrawDebugTrace::None, ShpereHit, true);
+	UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), TraceStart, TraceEnd, Radius, ObjectTypesArray, false, TemporaryArray, EDrawDebugTrace::ForDuration, ShpereHit, true);
 	if (ShpereHit.bBlockingHit)
 	{
 		UGameplayStatics::ApplyDamage(ShpereHit.GetActor(), DamageOverride, UGameplayStatics::GetPlayerController(GetWorld(), 0), GetOwner(), nullptr);

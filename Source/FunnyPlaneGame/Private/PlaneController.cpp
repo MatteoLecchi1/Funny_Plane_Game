@@ -46,6 +46,8 @@ void APlaneController::OnControlledPlaneDeath()
 	bEnableClickEvents = true;
 	bEnableMouseOverEvents = true;
 	UnPossess();
-	if (widgetDeathScreenInstance)
+	if (widgetDeathScreenInstance) {
 		widgetDeathScreenInstance->AddToPlayerScreen();
+		widgetDeathScreenInstance->OnAppearOnScreen();
+	}
 }

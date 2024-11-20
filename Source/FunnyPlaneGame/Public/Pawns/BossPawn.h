@@ -15,7 +15,7 @@ public:
 	// Sets default values for this pawn's properties
 	ABossPawn();
 
-	virtual void OnJumpToNextObjective(int CurrentObjective);
+	virtual void ChangePhase(int CurrentObjective);
 
 protected:
 	// Called when the game starts or when spawned

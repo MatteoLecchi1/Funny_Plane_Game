@@ -3,8 +3,9 @@
 
 #include "Pawns/BoatBossPawn.h"
 #include "LevelObjects/Spawner.h"
+#include "PlaneGameMode.h"
 
-void ABoatBossPawn::OnJumpToNextObjective(int CurrentObjective)
+void ABoatBossPawn::ChangePhase(int CurrentObjective)
 {
 	switch (CurrentObjective)
 	{
@@ -14,10 +15,6 @@ void ABoatBossPawn::OnJumpToNextObjective(int CurrentObjective)
 		StartFlight = true;
 		SpawnNewWeapons();
 		break;
-
-	case(2):
-		break;
-
 	default:
 		break;
 	}

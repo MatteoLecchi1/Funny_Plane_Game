@@ -36,6 +36,8 @@ void UPlaneCustomizationUI::UpdatePlaneList()
 			PlaneList->SetItemSelection(Item, true);
 		}
 	});
+
+	PlaneList->SetKeyboardFocus();
 }
 
 void UPlaneCustomizationUI::UpdateHardpointList()

@@ -25,6 +25,6 @@ class FUNNYPLANEGAME_API ABoatBossPawn : public ABossPawn
 	bool StartFlight;
 
 	void SpawnNewWeapons();
-	virtual void OnJumpToNextObjective(int CurrentObjective) override;
+	virtual void ChangePhase(int CurrentObjective) override;
 	virtual void Tick(float DeltaTime) override;
 };

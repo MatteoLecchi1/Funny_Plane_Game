@@ -3,6 +3,7 @@
 
 #include "LevelObjects/Spawner.h"
 #include "TimerManager.h"
+#include "PlaneGameMode.h"
 
 // Sets default values
 ASpawner::ASpawner()
@@ -52,8 +53,13 @@ void ASpawner::SpawnSingleActorAndAttach(AActor* Actor)
 {
 	FActorSpawnParameters ActorSpawnParameters;
 	ActorSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AActor* SpawnedInstance = GetWorld()->SpawnActor<AActor>(SpawnClass, GetActorLocation(), GetActorRotation(), ActorSpawnParameters);
-	if (!SpawnedInstance->IsValidLowLevel()) return;
+	FTransform spawnTransform = RootComponent->GetComponentTransform();
+
+	FString TheFloatStr = FString::FromInt(Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->CurrentObjective);
+
+	AActor* SpawnedInstance = GetWorld()->SpawnActor<AActor>(SpawnClass, spawnTransform.GetLocation(), spawnTransform.GetRotation().Rotator(), ActorSpawnParameters);
+
+	TheFloatStr = FString::FromInt(Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->CurrentObjective);
 
 	if (APlanePawn* PlaneInstance = Cast<APlanePawn>(SpawnedInstance)) {
 		PlaneInstance->SpawnDefaultController();
@@ -62,6 +68,6 @@ void ASpawner::SpawnSingleActorAndAttach(AActor* Actor)
 		TurretInstance->SpawnDefaultController();
 	}
 	if (Actor != nullptr) {
-		SpawnedInstance->AttachToActor(Actor, FAttachmentTransformRules::KeepRelativeTransform);
+		SpawnedInstance->AttachToActor(Actor, FAttachmentTransformRules::KeepWorldTransform);
 	}
 }

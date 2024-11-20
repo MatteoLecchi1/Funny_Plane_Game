@@ -66,7 +66,7 @@ protected:
 		AActor* DamageCauser
 	)override;
 
-	void OnDestroy();
+	void MyDestroy();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

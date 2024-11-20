@@ -126,7 +126,7 @@ void APlaneGameMode::AssignTargets()
 	switch(Objective.Type)
 	{
 	case(ObjectiveType::DESTROYALLENEMIES):
-
+		Targets.Empty();
 		Targets = EnemyActors;
 		break;
 
@@ -167,7 +167,7 @@ void APlaneGameMode::UpdateBosses()
 {
 	for (AActor* Boss : Bosses)
 	{
-		Cast<ABossPawn>(Boss)->OnJumpToNextObjective(CurrentObjective);
+		Cast<ABossPawn>(Boss)->ChangePhase(CurrentObjective);
 	}
 }
 void APlaneGameMode::SpawnActorsFromSpawnerTag(FName Tag) 

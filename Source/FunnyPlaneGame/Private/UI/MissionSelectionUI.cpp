@@ -23,4 +23,6 @@ void UMissionSelectionUI::UpdateMissionList()
 			MissionList->AddItem(Item);
 		}
 	});
+
+	MissionList->SetKeyboardFocus();
 }

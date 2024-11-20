@@ -24,6 +24,8 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
+	void OnAppearOnScreen();
+	UFUNCTION()
 	void OnRetryButtonPressed();
 	UFUNCTION()
 	void OnMainMenuButtonPressed();

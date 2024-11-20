@@ -9,10 +9,12 @@ void UDeathScreen::NativeConstruct()
 {
 	if (RetryButton)
 		RetryButton->OnClicked.AddDynamic(this, &UDeathScreen::OnRetryButtonPressed);
-	if (RetryButton)
+	if (MainMenuButton)
 		MainMenuButton->OnClicked.AddDynamic(this, &UDeathScreen::OnMainMenuButtonPressed);
 }
-
+void UDeathScreen::OnAppearOnScreen() {
+	RetryButton->SetKeyboardFocus();
+}
 void UDeathScreen::OnRetryButtonPressed()
 {
 	UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), GetWorld()->GetCurrentLevel());

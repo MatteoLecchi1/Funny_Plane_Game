@@ -17,21 +17,25 @@ ATurretPawn::ATurretPawn()
 // Called when the game starts or when spawned
 void ATurretPawn::BeginPlay()
 {
-	Super::BeginPlay();
 
-	CurrentHealth = MaxHealth;
+	FString TheFloatStr = FString::FromInt(Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->CurrentObjective);
+	Super::BeginPlay();
 
 	GetComponents<UHardpoint>(Hardpoints, true);
 
 	turretBase = Cast<USceneComponent>(GetComponentsByTag(USceneComponent::StaticClass(), "turretBase")[0]);
 	turretGimball = Cast<USceneComponent>(GetComponentsByTag(USceneComponent::StaticClass(), "turretGimball")[0]);
 
+	TheFloatStr = FString::FromInt(Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->CurrentObjective);
 	//add this actor to gamemode lists
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
 	if (gamemode)
 	{
 		gamemode->AddActorToArrays(this);
 	}
+	TheFloatStr = FString::FromInt(Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode())->CurrentObjective);
+
+	CurrentHealth = MaxHealth;
 }
 
 // Called every frame
@@ -80,13 +84,14 @@ float ATurretPawn::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 
 	//if turret health is less than 0
 	if (CurrentHealth <= 0)
-		OnDestroy();
+		MyDestroy();
 
 	return DamageAmount;
 }
 
-void ATurretPawn::OnDestroy() 
+void ATurretPawn::MyDestroy()
 {
+	Destroy();
 	auto gamemode = Cast<APlaneGameMode>(GetWorld()->GetAuthGameMode());
 	//remove this actor from gamemode lists
 	if (gamemode)
@@ -96,6 +101,5 @@ void ATurretPawn::OnDestroy()
 	if (ExplosionEffect) {
 		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation(), FRotator(0.f), FVector(1));
 	}
-	Destroy();
 }
 

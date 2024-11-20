@@ -33,7 +33,7 @@ void ABossPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-void ABossPawn::OnJumpToNextObjective(int CurrentObjective)
+void ABossPawn::ChangePhase(int CurrentObjective)
 {
 
 }

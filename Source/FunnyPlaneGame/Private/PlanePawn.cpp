@@ -164,14 +164,13 @@ void APlanePawn::OnPlayerDeath()
 			gamemode->RemoveActorFromArrays(this);
 		}
 	}
-
+	Destroy();
 	if (ExplosionEffect) {
 		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionEffect, GetActorLocation(), FRotator(0.f), FVector(1));
 	}
 	if (CosshairInstance) {
 		CosshairInstance->Destroy();
 	}
-	Destroy();
 }
 void APlanePawn::ManageCamera(float DeltaTime)
 {
@@ -428,6 +427,7 @@ void APlanePawn::ProcessEvadeReleased()
 }
 void APlanePawn::ProcessLockOnPressed()
 {
+	TimeSinceLastCameraInput = 99.f;
  	if(!IsCameraLockAToggle)
 	{
 		IsCameraLockedOn = true;
